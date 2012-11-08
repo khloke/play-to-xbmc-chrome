@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "version": "1.2.3",
+    "name": "Play to XBMC",
+    "description": "Send YouTube, Vimeo or CollegeHumor videos to your XBMC Player.",
+    "options_page": "options.html",
+    "permissions": [ "tabs", "http://*/*" ],
+    "browser_action": {
+        "default_icon": "images/icon.png",
+        "default_popup": "remote.html"
+    },
+    "icons": {
+        "128": "images/tv.png"
+    },
+    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaUHdGZuPbTYFURY+bhj9eTWn3BBj0y0rvfN1IzlM/5kiDWBvoTdHp25XoeJZObRpjDqXrJ+Axe5HPzjvlt0xq+uV795swToviNtQgo448ZYvKO4IiYmjtin4Pvo2Z3kOMmBZBkLEDBnKl/YJSy2afpyHuJQ+trjbDvn9cAh1DzwIDAQAB",
+    "update_url": "http://oaxaca.pirionsystems.com.au/~khloke/xbmc-remote/update.xml"
+}

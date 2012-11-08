@@ -1,0 +1,39 @@
+#remoteRow {
+    text-align: center;
+}
+
+#remoteRow button {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 40px;
+    margin: 0 3px;
+}
+
+#remoteRow button:hover {
+    cursor: pointer;
+}
+
+#remoteRow .playpause {
+    border: 1px solid #eee;
+    background-color: #fefefe;
+
+    padding: 12px 10px 12px 5px;
+    margin: 0 2px;
+    border-radius: 5px;
+}
+
+#volumeRow {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 195px;
+}
+
+#buttonsRow {
+    text-align: center;
+}
+
+.row {
+    margin: 15px auto;
+}
