@@ -10,15 +10,15 @@ $(document).ready( function() {
     });
 
     $('#previousBtn').click(function() {doAction(actions.GoPrevious, function(){})});
-    $('#rewindBtn').click(function() {doAction(actions.SmallSkipBackward, function(){})});
+    $('#rewindBtn').click(function() {playerSeek('smallbackward')});
     $('#stopBtn').click(function() {doAction(actions.Stop, function(){initQueueCount()}); clearPlaylist(function(){});});
     $('#playBtn').click(function() {doAction(actions.PlayPause, function(){})});
-    $('#fastForwardBtn').click(function() {doAction(actions.SmallSkipForward, function(){})});
+    $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
     $('#nextBtn').click(function() {doAction(actions.GoNext, function(){})});
 
     $('#playCurrentVideoButton').click(function() {playCurrentUrl()});
     $('#queueVideoButton').click(function() {queueCurrentUrl()});
     $('#addToFavButton').click(function() {addToFavourites()});
-//    $('#testBtn').click(function() {  });
+//    $('#testBtn').click(function() { getCurrentPlaytime() });
 
 });

@@ -62,7 +62,8 @@ function ajaxPost(data, callback) {
             callback(result);
         },
         contentType: "application/json",
-        data : data
+        data : data,
+        dataType: 'json'
     });
 }
 
@@ -109,6 +110,14 @@ function addItemToPlaylist(video_url, callback) {
     });
 }
 
+function getActivePlayers(callback) {
+    var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
+
+    ajaxPost(getActivePlayers, function(result) {
+        callback(result);
+    });
+}
+
 function clearNonPlayingPlaylist(callback) {
     var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
 
@@ -129,3 +138,12 @@ function getPlaylistSize() {
         return data.result.items.length;
     });
 }
+
+function playerSeek(value) {
+    var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":1, "value":"' + value + '"}, "id" : 1}';
+
+    ajaxPost(playerseek, function(data) {
+        //Do nothing
+    });
+}
+
