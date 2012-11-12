@@ -21,4 +21,8 @@ $(document).ready( function() {
     $('#addToFavButton').click(function() {addToFavourites()});
 //    $('#testBtn').click(function() { getCurrentPlaytime() });
 
+    if (!hasUrlSetup()) {
+        $('#setupTooltip').css("display", "block");
+    }
+
 });

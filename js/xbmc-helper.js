@@ -147,3 +147,9 @@ function playerSeek(value) {
     });
 }
 
+function hasUrlSetup() {
+    var url = localStorage["url"];
+    var port = localStorage["port"];
+
+    return url != null && url != '' && port != null && port != '';
+}
