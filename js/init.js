@@ -7,6 +7,7 @@ $(document).ready( function() {
         initVideoButton();
         initFavouritesTable();
         initQueueCount();
+        initRepeatMode();
     });
 
     $('#previousBtn').click(function() {doAction(actions.GoPrevious, function(){})});
@@ -20,6 +21,12 @@ $(document).ready( function() {
     $('#queueVideoButton').click(function() {queueCurrentUrl()});
     $('#addToFavButton').click(function() {addToFavourites()});
 //    $('#testBtn').click(function() { getCurrentPlaytime() });
+    if (localStorage['showRepeat'] == 'true') {
+        $('#repeatBtn').show();
+    }
+    $('#repeatOff').click(function() {setRepeatMode('off', function() {initRepeatMode();});});
+    $('#repeatOne').click(function() {setRepeatMode('one', function() {initRepeatMode();});});
+    $('#repeatAll').click(function() {setRepeatMode('all', function() {initRepeatMode();});});
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
