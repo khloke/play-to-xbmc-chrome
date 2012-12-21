@@ -140,6 +140,21 @@ function clearPlaylist(callback) {
     });
 }
 
+function addItemsToPlaylist(video_urls, callback) {
+    var item = video_urls.pop();
+    if (item) {
+        addItemToPlaylist(item, function(result) {
+            if (video_urls.length > 0) {
+                addItemsToPlaylist(video_urls, function(result) {
+                    callback(result);
+                });
+            } else {
+                addItemsToPlaylist(video_urls, callback);
+            }
+        })
+    }
+}
+
 function addItemToPlaylist(video_url, callback) {
     var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
     var addToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":1, "item" :{ "file" : "' + video_url + '" }}, "id" : 1}';
