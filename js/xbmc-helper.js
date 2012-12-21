@@ -1,3 +1,8 @@
+/**
+ * Handy curl command:
+ *  curl -i -X POST -d '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":1, "item" :{ "file" : "plugin://plugin.video.youtube/?action=play_video&videoid=XuYjOwWo9hA" }, "item" :{ "file" : "plugin://plugin.video.youtube/?action=play_video&videoid=AdedReMyBy8" }}, "id" : 1}' --header Content-Type:"application/json" http://localhost:8085/jsonrpc
+ */
+
 function getVideoUrl(url) {
     var type = 'youtube';
     var videoId = getUrlVars(url, 'v');
@@ -82,6 +87,21 @@ function clearPlaylist(callback) {
     ajaxPost(clearPlaylist, function(result) {
         callback(result);
     });
+}
+
+function addItemsToPlaylist(video_urls, callback) {
+    var item = video_urls.pop();
+    if (item) {
+        addItemToPlaylist(item, function(result) {
+            if (video_urls.length > 0) {
+                addItemsToPlaylist(video_urls, function(result) {
+                    callback(result);
+                });
+            } else {
+                addItemsToPlaylist(video_urls, callback);
+            }
+        })
+    }
 }
 
 function addItemToPlaylist(video_url, callback) {

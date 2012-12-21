@@ -3,14 +3,16 @@ chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.method == "getPlaylistVideoIds") {
 
+            var videoIds = new Array();
+
             $('.playlist-video-item-base-content img[alt="Thumbnail"]').each(
                 function (index) {
                     var thisElement = $(this);
-                    chrome.extension.getBackgroundPage().addItemToPlaylist(extractId(thisElement.attr('src')), function() {});
-                    alert(extractId(thisElement.attr('src')));
-                });
+                    videoIds.push(extractId(thisElement.attr('src')));
+                }
+            );
 
-            sendResponse({video_ids: "blah"});
+            sendResponse({video_ids: JSON.stringify(videoIds)});
 
         } else {
             sendResponse({});

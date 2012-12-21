@@ -193,3 +193,28 @@ function initRepeatMode() {
         $('#repeatBtnLabel').html(buttonLabel);
     });
 }
+
+function playCurrentPlaylist() {
+    doAction(actions.Stop, function() {
+        clearPlaylist(function() {
+            queueCurrentPlaylist();
+        });
+    });
+}
+
+function queueCurrentPlaylist() {
+    chrome.tabs.getSelected(function(tab) {
+        chrome.tabs.sendMessage(tab.id, {method: "getPlaylistVideoIds"}, function(response) {
+            if (response && response.video_ids) {
+                var videoIds = JSON.parse(response.video_ids);
+                var videoPluginUrls = new Array();
+                for (i in videoIds) {
+                    videoPluginUrls.push(getPluginPath('youtube', videoIds[i]));
+                }
+                addItemsToPlaylist(videoPluginUrls.reverse(), function() {
+                    initQueueCount();
+                });
+            }
+        });
+    });
+}
