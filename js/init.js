@@ -20,7 +20,14 @@ $(document).ready( function() {
     $('#playCurrentVideoButton').click(function() {playCurrentUrl()});
     $('#queueVideoButton').click(function() {queueCurrentUrl()});
     $('#addToFavButton').click(function() {addToFavourites()});
-//    $('#testBtn').click(function() { getCurrentPlaytime() });
+//    $('#testBtn').click(function() {
+//
+//        chrome.tabs.getSelected(function(tab) {
+//            chrome.tabs.sendMessage(tab.id, {greeting: "getPlaylistVideoIds"}, function(response) {
+////                console.log(response.stuff);
+//            });
+//        });
+//    });
     if (localStorage['showRepeat'] == 'true') {
         $('#repeatBtn').show();
     }
