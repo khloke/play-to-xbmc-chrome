@@ -69,11 +69,18 @@ function ajaxPost(data, callback) {
 
 function validUrl(url) {
 // check URL
-    var valid = false;
-    if (url.indexOf('youtube') != -1) valid = true;
-    if (url.indexOf('vimeo') != -1) valid = true;
-    if (url.indexOf('collegehumor') != -1) valid = true;
-    return valid;
+
+    // regex checking for the websites --
+    // chrome tab should be at a specific video.
+    var reYoutube = ".*youtube.com/watch.*";
+    var reVimeo = ".*vimeo.com/\\d+";
+    var reCollegeHumor = ".*collegehumor.com/video/\\d+/\\w+";
+   
+
+   	return (url.match(reYoutube) !== null ||
+   			url.match(reVimeo) !== null ||
+   			url.match(reCollegeHumor) !== null);
+   			
 }
 
 function clearPlaylist(callback) {
