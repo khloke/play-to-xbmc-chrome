@@ -42,6 +42,7 @@ function initialiseSlider(volume) {
     })
 }
 
+
 function playCurrentUrl() {
     doAction(actions.Stop, function() {
         clearPlaylist(function() {
