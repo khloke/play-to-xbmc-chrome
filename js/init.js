@@ -22,9 +22,7 @@ $(document).ready( function() {
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#playCurrentPlaylistButton').click(function() {playCurrentPlaylist()});
 //    $('#testBtn').click(function() {playCurrentPlaylist()});
-    if (localStorage['showRepeat'] == 'true') {
-        $('#repeatBtn').show();
-    }
+
     $('#repeatOff').click(function() {setRepeatMode('off', function() {initRepeatMode();});});
     $('#repeatOne').click(function() {setRepeatMode('one', function() {initRepeatMode();});});
     $('#repeatAll').click(function() {setRepeatMode('all', function() {initRepeatMode();});});

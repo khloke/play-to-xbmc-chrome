@@ -158,9 +158,12 @@ function initVideoButton() {
     chrome.tabs.getSelected(null, function(tab) {
         var url = tab.url;
         var valid = validUrl(url);
-        // if valid, enable button
+        // if valid, enable buttons
         if (valid) {
             $("#playCurrentVideoButton").removeAttr('disabled');
+            if (localStorage['enablePlaylist'] == 'true') {
+                $("#playCurrentPlaylistButton").removeAttr('disabled');
+            }
             $("#queueVideoButton").removeAttr('disabled');
             $("#addToFavButton").removeAttr('disabled');
         }
@@ -180,18 +183,22 @@ function initQueueCount() {
 }
 
 function initRepeatMode() {
-    getRepeatMode(function (data) {
-        var buttonLabel = "Repeat: ";
-        if (data == "one" || data == "One") {
-            buttonLabel += "One";
-        } else if (data == "all" || data == "All") {
-            buttonLabel += "All";
-        } else {
-            buttonLabel += "Off";
-        }
+    if (localStorage['showRepeat'] == 'true') {
+        getRepeatMode(function (data) {
+            var buttonLabel = "Repeat: ";
+            if (data == "one" || data == "One") {
+                buttonLabel += "One";
+            } else if (data == "all" || data == "All") {
+                buttonLabel += "All";
+            } else {
+                buttonLabel += "Off";
+            }
 
-        $('#repeatBtnLabel').html(buttonLabel);
-    });
+            $('#repeatBtnLabel').html(buttonLabel);
+
+            $('#repeatBtn').show();
+        });
+    }
 }
 
 function playCurrentPlaylist() {

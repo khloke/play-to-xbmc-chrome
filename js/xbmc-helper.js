@@ -178,6 +178,8 @@ function getRepeatMode(callback) {
     var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":1, "properties":["repeat"]}, "id" : 1}';
 
     ajaxPost(playerRepeat, function(data) {
-        callback(data.result.repeat);
+        if (data && data.result && data.result.repeat) {
+            callback(data.result.repeat);
+        }
     });
 }

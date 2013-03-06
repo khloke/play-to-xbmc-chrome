@@ -12,7 +12,11 @@
     "content_scripts": [
         {
             "matches": ["http://www.youtube.com/playlist*"],
-            "js": ["/js/jquery-1.7.2.min.js", "/js/youtube-playlist-scripts.js"]
+            "js": ["/js/jquery-1.7.2.min.js", "/js/content_scripts/youtube-playlist-scripts.js"]
+        },
+        {
+            "matches": ["http://www.youtube.com/watch*&list=*"],
+            "js": ["/js/jquery-1.7.2.min.js", "/js/content_scripts/youtube-playlist-scripts-2.js"]
         }
     ],
     "icons": {

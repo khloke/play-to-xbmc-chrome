@@ -13,11 +13,13 @@ function save_options() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     var showRepeat = document.getElementById("showRepeat").checked;
+    var enablePlaylist = document.getElementById("enablePlaylist").checked;
     localStorage.setItem("url", url);
     localStorage.setItem("port", port);
     localStorage.setItem("username", username);
     localStorage.setItem("password", password);
     localStorage.setItem("showRepeat", showRepeat);
+    localStorage.setItem("enablePlaylist", enablePlaylist);
 
     // Update status to let user know options were saved.
     var status = $("#status");
@@ -31,6 +33,7 @@ function restore_options() {
     var username = localStorage["username"];
     var password = localStorage["password"];
     var showRepeat = localStorage["showRepeat"];
+    var enablePlaylist = localStorage["enablePlaylist"];
     if (!url || !port) {
         return;
     }
@@ -40,11 +43,17 @@ function restore_options() {
         document.getElementById("username").value = username;
         document.getElementById("password").value = password;
     }
+
     if (showRepeat == "true") {
         $('#showRepeat').attr("checked", true);
-//        document.getElementById("showRepeat").checked = showRepeat;
     } else {
         $('#showRepeat').removeAttr("checked");
+    }
+
+    if (enablePlaylist == "true") {
+        $('#enablePlaylist').attr("checked", true);
+    } else {
+        $('#enablePlaylist').removeAttr("checked");
     }
 }
 
