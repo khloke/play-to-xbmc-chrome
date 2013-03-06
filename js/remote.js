@@ -154,6 +154,12 @@ function initFavouritesTable() {
     });
 }
 
+function initJsonVersion() {
+    getXbmcJsonVersion(function(version) {
+        localStorage.setItem('jsonVersion', version);
+    });
+}
+
 function initVideoButton() {
     chrome.tabs.getSelected(null, function(tab) {
         var url = tab.url;
