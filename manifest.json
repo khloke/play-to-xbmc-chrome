@@ -9,12 +9,6 @@
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"
     },
-    "content_scripts": [
-        {
-            "matches": ["http://www.youtube.com/playlist*"],
-            "js": ["/js/jquery-1.7.2.min.js", "/js/youtube-playlist-scripts.js"]
-        }
-    ],
     "icons": {
         "128": "images/tv.png"
     }

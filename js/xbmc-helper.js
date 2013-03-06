@@ -139,6 +139,14 @@ function clearNonPlayingPlaylist(callback) {
     });
 }
 
+function getPlaylistSize() {
+    var getCurrentPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
+
+    ajaxPost(getCurrentPlaylist, function(data) {
+        return data.result.items.length;
+    });
+}
+
 function playerSeek(value) {
     var playerSeek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":1, "value":"' + value + '"}, "id" : 1}';
 

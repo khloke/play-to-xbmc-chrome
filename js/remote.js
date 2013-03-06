@@ -168,8 +168,8 @@ function initVideoButton() {
 }
 
 function initQueueCount() {
-    var getCurrentPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
-    ajaxPost(getCurrentPlaylist, function(data) {
+    var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
+    ajaxPost(getcurrentplaylist, function(data) {
         var items = data.result.items;
         if (items != null) {
             $("#queueVideoButton").html("+Queue(" + items.length + ")");
