@@ -16,6 +16,11 @@ function getVideoUrl(url) {
         videoId = url.replace('http://www.collegehumor.com/', '');
     }
 
+    if (url.indexOf('dailymotion') != -1) {
+        type = 'dailymotion';
+        videoId = url.substr(0, url.indexOf('_')).replace('http://www.dailymotion.com/video/', '');
+    }
+
     return getPluginPath(type, videoId);
 }
 
@@ -31,9 +36,11 @@ function getPluginPath(type, videoId) {
     switch (type) {
         case 'youtube':
         case 'vimeo':
-            return  'plugin://plugin.video.' + type + '/?action=play_video&videoid=' + videoId;
+            return 'plugin://plugin.video.' + type + '/?action=play_video&videoid=' + videoId;
         case 'collegehumor':
-            return  'plugin://plugin.video.' + type + '/watch/' + encodeURIComponent(videoId) + '/';
+            return 'plugin://plugin.video.' + type + '/watch/' + encodeURIComponent(videoId) + '/';
+        case 'dailymotion':
+            return 'plugin://plugin.video.dailymotion_com/?url=' + videoId + '&mode=playVideo';
         default:
             return '';
     }
@@ -73,6 +80,7 @@ function validUrl(url) {
     if (url.indexOf('youtube') != -1) valid = true;
     if (url.indexOf('vimeo') != -1) valid = true;
     if (url.indexOf('collegehumor') != -1) valid = true;
+    if (url.indexOf('dailymotion') != -1) valid = true;
     return valid;
 }
 
