@@ -178,18 +178,3 @@ function initQueueCount() {
         }
     });
 }
-
-function initRepeatMode() {
-    getRepeatMode(function (data) {
-        var buttonLabel = "Repeat: ";
-        if (data == "one" || data == "One") {
-            buttonLabel += "One";
-        } else if (data == "all" || data == "All") {
-            buttonLabel += "All";
-        } else {
-            buttonLabel += "Off";
-        }
-
-        $('#repeatBtnLabel').html(buttonLabel);
-    });
-}

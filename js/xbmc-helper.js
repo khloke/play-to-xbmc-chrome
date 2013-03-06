@@ -140,17 +140,17 @@ function clearNonPlayingPlaylist(callback) {
 }
 
 function getPlaylistSize() {
-    var getCurrentPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
+    var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
 
-    ajaxPost(getCurrentPlaylist, function(data) {
+    ajaxPost(getcurrentplaylist, function(data) {
         return data.result.items.length;
     });
 }
 
 function playerSeek(value) {
-    var playerSeek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":1, "value":"' + value + '"}, "id" : 1}';
+    var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":1, "value":"' + value + '"}, "id" : 1}';
 
-    ajaxPost(playerSeek, function(data) {
+    ajaxPost(playerseek, function(data) {
         //Do nothing
     });
 }
@@ -160,20 +160,4 @@ function hasUrlSetup() {
     var port = localStorage["port"];
 
     return url != null && url != '' && port != null && port != '';
-}
-
-function setRepeatMode(repeatMode, callback) {
-    var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":1, "state":"' + repeatMode + '"}, "id" : 1}';
-
-    ajaxPost(playerRepeat, function(data) {
-        callback(data);
-    });
-}
-
-function getRepeatMode(callback) {
-    var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":1, "properties":["repeat"]}, "id" : 1}';
-
-    ajaxPost(playerRepeat, function(data) {
-        callback(data.result.repeat);
-    });
 }
