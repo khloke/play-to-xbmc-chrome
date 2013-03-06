@@ -159,10 +159,12 @@ function playerGoPrevious() {
     var version = localStorage["jsonVersion"];
     var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":1, "to":"previous"}, "id" : 1}';
 
-    if (version == 4 || version == '4') {
-        doAction(actions.GoPrevious, function(){});
-    } else if (version == 6 || version == '6') {
+    if (version >= 6) {
         ajaxPost(playerPreviousV6, function(data){});
+
+    } else if (version >= 4) {
+        doAction(actions.GoPrevious, function(){});
+
     }
 }
 
@@ -170,10 +172,12 @@ function playerGoNext() {
     var version = localStorage["jsonVersion"];
     var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":1, "to":"next"}, "id" : 1}';
 
-    if (version == 4 || version == '4') {
-        doAction(actions.GoNext, function(){});
-    } else if (version == 6 || version == '6') {
+    if (version >= 6) {
         ajaxPost(playerNextV6, function(data){});
+
+    } else if (version >= 4) {
+        doAction(actions.GoNext, function(){});
+
     }
 }
 
@@ -189,6 +193,9 @@ function getXbmcJsonVersion(callback) {
 
     ajaxPost(getJsonVersion, function(data) {
         version = data.result.version.major;
+        if (!version) {
+            version = data.result.version;
+        }
         callback(version);
     });
 }
