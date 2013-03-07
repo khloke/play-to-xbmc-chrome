@@ -75,19 +75,21 @@ function ajaxPost(data, callback) {
 }
 
 function validUrl(url) {
-// check URL
-
     // regex checking for the websites --
     // chrome tab should be at a specific video.
     var reYoutube = ".*youtube.com/watch.*";
     var reVimeo = ".*vimeo.com/\\d+";
     var reCollegeHumor = ".*collegehumor.com/video/\\d+/\\w+";
-   
+    var reDailyMotion = ".*dailymotion.com/video/.*";
 
-   	return (url.match(reYoutube) !== null ||
-   			url.match(reVimeo) !== null ||
-   			url.match(reCollegeHumor) !== null);
-   			
+
+    return (
+            url.match(reYoutube) ||
+            url.match(reVimeo) ||
+            url.match(reCollegeHumor) ||
+            url.match(reDailyMotion)
+        );
+
 }
 
 function clearPlaylist(callback) {
