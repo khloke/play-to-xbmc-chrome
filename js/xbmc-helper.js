@@ -1,4 +1,4 @@
-function getVideoUrl(url) {
+function getPluginPath(url) {
     var type = 'youtube';
     var videoId = getUrlVars(url, 'v');
 
@@ -26,33 +26,34 @@ function getVideoUrl(url) {
         videoId = url.substr(0, url.lastIndexOf('/')).replace('http://www.ebaumsworld.com/video/watch/', '');
     }
 
-    return getPluginPath(type, videoId);
+    return buildPluginPath(type, videoId);
 }
 
 function queueItem(url, callback) {
-    var videoUrl = getVideoUrl(url);
+    var videoUrl = getPluginPath(url);
 
     addItemToPlaylist(videoUrl, function(result) {
         callback(result);
     });
 }
 
-function getPluginPath(type, videoId) {
+function buildPluginPath(type, videoId) {
     switch (type) {
         case 'youtube':
         case 'vimeo':
             return 'plugin://plugin.video.' + type + '/?action=play_video&videoid=' + videoId;
+
         case 'collegehumor':
             return 'plugin://plugin.video.' + type + '/watch/' + encodeURIComponent(videoId) + '/';
+
         case 'dailymotion':
-            return 'plugin://plugin.video.dailymotion_com/?url=' + videoId + '&mode=playVideo';
         case 'ebaumsworld':
-            return 'plugin://plugin.video.ebaumsworld_com/?url=' + videoId + '&mode=playVideo';
+            return 'plugin://plugin.video.' + type + '_com/?url=' + videoId + '&mode=playVideo';
+
         default:
             return '';
     }
 }
-
 
 function getUrlVars(url, attribute) {
     var vars = [], hash;
@@ -78,6 +79,18 @@ function ajaxPost(data, callback) {
         contentType: "application/json",
         data : data,
         dataType: 'json'
+    });
+}
+
+function getSoundcloudId(url, callback) {
+    jQuery.ajax({
+        type: 'POST',
+        url : 'http://soundcloud.com/oembed?url=' + url,
+        success: function(result) {
+            var iframetext = $(result).find("html").text();
+
+            callback(result);
+        }
     });
 }
 
