@@ -21,6 +21,11 @@ function getVideoUrl(url) {
         videoId = url.substr(0, url.indexOf('_')).replace('http://www.dailymotion.com/video/', '');
     }
 
+    if (url.indexOf('ebaumsworld') != -1) {
+        type = 'ebaumsworld';
+        videoId = url.substr(0, url.lastIndexOf('/')).replace('http://www.ebaumsworld.com/video/watch/', '');
+    }
+
     return getPluginPath(type, videoId);
 }
 
@@ -41,6 +46,8 @@ function getPluginPath(type, videoId) {
             return 'plugin://plugin.video.' + type + '/watch/' + encodeURIComponent(videoId) + '/';
         case 'dailymotion':
             return 'plugin://plugin.video.dailymotion_com/?url=' + videoId + '&mode=playVideo';
+        case 'ebaumsworld':
+            return 'plugin://plugin.video.ebaumsworld_com/?url=' + videoId + '&mode=playVideo';
         default:
             return '';
     }
@@ -81,13 +88,15 @@ function validUrl(url) {
     var reVimeo = ".*vimeo.com/\\d+";
     var reCollegeHumor = ".*collegehumor.com/video/\\d+/\\w+";
     var reDailyMotion = ".*dailymotion.com/video/.*";
+    var reEbaumsworld = ".*ebaumsworld.com/video/.*";
 
 
     return (
             url.match(reYoutube) ||
             url.match(reVimeo) ||
             url.match(reCollegeHumor) ||
-            url.match(reDailyMotion)
+            url.match(reDailyMotion) ||
+            url.match(reEbaumsworld)
         );
 
 }
