@@ -22,10 +22,15 @@ function setVolume(volume) {
 }
 
 function doAction(item, callback) {
-    var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":1}, "id" : 1}';
-
-    ajaxPost(action, function(result) {
-        callback(result);
+    getActivePlayers(function(result) {
+        if (result && result.result.length > 0) {
+            var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + result.result[0].playerid + '}, "id" : 1}';
+            ajaxPost(action, function (result) {
+                callback(result);
+            });
+        } else {
+            callback();
+        }
     });
 }
 

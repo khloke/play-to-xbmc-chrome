@@ -1,39 +1,50 @@
-function getPluginPath(url) {
-    var type = 'youtube';
-    var videoId = getUrlVars(url, 'v');
+function getPluginPath(url, callback) {
+    var videoId;
 
-    if (url.indexOf('vimeo') != -1) {
-        type = 'vimeo';
-        var index = url.lastIndexOf('/');
-        if (url.indexOf('#') != -1) {
-            index = url.indexOf('#');
-        }
-        videoId = url.substring(index + 1, url.length);
+    var typeRegex = '(https|http)://(www\.)?([^\.]+)\.([^/]+).+';
+    var type = url.match(typeRegex)[3];
+
+    var youtubeRegex = 'v=([^&]+)';
+    var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&]+)';
+    var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^&/]+)';
+    var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&]+)';
+
+    switch (type) {
+        case 'youtube':
+            videoId = url.match(youtubeRegex)[1];
+            break;
+
+        case 'vimeo':
+            videoId = url.match(vimeoRegex)[3];
+            break;
+
+        case 'collegehumor':
+            videoId = url.match(collegehumorRegex)[3];
+            break;
+
+        case 'dailymotion':
+            videoId = url.match(dailymotionRegex)[3];
+            break;
+
+        case 'soundcloud':
+            getSoundcloudTrackId(url, function(trackId){
+                callback(buildPluginPath(type, trackId));
+            });
+            return;
+
+
+        default:
+            console.log('An error has occurred while attempting to obtain content id.');
     }
 
-    if (url.indexOf('collegehumor') != -1) {
-        type = 'collegehumor';
-        videoId = url.replace('http://www.collegehumor.com/', '');
-    }
-
-    if (url.indexOf('dailymotion') != -1) {
-        type = 'dailymotion';
-        videoId = url.substr(0, url.indexOf('_')).replace('http://www.dailymotion.com/video/', '');
-    }
-
-    if (url.indexOf('ebaumsworld') != -1) {
-        type = 'ebaumsworld';
-        videoId = url.substr(0, url.lastIndexOf('/')).replace('http://www.ebaumsworld.com/video/watch/', '');
-    }
-
-    return buildPluginPath(type, videoId);
+    callback(buildPluginPath(type, videoId));
 }
 
 function queueItem(url, callback) {
-    var videoUrl = getPluginPath(url);
-
-    addItemToPlaylist(videoUrl, function(result) {
-        callback(result);
+    getPluginPath(url, function(pluginPath){
+        addItemToPlaylist(pluginPath, function(result) {
+            callback(result);
+        });
     });
 }
 
@@ -49,6 +60,9 @@ function buildPluginPath(type, videoId) {
         case 'dailymotion':
         case 'ebaumsworld':
             return 'plugin://plugin.video.' + type + '_com/?url=' + videoId + '&mode=playVideo';
+
+        case 'soundcloud':
+            return 'plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15';
 
         default:
             return '';
@@ -82,14 +96,16 @@ function ajaxPost(data, callback) {
     });
 }
 
-function getSoundcloudId(url, callback) {
+function getSoundcloudTrackId(url, callback) {
+    var soundcloudRegex = 'url=.+tracks%2F([^&]+).+';
     jQuery.ajax({
         type: 'POST',
         url : 'http://soundcloud.com/oembed?url=' + url,
         success: function(result) {
             var iframetext = $(result).find("html").text();
+            var trackId = iframetext.match(soundcloudRegex)[1];
 
-            callback(result);
+            callback(trackId);
         }
     });
 }
@@ -99,9 +115,10 @@ function validUrl(url) {
     // chrome tab should be at a specific video.
     var reYoutube = ".*youtube.com/watch.*";
     var reVimeo = ".*vimeo.com/\\d+";
-    var reCollegeHumor = ".*collegehumor.com/video/\\d+/\\w+";
+    var reCollegeHumor = ".*collegehumor.com/[video|embed]+/\\d+/\\w+";
     var reDailyMotion = ".*dailymotion.com/video/.*";
     var reEbaumsworld = ".*ebaumsworld.com/video/.*";
+    var reSoundcloud = ".*soundcloud.com.*";
 
 
     return (
@@ -109,7 +126,8 @@ function validUrl(url) {
             url.match(reVimeo) ||
             url.match(reCollegeHumor) ||
             url.match(reDailyMotion) ||
-            url.match(reEbaumsworld)
+            url.match(reEbaumsworld) ||
+            url.match(reSoundcloud)
         );
 
 }
@@ -178,37 +196,50 @@ function getPlaylistSize() {
 }
 
 function playerSeek(value) {
-    var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":1, "value":"' + value + '"}, "id" : 1}';
-
-    ajaxPost(playerseek, function(data) {
-        //Do nothing
+    getActivePlayers(function(result) {
+        if (result && result.result.length > 0) {
+            var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":' + result.result[0].playerid + ', "value":"' + value + '"}, "id" : 1}';
+            ajaxPost(playerseek, function (data) {
+                //Do nothing
+            });
+        }
     });
 }
 
 function playerGoPrevious() {
-    var version = localStorage["jsonVersion"];
-    var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":1, "to":"previous"}, "id" : 1}';
+    getActivePlayers(function(result) {
+        if (result && result.result.length > 0) {
+            var version = localStorage["jsonVersion"];
+            var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + result.result[0].playerid + ', "to":"previous"}, "id" : 1}';
 
-    if (version >= 6) {
-        ajaxPost(playerPreviousV6, function(data){});
+            if (version >= 6) {
+                ajaxPost(playerPreviousV6, function (data) {
+                });
 
-    } else if (version >= 4) {
-        doAction(actions.GoPrevious, function(){});
+            } else if (version >= 4) {
+                doAction(actions.GoPrevious, function () {
+                });
 
-    }
+            }
+        }
+    });
 }
 
 function playerGoNext() {
-    var version = localStorage["jsonVersion"];
-    var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":1, "to":"next"}, "id" : 1}';
+    getActivePlayers(function(result) {
+        if (result && result.result.length > 0) {
+            var version = localStorage["jsonVersion"];
+            var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + result.result[0].playerid + ', "to":"next"}, "id" : 1}';
 
-    if (version >= 6) {
-        ajaxPost(playerNextV6, function(data){});
+            if (version >= 6) {
+                ajaxPost(playerNextV6, function(data){});
 
-    } else if (version >= 4) {
-        doAction(actions.GoNext, function(){});
+            } else if (version >= 4) {
+                doAction(actions.GoNext, function(){});
 
-    }
+            }
+        }
+    });
 }
 
 function hasUrlSetup() {
