@@ -5,10 +5,10 @@ function getPluginPath(url, callback) {
     var type = url.match(typeRegex)[3];
 
     var youtubeRegex = 'v=([^&]+)';
-    var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&]+)';
-    var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^&/]+)';
-    var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&]+)';
-    var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/]+)';
+    var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&/#\?]+)';
+    var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
+    var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
+    var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
 
     switch (type) {
         case 'youtube':
@@ -72,17 +72,6 @@ function queueItem(url, callback) {
             callback(result);
         });
     });
-}
-
-function getUrlVars(url, attribute) {
-    var vars = [], hash;
-    var hashes = url.slice(url.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars[attribute];
 }
 
 function ajaxPost(data, callback) {
