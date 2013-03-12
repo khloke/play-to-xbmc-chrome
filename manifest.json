@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "version": "1.2.6.1",
+    "version": "1.2.7.0",
     "name": "Play to XBMC",
-    "description": "Send YouTube, Vimeo, DailyMotion and CollegeHumor videos to your XBMC Player.",
+    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld and SoundCloud content on your XBMC Player.",
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*" ],
     "browser_action": {
