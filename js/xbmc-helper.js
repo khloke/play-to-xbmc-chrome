@@ -1,3 +1,8 @@
+/**
+ * Handy curl command:
+ *  curl -i -X POST -d '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":1, "item" :{ "file" : "plugin://plugin.video.youtube/?action=play_video&videoid=XuYjOwWo9hA" }, "item" :{ "file" : "plugin://plugin.video.youtube/?action=play_video&videoid=AdedReMyBy8" }}, "id" : 1}' --header Content-Type:"application/json" http://localhost:8085/jsonrpc
+ */
+
 function getPluginPath(url, callback) {
     var videoId;
 
@@ -133,6 +138,21 @@ function clearPlaylist(callback) {
     });
 }
 
+function addItemsToPlaylist(video_urls, callback) {
+    var item = video_urls.pop();
+    if (item) {
+        addItemToPlaylist(item, function(result) {
+            if (video_urls.length > 0) {
+                addItemsToPlaylist(video_urls, function(result) {
+                    callback(result);
+                });
+            } else {
+                addItemsToPlaylist(video_urls, callback);
+            }
+        })
+    }
+}
+
 function addItemToPlaylist(video_url, callback) {
     var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
     var addToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":1, "item" :{ "file" : "' + video_url + '" }}, "id" : 1}';
@@ -251,5 +271,15 @@ function getXbmcJsonVersion(callback) {
             version = data.result.version;
         }
         callback(version);
+    });
+}
+
+function getRepeatMode(callback) {
+    var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":1, "properties":["repeat"]}, "id" : 1}';
+
+    ajaxPost(playerRepeat, function(data) {
+        if (data && data.result && data.result.repeat) {
+            callback(data.result.repeat);
+        }
     });
 }

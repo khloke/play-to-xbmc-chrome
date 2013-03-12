@@ -175,7 +175,7 @@ function initVideoButton() {
     chrome.tabs.getSelected(null, function(tab) {
         var url = tab.url;
         var valid = validUrl(url);
-        // if valid, enable button
+        // if valid, enable buttons
         if (valid) {
             $(".disabled-btn").removeAttr('disabled');
         }
@@ -191,5 +191,49 @@ function initQueueCount() {
         } else {
             $("#queueVideoButton").html("+Queue");
         }
+    });
+}
+
+function initRepeatMode() {
+    if (localStorage['showRepeat'] == 'true') {
+        getRepeatMode(function (data) {
+            var buttonLabel = "Repeat: ";
+            if (data == "one" || data == "One") {
+                buttonLabel += "One";
+            } else if (data == "all" || data == "All") {
+                buttonLabel += "All";
+            } else {
+                buttonLabel += "Off";
+            }
+
+            $('#repeatBtnLabel').html(buttonLabel);
+
+            $('#repeatBtn').show();
+        });
+    }
+}
+
+function playCurrentPlaylist() {
+    doAction(actions.Stop, function() {
+        clearPlaylist(function() {
+            queueCurrentPlaylist();
+        });
+    });
+}
+
+function queueCurrentPlaylist() {
+    chrome.tabs.getSelected(function(tab) {
+        chrome.tabs.sendMessage(tab.id, {method: "getPlaylistVideoIds"}, function(response) {
+            if (response && response.video_ids) {
+                var videoIds = JSON.parse(response.video_ids);
+                var videoPluginUrls = new Array();
+                for (i in videoIds) {
+                    videoPluginUrls.push(getPluginPath('youtube', videoIds[i]));
+                }
+                addItemsToPlaylist(videoPluginUrls.reverse(), function() {
+                    initQueueCount();
+                });
+            }
+        });
     });
 }
