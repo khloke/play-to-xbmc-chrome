@@ -8,6 +8,7 @@ function getPluginPath(url, callback) {
     var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&]+)';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^&/]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&]+)';
+    var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/]+)';
 
     switch (type) {
         case 'youtube':
@@ -26,6 +27,10 @@ function getPluginPath(url, callback) {
             videoId = url.match(dailymotionRegex)[3];
             break;
 
+        case 'ebaumsworld':
+            videoId = url.match(ebaumsworldRegex)[3];
+            break;
+
         case 'soundcloud':
             getSoundcloudTrackId(url, function(trackId){
                 callback(buildPluginPath(type, trackId));
@@ -38,14 +43,6 @@ function getPluginPath(url, callback) {
     }
 
     callback(buildPluginPath(type, videoId));
-}
-
-function queueItem(url, callback) {
-    getPluginPath(url, function(pluginPath){
-        addItemToPlaylist(pluginPath, function(result) {
-            callback(result);
-        });
-    });
 }
 
 function buildPluginPath(type, videoId) {
@@ -67,6 +64,14 @@ function buildPluginPath(type, videoId) {
         default:
             return '';
     }
+}
+
+function queueItem(url, callback) {
+    getPluginPath(url, function(pluginPath){
+        addItemToPlaylist(pluginPath, function(result) {
+            callback(result);
+        });
+    });
 }
 
 function getUrlVars(url, attribute) {
@@ -119,7 +124,6 @@ function validUrl(url) {
     var reDailyMotion = ".*dailymotion.com/video/.*";
     var reEbaumsworld = ".*ebaumsworld.com/video/.*";
     var reSoundcloud = ".*soundcloud.com.*";
-
 
     return (
             url.match(reYoutube) ||
