@@ -16,6 +16,11 @@ function getURL() {
     return 'http://'+ loginPortion + url + ':' + port;
 }
 
+function onChangeUpdate() {
+    initQueueCount();
+    initRepeatMode();
+}
+
 function setVolume(volume) {
     var setVolume = '{"jsonrpc": "2.0", "method": "Application.SetVolume", "params": {"volume":' + volume + '} , "id" : 1}';
     ajaxPost(setVolume, function() {});
@@ -51,7 +56,7 @@ function playCurrentUrl() {
     doAction(actions.Stop, function() {
         clearPlaylist(function() {
             queueCurrentUrl();
-            initQueueCount();
+            onChangeUpdate();
         });
     });
 }
@@ -59,7 +64,7 @@ function playCurrentUrl() {
 function queueCurrentUrl() {
     getCurrentUrl(function(tabUrl) {
         queueItem(tabUrl, function() {
-            initQueueCount();
+            onChangeUpdate();
         });
     });
 }
@@ -125,7 +130,7 @@ function createFavouritesActionButtons(i) {
     $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><a class='btn btn-mini btn-primary' id='favQueueBtn" + i + "' href=\"#\">Play</a>&#32;<a class='btn btn-mini' id='favRemoveBtn" + i + "' href=\"#\">Remove</a></div></td></tr>");
     $('#favQueueBtn' + i).click(function() {
         queueItem(favArray[i][1], function() {
-            initQueueCount()
+            onChangeUpdate();
         });
     });
     $('#favRemoveBtn' + i).click(function() {
@@ -177,7 +182,7 @@ function initVideoButton() {
         var valid = validUrl(url);
         // if valid, enable button
         if (valid) {
-            $(".disabled-btn").removeAttr('disabled');
+            $(".disabled-btn").each(function() { $(this).removeAttr('disabled') });;
         }
     });
 }
@@ -193,3 +198,63 @@ function initQueueCount() {
         }
     });
 }
+
+function initRepeatMode() {
+    getRepeatMode(function (repeat) {
+        var buttonLabel = "Repeat: ";
+        var repeatButton = $('#repeatButton');
+        if (repeat == "one" || repeat == "One") {
+            buttonLabel += "One";
+        } else if (repeat == "all" || repeat == "All") {
+            buttonLabel += "All";
+        } else if (repeat == "off" || repeat == "Off") {
+            buttonLabel += "Off";
+        } else {
+            buttonLabel += "Not playing";
+            repeatButton.attr('disabled', true);
+        }
+
+        repeatButton.removeAttr('disabled');
+        repeatButton.html(buttonLabel);
+    });
+}
+
+function toggleRepeat() {
+    $('#repeatButton').html('<img src="/images/loading.gif"/>');
+    getRepeatMode(function (repeat) {
+        if (repeat == "one" || repeat == "One") {
+            setRepeatMode('all', function(){});
+        } else if (repeat == "all" || repeat == "All") {
+            setRepeatMode('off', function(){});
+        } else if (repeat == "off" || repeat == "Off") {
+            setRepeatMode('one', function(){});
+        }
+
+        initRepeatMode();
+    });
+}
+
+//function playCurrentPlaylist() {
+//    doAction(actions.Stop, function() {
+//        clearPlaylist(function() {
+//            queueCurrentPlaylist();
+//        });
+//    });
+//}
+
+//function queueCurrentPlaylist() {
+//    chrome.tabs.getSelected(function(tab) {
+//        chrome.tabs.sendMessage(tab.id, {method: "getPlaylistVideoIds"}, function(response) {
+//            if (response && response.video_ids) {
+//                var videoIds = JSON.parse(response.video_ids);
+//                var videoPluginUrls = new Array();
+//                for (i in videoIds) {
+//                    videoPluginUrls.push(getPluginPath('youtube', videoIds[i]));
+//                }
+//                addItemsToPlaylist(videoPluginUrls.reverse(), function() {
+//                    initQueueCount();
+//                });
+//            }
+//        });
+//    });
+//}
