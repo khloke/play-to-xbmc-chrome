@@ -200,19 +200,6 @@ function clearNonPlayingPlaylist(callback) {
     });
 }
 
-function getPlaylistSize(callback) {
-    var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
-
-    ajaxPost(getcurrentplaylist, function(response) {
-        if (response && response.result.length > 0) {
-            var playlistSize = response.result.items.length;
-            callback(playlistSize);
-        } else {
-            callback(null);
-        }
-    });
-}
-
 function playerSeek(value) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
@@ -320,15 +307,31 @@ function setRepeatMode(mode, callback) {
     });
 }
 
-function getQueuePosition(callback) {
+function getPlaylistPosition(callback) {
 
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var getQueuePosition = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["position"]}, "id" : 1}';
 
             ajaxPost(getQueuePosition, function (response) {
-
+                if (response && response.result) {
+                    var position = response.result.position;
+                    callback(position);
+                }
             });
+        } else {
+            callback(null);
+        }
+    });
+}
+
+function getPlaylistSize(callback) {
+    var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
+
+    ajaxPost(getcurrentplaylist, function(response) {
+        if (response && response.result && response.result.items) {
+            var playlistSize = response.result.items.length;
+            callback(playlistSize);
         } else {
             callback(null);
         }
@@ -339,7 +342,7 @@ function getVolumeLevel(callback) {
     var getVolumeLevel = '{"jsonrpc": "2.0", "method": "Application.GetProperties", "params":{"properties":["volume"]}, "id" : 1}';
 
     ajaxPost(getVolumeLevel, function(response) {
-        if (response && response.result.length > 0) {
+        if (response && response.result) {
             callback(response.result["volume"]);
         } else {
             callback(null);

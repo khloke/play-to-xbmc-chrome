@@ -175,15 +175,20 @@ function initVideoButton() {
 }
 
 function initQueueCount() {
-    var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
-    ajaxPost(getcurrentplaylist, function(data) {
-        var items = data.result.items;
-        if (items != null) {
-            $("#queueVideoButton").html("+Queue(" + items.length + ")");
-        } else {
-            $("#queueVideoButton").html("+Queue");
+    getPlaylistSize(function(playlistSize) {
+        if (playlistSize != null) {
+            getPlaylistPosition(function (playlistPosition) {
+                var leftOvers = playlistSize - playlistPosition;
+                if (playlistPosition != null) {
+                    console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
+                    $("#queueVideoButton").html("+Queue(" + leftOvers + ")");
+                    return;
+                }
+            });
         }
     });
+
+    $("#queueVideoButton").html("+Queue");
 }
 
 function initRepeatMode() {
