@@ -97,9 +97,13 @@ function getSoundcloudTrackId(url, callback) {
         url : 'http://soundcloud.com/oembed?url=' + url,
         success: function(result) {
             var iframetext = $(result).find("html").text();
-            var trackId = iframetext.match(soundcloudRegex)[1];
+            if (iframetext.indexOf('tracks')) {
+                var trackId = iframetext.match(soundcloudRegex)[1];
 
-            callback(trackId);
+                callback(trackId);
+            } else {
+                callback(null);
+            }
         }
     });
 }
@@ -149,20 +153,19 @@ function addItemsToPlaylist(video_urls, callback) {
 }
 
 function addItemToPlaylist(video_url, callback) {
-    var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
     var addToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":1, "item" :{ "file" : "' + video_url + '" }}, "id" : 1}';
 
-    ajaxPost(getActivePlayers, function(result) {
-        if ($.isEmptyObject(result.result)) {
+    getActivePlayerId(function(playerid) {
+        if (playerid == null) {
             //If nothing is playing, clear the list, probably left over from be
             clearPlaylist(function(){});
         }
         ajaxPost(addToPlaylist, function(result){
-            ajaxPost(getActivePlayers,function( result ){
+            getActivePlayerId(function(playerid_2) {
                 var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":1, "position" : 0}}, "id": 1}';
 
                 //if nothing is playing, play what we inserted
-                if (jQuery.isEmptyObject(result.result)){
+                if (playerid_2 == null){
                     ajaxPost(playVideo, function(result) {
                         callback(result);
                     });
@@ -174,24 +177,26 @@ function addItemToPlaylist(video_url, callback) {
     });
 }
 
-function getActivePlayers(callback) {
+function getActivePlayerId(callback) {
     var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
 
     ajaxPost(getActivePlayers, function(result) {
-        callback(result);
+        if (result && result.result.length > 0) {
+            var playerid = result.result[0].playerid;
+            callback(playerid);
+        } else {
+            callback(null);
+        }
     });
 }
 
 function clearNonPlayingPlaylist(callback) {
-    var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
-
-    ajaxPost(getActivePlayers, function(result) {
-        if ($.isEmptyObject(result.result)) {
+    getActivePlayerId(function(playerid){
+        if (playerid == null) {
             //If nothing is playing, clear the list, probably left over from be
             clearPlaylist(function(){});
         }
-
-        callback(result);
+        callback();
     });
 }
 
@@ -204,29 +209,25 @@ function getPlaylistSize() {
 }
 
 function playerSeek(value) {
-    getActivePlayers(function(result) {
-        if (result && result.result.length > 0) {
-            var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":' + result.result[0].playerid + ', "value":"' + value + '"}, "id" : 1}';
-            ajaxPost(playerseek, function (data) {
-                //Do nothing
-            });
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
+            var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":' + playerid + ', "value":"' + value + '"}, "id" : 1}';
+            ajaxPost(playerseek, function () {});
         }
     });
 }
 
 function playerGoPrevious() {
-    getActivePlayers(function(result) {
-        if (result && result.result.length > 0) {
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
             var version = localStorage["jsonVersion"];
-            var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + result.result[0].playerid + ', "to":"previous"}, "id" : 1}';
+            var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerPreviousV6, function (data) {
-                });
+                ajaxPost(playerPreviousV6, function () {});
 
             } else if (version >= 4) {
-                doAction(actions.GoPrevious, function () {
-                });
+                doAction(actions.GoPrevious, function () {});
 
             }
         }
@@ -234,13 +235,13 @@ function playerGoPrevious() {
 }
 
 function playerGoNext() {
-    getActivePlayers(function(result) {
-        if (result && result.result.length > 0) {
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
             var version = localStorage["jsonVersion"];
-            var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + result.result[0].playerid + ', "to":"next"}, "id" : 1}';
+            var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerNextV6, function(data){});
+                ajaxPost(playerNextV6, function(){});
 
             } else if (version >= 4) {
                 doAction(actions.GoNext, function(){});
@@ -270,48 +271,63 @@ function getXbmcJsonVersion(callback) {
 }
 
 function getRepeatMode(callback) {
-    getActivePlayers(function(result) {
-        var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + result.result[0].playerid + ', "properties":["repeat"]}, "id" : 1}';
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
+            var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["repeat"]}, "id" : 1}';
 
-        ajaxPost(playerRepeat, function(data) {
-            if (data && data.result && data.result.repeat) {
-                callback(data.result.repeat);
-            } else {
-                callback(null);
-            }
-        });
+            ajaxPost(playerRepeat, function (result) {
+                if (result && result.result && result.result.repeat) {
+                    callback(result.result.repeat);
+                } else {
+                    callback(null);
+                }
+            });
+        } else {
+            callback(null);
+        }
     });
 }
 
 function setRepeatMode(mode, callback) {
-    getActivePlayers(function(result) {
-        var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + result.result[0].playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
-        var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + result.result[0].playerid + ', "state":"' + mode + '"}, "id" : 1}';
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
+            var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
+            var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + playerid + ', "state":"' + mode + '"}, "id" : 1}';
 
-        var version = localStorage["jsonVersion"];
+            var version = localStorage["jsonVersion"];
 
-        if (version >= 6) {
-            ajaxPost(playerSetRepeatV6, function (result) {
-                console.log(result);
-                callback(result);
-            });
+            if (version >= 6) {
+                ajaxPost(playerSetRepeatV6, function (result) {
+                    console.log(result);
+                    callback(result);
+                });
 
-        } else if (version >= 4) {
-            ajaxPost(playerSetRepeatV4, function (result) {
-                console.log(result);
-                callback(result);
-            });
+            } else if (version >= 4) {
+                ajaxPost(playerSetRepeatV4, function (result) {
+                    console.log(result);
+                    callback(result);
+                });
 
+            } else {
+                callback(null);
+            }
+        } else {
+            callback(null);
         }
     });
 }
 
 function getQueuePosition(callback) {
-    var getQueuePosition = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + result.result[0].playerid + ', "properties":["position"]}, "id" : 1}';
 
-    getActivePlayers(function(result) {
-        ajaxPost(getQueuePosition, function(result) {
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
+            var getQueuePosition = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["position"]}, "id" : 1}';
 
-        });
+            ajaxPost(getQueuePosition, function (result) {
+
+            });
+        } else {
+            callback(null);
+        }
     });
 }

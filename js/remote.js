@@ -27,14 +27,14 @@ function setVolume(volume) {
 }
 
 function doAction(item, callback) {
-    getActivePlayers(function(result) {
-        if (result && result.result.length > 0) {
-            var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + result.result[0].playerid + '}, "id" : 1}';
+    getActivePlayerId(function(playerid) {
+        if (playerid != null) {
+            var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + playerid + '}, "id" : 1}';
             ajaxPost(action, function (result) {
                 callback(result);
             });
         } else {
-            callback();
+            callback(null);
         }
     });
 }
