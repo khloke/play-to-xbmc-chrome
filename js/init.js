@@ -20,7 +20,7 @@ $(document).ready( function() {
     $('#queueVideoButton').click(function() {queueCurrentUrl()});
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
-//    $('#testBtn').click(function() { });
+//    $('#testBtn').click(function() { initQueueCount() });
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
