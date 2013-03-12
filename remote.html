@@ -23,11 +23,18 @@
     <div id="volume_control" style="width:185px; margin: 5px 0 5px -5px;"></div>
 </div>
 
-<div id="buttonsRow" class="row">
-    <button id="playCurrentVideoButton" class="btn btn-small" disabled style="padding: 5px;">Play now</button>
-    <button id="playCurrentPlaylistButton" class="btn btn-small" disabled style="padding: 5px;">Play playlist now</button>
-    <button id="queueVideoButton" class="btn btn-small" disabled style="padding: 5px;">+Queue</button>
-    <button id="addToFavButton" class="btn btn-small" disabled style="padding: 5px">+Favourite</button>
+<div id="buttonsRow" class="btn-toolbar">
+    <div class="btn-group">
+        <button id="playCurrentVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Play now</button>
+        <button id="queueVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">+Queue</button>
+        <button id="addToFavButton" class="btn btn-small disabled-btn" disabled style="padding: 5px">+Favourite</button>
+        <button class="btn dropdown-toggle disabled-btn" disabled data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <!-- play next -->
+        </ul>
+    </div>
     <!--<button id="testBtn">Test</button>-->
 </div>
 

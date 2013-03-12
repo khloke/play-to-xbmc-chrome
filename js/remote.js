@@ -57,12 +57,17 @@ function playCurrentUrl() {
 }
 
 function queueCurrentUrl() {
-    chrome.tabs.getSelected(null, function(tab) {
-        var tabUrl = tab.url;
-
-        queueItem(tabUrl, function(result) {
+    getCurrentUrl(function(tabUrl) {
+        queueItem(tabUrl, function() {
             initQueueCount();
         });
+    });
+}
+
+function getCurrentUrl(callback) {
+    chrome.tabs.getSelected(null, function(tab) {
+        var tabUrl = tab.url;
+        callback(tabUrl);
     });
 }
 
@@ -172,9 +177,7 @@ function initVideoButton() {
         var valid = validUrl(url);
         // if valid, enable button
         if (valid) {
-            $("#playCurrentVideoButton").removeAttr('disabled');
-            $("#queueVideoButton").removeAttr('disabled');
-            $("#addToFavButton").removeAttr('disabled');
+            $(".disabled-btn").removeAttr('disabled');
         }
     });
 }
