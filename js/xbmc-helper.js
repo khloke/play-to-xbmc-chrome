@@ -81,8 +81,8 @@ function ajaxPost(data, callback) {
     jQuery.ajax({
         type: 'POST',
         url : fullPath,
-        success: function(result) {
-            callback(result);
+        success: function(response) {
+            callback(response);
         },
         contentType: "application/json",
         data : data,
@@ -132,8 +132,8 @@ function validUrl(url) {
 function clearPlaylist(callback) {
     var clearPlaylist ='{"jsonrpc": "2.0", "method": "Playlist.Clear", "params":{"playlistid":1}, "id": 1}';
 
-    ajaxPost(clearPlaylist, function(result) {
-        callback(result);
+    ajaxPost(clearPlaylist, function(response) {
+        callback(response);
     });
 }
 
@@ -160,17 +160,17 @@ function addItemToPlaylist(video_url, callback) {
             //If nothing is playing, clear the list, probably left over from be
             clearPlaylist(function(){});
         }
-        ajaxPost(addToPlaylist, function(result){
+        ajaxPost(addToPlaylist, function(response){
             getActivePlayerId(function(playerid_2) {
                 var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":1, "position" : 0}}, "id": 1}';
 
                 //if nothing is playing, play what we inserted
                 if (playerid_2 == null){
-                    ajaxPost(playVideo, function(result) {
-                        callback(result);
+                    ajaxPost(playVideo, function(response_2) {
+                        callback(response_2);
                     });
                 } else {
-                    callback(result);
+                    callback(response);
                 }
             });
         });
@@ -180,9 +180,9 @@ function addItemToPlaylist(video_url, callback) {
 function getActivePlayerId(callback) {
     var getActivePlayers = '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}';
 
-    ajaxPost(getActivePlayers, function(result) {
-        if (result && result.result.length > 0) {
-            var playerid = result.result[0].playerid;
+    ajaxPost(getActivePlayers, function(response) {
+        if (response && response.result.length > 0) {
+            var playerid = response.result[0].playerid;
             callback(playerid);
         } else {
             callback(null);
@@ -200,11 +200,16 @@ function clearNonPlayingPlaylist(callback) {
     });
 }
 
-function getPlaylistSize() {
+function getPlaylistSize(callback) {
     var getcurrentplaylist = '{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params":{"playlistid":1}, "id": 1}';
 
-    ajaxPost(getcurrentplaylist, function(data) {
-        return data.result.items.length;
+    ajaxPost(getcurrentplaylist, function(response) {
+        if (response && response.result.length > 0) {
+            var playlistSize = response.result.items.length;
+            callback(playlistSize);
+        } else {
+            callback(null);
+        }
     });
 }
 
@@ -212,7 +217,7 @@ function playerSeek(value) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":' + playerid + ', "value":"' + value + '"}, "id" : 1}';
-            ajaxPost(playerseek, function () {});
+            ajaxPost(playerseek, function () {onChangeUpdate()});
         }
     });
 }
@@ -224,10 +229,10 @@ function playerGoPrevious() {
             var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerPreviousV6, function () {});
+                ajaxPost(playerPreviousV6, function () {onChangeUpdate()});
 
             } else if (version >= 4) {
-                doAction(actions.GoPrevious, function () {});
+                doAction(actions.GoPrevious, function () {onChangeUpdate()});
 
             }
         }
@@ -241,10 +246,10 @@ function playerGoNext() {
             var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerNextV6, function(){});
+                ajaxPost(playerNextV6, function(){onChangeUpdate()});
 
             } else if (version >= 4) {
-                doAction(actions.GoNext, function(){});
+                doAction(actions.GoNext, function(){onChangeUpdate()});
 
             }
         }
@@ -261,10 +266,10 @@ function hasUrlSetup() {
 function getXbmcJsonVersion(callback) {
     var getJsonVersion = '{"jsonrpc": "2.0", "method": "JSONRPC.Version", "id" : 1}';
 
-    ajaxPost(getJsonVersion, function(data) {
-        version = data.result.version.major;
+    ajaxPost(getJsonVersion, function(response) {
+        version = response.result.version.major;
         if (!version) {
-            version = data.result.version;
+            version = response.result.version;
         }
         callback(version);
     });
@@ -275,9 +280,9 @@ function getRepeatMode(callback) {
         if (playerid != null) {
             var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["repeat"]}, "id" : 1}';
 
-            ajaxPost(playerRepeat, function (result) {
-                if (result && result.result && result.result.repeat) {
-                    callback(result.result.repeat);
+            ajaxPost(playerRepeat, function (response) {
+                if (response && response.result && response.result.repeat) {
+                    callback(response.result.repeat);
                 } else {
                     callback(null);
                 }
@@ -297,15 +302,13 @@ function setRepeatMode(mode, callback) {
             var version = localStorage["jsonVersion"];
 
             if (version >= 6) {
-                ajaxPost(playerSetRepeatV6, function (result) {
-                    console.log(result);
-                    callback(result);
+                ajaxPost(playerSetRepeatV6, function (response) {
+                    callback(response);
                 });
 
             } else if (version >= 4) {
-                ajaxPost(playerSetRepeatV4, function (result) {
-                    console.log(result);
-                    callback(result);
+                ajaxPost(playerSetRepeatV4, function (response) {
+                    callback(response);
                 });
 
             } else {
@@ -323,9 +326,21 @@ function getQueuePosition(callback) {
         if (playerid != null) {
             var getQueuePosition = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["position"]}, "id" : 1}';
 
-            ajaxPost(getQueuePosition, function (result) {
+            ajaxPost(getQueuePosition, function (response) {
 
             });
+        } else {
+            callback(null);
+        }
+    });
+}
+
+function getVolumeLevel(callback) {
+    var getVolumeLevel = '{"jsonrpc": "2.0", "method": "Application.GetProperties", "params":{"properties":["volume"]}, "id" : 1}';
+
+    ajaxPost(getVolumeLevel, function(response) {
+        if (response && response.result.length > 0) {
+            callback(response.result["volume"]);
         } else {
             callback(null);
         }
