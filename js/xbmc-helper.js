@@ -275,11 +275,48 @@ function getXbmcJsonVersion(callback) {
 }
 
 function getRepeatMode(callback) {
-    var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":1, "properties":["repeat"]}, "id" : 1}';
+    getActivePlayers(function(result) {
+        var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + result.result[0].playerid + ', "properties":["repeat"]}, "id" : 1}';
 
-    ajaxPost(playerRepeat, function(data) {
-        if (data && data.result && data.result.repeat) {
-            callback(data.result.repeat);
+        ajaxPost(playerRepeat, function(data) {
+            if (data && data.result && data.result.repeat) {
+                callback(data.result.repeat);
+            } else {
+                callback(null);
+            }
+        });
+    });
+}
+
+function setRepeatMode(mode, callback) {
+    getActivePlayers(function(result) {
+        var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + result.result[0].playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
+        var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + result.result[0].playerid + ', "state":"' + mode + '"}, "id" : 1}';
+
+        var version = localStorage["jsonVersion"];
+
+        if (version >= 6) {
+            ajaxPost(playerSetRepeatV6, function (result) {
+                console.log(result);
+                callback(result);
+            });
+
+        } else if (version >= 4) {
+            ajaxPost(playerSetRepeatV4, function (result) {
+                console.log(result);
+                callback(result);
+            });
+
         }
+    });
+}
+
+function getQueuePosition(callback) {
+    var getQueuePosition = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + result.result[0].playerid + ', "properties":["position"]}, "id" : 1}';
+
+    getActivePlayers(function(result) {
+        ajaxPost(getQueuePosition, function(result) {
+
+        });
     });
 }
