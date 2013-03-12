@@ -39,19 +39,6 @@ function doAction(item, callback) {
     });
 }
 
-function initialiseSlider(volume) {
-    $('#volume_control').slider({
-        orientation: "horizontal",
-        range: "min",
-        min: 0,
-        max: 100,
-        value: volume,
-        slide: function(event, ui) {
-            setVolume(ui.value);
-        }
-    });
-}
-
 function playCurrentUrl() {
     doAction(actions.Stop, function() {
         clearPlaylist(function() {
@@ -216,6 +203,21 @@ function initRepeatMode() {
 
         repeatButton.removeAttr('disabled');
         repeatButton.html(buttonLabel);
+    });
+}
+
+function initVolumeSlider() {
+    getVolumeLevel(function(volume) {
+        $('#volume_control').slider({
+            orientation: "horizontal",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: volume,
+            slide: function(event, ui) {
+                setVolume(ui.value);
+            }
+        });
     });
 }
 

@@ -1,8 +1,6 @@
 $(document).ready( function() {
     initJsonVersion();
-    ajaxPost('{"jsonrpc": "2.0", "method": "Application.GetProperties", "params":{"properties":["volume"]}, "id" : 1}', function(data) {
-        initialiseSlider(data.result["volume"]);
-    });
+    initVolumeSlider();
 
     clearNonPlayingPlaylist(function() {
         initVideoButton();
@@ -13,8 +11,8 @@ $(document).ready( function() {
 
     $('#previousBtn').click(function() {playerGoPrevious()});
     $('#rewindBtn').click(function() {playerSeek('smallbackward')});
-    $('#stopBtn').click(function() {doAction(actions.Stop, function(){initQueueCount()}); clearPlaylist(function(){});});
-    $('#playBtn').click(function() {doAction(actions.PlayPause, function(){})});
+    $('#stopBtn').click(function() {doAction(actions.Stop, function(){onChangeUpdate()}); clearPlaylist(function(){});});
+    $('#playBtn').click(function() {doAction(actions.PlayPause, function(){onChangeUpdate()})});
     $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
     $('#nextBtn').click(function() {playerGoNext()});
 
