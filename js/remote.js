@@ -65,10 +65,8 @@ function playCurrentUrl(caller) {
 }
 
 function playNextCurrentUrl(caller) {
-    turnOnLoading(caller);
     chrome.extension.sendMessage({action: 'playNextCurrent'}, function(response) {
         onChangeUpdate();
-        turnOffLoading(caller);
     });
 }
 
