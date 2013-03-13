@@ -10,19 +10,20 @@ $(document).ready( function() {
         initPlaylistNumbers();
     });
 
-    $('#previousBtn').click(function() {playerGoPrevious()});
+    $('#previousBtn').click(function() {previous()});
     $('#rewindBtn').click(function() {playerSeek('smallbackward')});
-    $('#stopBtn').click(function() {doAction(actions.Stop, function(){onChangeUpdate()});});
-    $('#playBtn').click(function() {doAction(actions.PlayPause, function(){onChangeUpdate()})});
+    $('#stopBtn').click(function() {doAction(actions.Stop);});
+    $('#playBtn').click(function() {doAction(actions.PlayPause)});
     $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
-    $('#nextBtn').click(function() {playerGoNext()});
+    $('#nextBtn').click(function() {next()});
 
     $('#playCurrentVideoButton').click(function() {playCurrentUrl($(this))});
     $('#queueVideoButton').click(function() {queueCurrentUrl($(this))});
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
-    $('#clearPlaylistButton').click(function() {clearPlaylist(function(){onChangeUpdate();})});
+    $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
+    $('#clearPlaylistButton').click(function() {emptyPlaylist()});
 //    $('#testBtn').click(function() { initQueueCount() });
 
     if (!hasUrlSetup()) {

@@ -34,15 +34,15 @@ function setVolume(volume) {
     ajaxPost(setVolume, function() {});
 }
 
-function doAction(item, callback) {
+function doAction(item) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + playerid + '}, "id" : 1}';
-            ajaxPost(action, function (result) {
-                callback(result);
+            ajaxPost(action, function () {
+                onChangeUpdate()
             });
         } else {
-            callback(null);
+            onChangeUpdate()
         }
     });
 }
@@ -73,6 +73,16 @@ function queueCurrentUrl(caller) {
         queueItem(tabUrl, function() {
             onChangeUpdate();
             turnOffLoading(caller);
+        });
+    });
+}
+
+function removeThisFromPlaylist(caller) {
+    getPlaylistPosition(function(position) {
+        playerGoNext(function() {
+            removeItemFromPlaylist(position, function() {
+                onChangeUpdate();
+            });
         });
     });
 }
@@ -216,14 +226,16 @@ function initRepeatMode() {
     getRepeatMode(function (repeat) {
         var buttonLabel = "Repeat: ";
         var repeatButton = $('#repeatButton');
-        repeatButton.removeAttr('disabled');
 
         if (repeat == "one" || repeat == "One") {
             buttonLabel += "One";
+            repeatButton.removeAttr('disabled');
         } else if (repeat == "all" || repeat == "All") {
             buttonLabel += "All";
+            repeatButton.removeAttr('disabled');
         } else if (repeat == "off" || repeat == "Off") {
             buttonLabel += "Off";
+            repeatButton.removeAttr('disabled');
         } else {
             buttonLabel += "Stopped";
             repeatButton.attr('disabled', true);
@@ -250,14 +262,18 @@ function initVolumeSlider() {
 
 function initPlaylistNumbers() {
     getActivePlaylistSize(function(size) {
-        getPlaylistPosition(function(position) {
-            if (size != null && position != null) {
-                $('#playlistText').html('Playing: ' + (position+1) + '/' + size);
-                $('#playlistTextContainer').show();
-            } else {
-                $('#playlistTextContainer').hide();
-            }
-        });
+        if (size != null) {
+            getPlaylistPosition(function (position) {
+                if (size != null && position != null) {
+                    $('#playlistText').html('Playing: ' + (position + 1) + '/' + size);
+                    $('#playlistTextContainer').show();
+                } else {
+                    $('#playlistTextContainer').hide();
+                }
+            });
+        } else {
+            $('#playlistTextContainer').hide();
+        }
     });
 }
 
@@ -290,6 +306,24 @@ function turnOnLoading(jObj) {
 function turnOffLoading(jObj) {
     jObj.css('background', '');
     jObj.removeAttr('disabled');
+}
+
+function previous() {
+    playerGoPrevious(function() {
+        onChangeUpdate();
+    })
+}
+
+function next() {
+    playerGoNext(function() {
+        onChangeUpdate();
+    })
+}
+
+function emptyPlaylist() {
+    clearPlaylist(function() {
+        onChangeUpdate();
+    });
 }
 
 //function playCurrentPlaylist() {
