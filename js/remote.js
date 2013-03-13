@@ -16,6 +16,13 @@ function getURL() {
     return 'http://'+ loginPortion + url + ':' + port;
 }
 
+function hasUrlSetup() {
+    var url = localStorage["url"];
+    var port = localStorage["port"];
+
+    return url != null && url != '' && port != null && port != '';
+}
+
 function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
@@ -39,19 +46,20 @@ function doAction(item, callback) {
     });
 }
 
-function playCurrentUrl() {
+function playCurrentUrl(caller) {
     doAction(actions.Stop, function() {
-        clearPlaylist(function() {
-            queueCurrentUrl();
-            onChangeUpdate();
-        });
+//        clearPlaylist(function() {
+            queueCurrentUrl(caller);
+//        });
     });
 }
 
-function queueCurrentUrl() {
+function queueCurrentUrl(caller) {
+    turnOnLoading(caller);
     getCurrentUrl(function(tabUrl) {
         queueItem(tabUrl, function() {
             onChangeUpdate();
+            turnOffLoading(caller);
         });
     });
 }
@@ -175,7 +183,7 @@ function initVideoButton() {
 }
 
 function initQueueCount() {
-    getPlaylistSize(function(playlistSize) {
+    getActivePlaylistSize(function(playlistSize) {
         if (playlistSize != null) {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
@@ -195,6 +203,8 @@ function initRepeatMode() {
     getRepeatMode(function (repeat) {
         var buttonLabel = "Repeat: ";
         var repeatButton = $('#repeatButton');
+        repeatButton.removeAttr('disabled');
+
         if (repeat == "one" || repeat == "One") {
             buttonLabel += "One";
         } else if (repeat == "all" || repeat == "All") {
@@ -202,11 +212,10 @@ function initRepeatMode() {
         } else if (repeat == "off" || repeat == "Off") {
             buttonLabel += "Off";
         } else {
-            buttonLabel += "Not playing";
+            buttonLabel += "Stopped";
             repeatButton.attr('disabled', true);
         }
 
-        repeatButton.removeAttr('disabled');
         repeatButton.html(buttonLabel);
     });
 }
@@ -230,15 +239,31 @@ function toggleRepeat() {
     $('#repeatButton').html('<img src="/images/loading.gif"/>');
     getRepeatMode(function (repeat) {
         if (repeat == "one" || repeat == "One") {
-            setRepeatMode('all', function(){});
+            setRepeatMode('all', function(){
+                initRepeatMode();
+            });
         } else if (repeat == "all" || repeat == "All") {
-            setRepeatMode('off', function(){});
+            setRepeatMode('off', function(){
+                initRepeatMode();
+            });
         } else if (repeat == "off" || repeat == "Off") {
-            setRepeatMode('one', function(){});
+            setRepeatMode('one', function(){
+                initRepeatMode();
+            });
+        } else {
+            initRepeatMode();
         }
-
-        initRepeatMode();
     });
+}
+
+function turnOnLoading(jObj) {
+    jObj.attr('disabled', true);
+    jObj.css('background', 'url("/images/loading.gif") no-repeat center #e6e6e6')
+}
+
+function turnOffLoading(jObj) {
+    jObj.css('background', '');
+    jObj.removeAttr('disabled');
 }
 
 //function playCurrentPlaylist() {
