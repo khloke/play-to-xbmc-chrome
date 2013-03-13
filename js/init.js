@@ -7,6 +7,7 @@ $(document).ready( function() {
         initFavouritesTable();
         initQueueCount();
         initRepeatMode();
+        initPlaylistNumbers();
     });
 
     $('#previousBtn').click(function() {playerGoPrevious()});
@@ -21,7 +22,7 @@ $(document).ready( function() {
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
-    $('#clearPlaylistButton').click(function() {clearPlaylist()});
+    $('#clearPlaylistButton').click(function() {clearPlaylist(function(){onChangeUpdate();})});
 //    $('#testBtn').click(function() { initQueueCount() });
 
     if (!hasUrlSetup()) {
