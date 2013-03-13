@@ -34,24 +34,22 @@ function setVolume(volume) {
     ajaxPost(setVolume, function() {});
 }
 
-function doAction(item) {
+function doAction(item, callback) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + playerid + '}, "id" : 1}';
-            ajaxPost(action, function () {
-                onChangeUpdate()
+            ajaxPost(action, function (result) {
+                callback(result);
             });
         } else {
-            onChangeUpdate()
+            callback(null);
         }
     });
 }
 
 function playCurrentUrl(caller) {
     doAction(actions.Stop, function() {
-//        clearPlaylist(function() {
-            queueCurrentUrl(caller);
-//        });
+        queueCurrentUrl(caller);
     });
 }
 
@@ -312,6 +310,18 @@ function previous() {
     playerGoPrevious(function() {
         onChangeUpdate();
     })
+}
+
+function stop() {
+    doAction(actions.Stop, function() {
+        onChangeUpdate();
+    });
+}
+
+function playPause() {
+    doAction(actions.PlayPause, function() {
+        onChangeUpdate();
+    });
 }
 
 function next() {
