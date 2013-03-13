@@ -20,6 +20,7 @@ $(document).ready( function() {
     $('#queueVideoButton').click(function() {queueCurrentUrl($(this))});
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
+    $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#clearPlaylistButton').click(function() {clearPlaylist()});
 //    $('#testBtn').click(function() { initQueueCount() });
 

@@ -54,6 +54,18 @@ function playCurrentUrl(caller) {
     });
 }
 
+function playNextCurrentUrl(caller) {
+    turnOnLoading(caller);
+    getCurrentUrl(function(tabUrl) {
+        getPlaylistPosition(function(position) {
+            insertItem(tabUrl, position+1, function() {
+                onChangeUpdate();
+                turnOffLoading(caller);
+            });
+        });
+    });
+}
+
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
     getCurrentUrl(function(tabUrl) {

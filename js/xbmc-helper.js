@@ -79,6 +79,14 @@ function queueItem(url, callback) {
     });
 }
 
+function insertItem(url, position, callback) {
+    getPluginPath(url, function(contentType, pluginPath){
+        insertItemToPlaylist(contentType, pluginPath, position, function(result) {
+            callback(result);
+        });
+    });
+}
+
 function ajaxPost(data, callback) {
     var url = getURL();
     var fullPath = url + "/jsonrpc";
@@ -170,6 +178,18 @@ function addItemToPlaylist(contentType, pluginPath, callback) {
                         }
                     });
                 });
+            });
+        });
+    });
+}
+
+function insertItemToPlaylist(contentType, pluginPath, position, callback) {
+    getPlaylistId(contentType, function(playlistId) {
+        var insertToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Insert", "params":{"playlistid":' + playlistId + ', "position": ' + position + ', "item" :{ "file" : "' + pluginPath + '" }}, "id" : 1}';
+
+        getActivePlayerId(function(playerid) {
+            ajaxPost(insertToPlaylist, function(response){
+                callback(response);
             });
         });
     });
