@@ -2,6 +2,15 @@
  * This file contains Google Chrome specific methods.
  */
 
+var actions = {
+    "PlayPause": "Player.PlayPause",
+    "Stop": "Player.Stop",
+    "SmallSkipBackward":"VideoPlayer.SmallSkipBackward",
+    "SmallSkipForward":"VideoPlayer.SmallSkipForward",
+    "GoPrevious": "Player.GoPrevious",
+    "GoNext": "Player.GoNext"
+};
+
 function getURL() {
     var url = localStorage["url"];
     var port = localStorage["port"];
@@ -48,47 +57,32 @@ function doAction(item, callback) {
 }
 
 function playCurrentUrl(caller) {
-    doAction(actions.Stop, function() {
-        queueCurrentUrl(caller);
+    turnOnLoading(caller);
+    chrome.extension.sendMessage({action: 'playNow'}, function(response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
     });
 }
 
 function playNextCurrentUrl(caller) {
     turnOnLoading(caller);
-    getCurrentUrl(function(tabUrl) {
-        getPlaylistPosition(function(position) {
-            insertItem(tabUrl, position+1, function() {
-                onChangeUpdate();
-                turnOffLoading(caller);
-            });
-        });
+    chrome.extension.sendMessage({action: 'playNextCurrent'}, function(response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
     });
 }
 
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
-    getCurrentUrl(function(tabUrl) {
-        queueItem(tabUrl, function() {
-            onChangeUpdate();
-            turnOffLoading(caller);
-        });
+    chrome.extension.sendMessage({action: 'queue'}, function(response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
     });
 }
 
 function removeThisFromPlaylist(caller) {
-    getPlaylistPosition(function(position) {
-        playerGoNext(function() {
-            removeItemFromPlaylist(position, function() {
-                onChangeUpdate();
-            });
-        });
-    });
-}
-
-function getCurrentUrl(callback) {
-    chrome.tabs.getSelected(null, function(tab) {
-        var tabUrl = tab.url;
-        callback(tabUrl);
+    chrome.extension.sendMessage({action: 'removeThis'}, function(response) {
+        onChangeUpdate();
     });
 }
 

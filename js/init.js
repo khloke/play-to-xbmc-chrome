@@ -12,8 +12,8 @@ $(document).ready( function() {
 
     $('#previousBtn').click(function() {previous()});
     $('#rewindBtn').click(function() {playerSeek('smallbackward')});
-    $('#stopBtn').click(function() {doAction(actions.Stop);});
-    $('#playBtn').click(function() {doAction(actions.PlayPause)});
+    $('#stopBtn').click(function() {stop()});
+    $('#playBtn').click(function() {playPause()});
     $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
     $('#nextBtn').click(function() {next()});
 
