@@ -24,18 +24,18 @@
 </div>
 
 <div id="buttonsRow" class="btn-toolbar">
-    <div class="btn-group">
+    <div class="btn-group" style="left:-10px;">
         <button id="playCurrentVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Play now</button>
         <button id="queueVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">+Queue</button>
         <button id="addToFavButton" class="btn btn-small disabled-btn" disabled style="padding: 5px">+Favourite</button>
         <button id="repeatButton" class="btn btn-small" style="padding: 5px"></button>
-        <button class="btn dropdown-toggle disabled-btn" disabled data-toggle="dropdown">
+        <button class="btn dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu pull-right">
             <li><a href="#" id="playNextButton">Play this Next</a></li>
             <li class="divider"></li>
-            <li></li>
+            <li><a href="#" id="clearPlaylistButton">Clear Playlist</a></li>
             <!-- play next -->
         </ul>
     </div>
