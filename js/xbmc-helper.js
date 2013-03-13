@@ -146,7 +146,7 @@ function clearPlaylist(callback) {
     var clearVideoPlaylist ='{"jsonrpc": "2.0", "method": "Playlist.Clear", "params":{"playlistid":1}, "id": 1}';
     var clearAudioPlaylist ='{"jsonrpc": "2.0", "method": "Playlist.Clear", "params":{"playlistid":0}, "id": 1}';
 
-    ajaxPost(clearVideoPlaylist, function(response) {
+    ajaxPost(clearVideoPlaylist, function() {
         ajaxPost(clearAudioPlaylist, function(response) {
             callback(response);
         });
@@ -157,26 +157,20 @@ function addItemToPlaylist(contentType, pluginPath, callback) {
     getPlaylistId(contentType, function(playlistId) {
         var addToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + pluginPath + '" }}, "id" : 1}';
 
-        getActivePlayerId(function(playerid) {
-//            if (playerid == null) {
-//                //If nothing is playing, clear the list, probably left over from be
-//                clearPlaylist(function(){});
-//            }
-            ajaxPost(addToPlaylist, function(response){
-                getActivePlayerId(function(playerid_2) {
-                    getPlaylistSize(playlistId, function(playlistSize) {
-                        var position = playlistSize - 1;
-                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + position + '}}, "id": 1}';
+        ajaxPost(addToPlaylist, function(response){
+            getActivePlayerId(function(playerid_2) {
+                getPlaylistSize(playlistId, function(playlistSize) {
+                    var position = playlistSize - 1;
+                    var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + position + '}}, "id": 1}';
 
-                        //if nothing is playing, play what we inserted
-                        if (playerid_2 == null){
-                            ajaxPost(playVideo, function(response_2) {
-                                callback(response_2);
-                            });
-                        } else {
-                            callback(response);
-                        }
-                    });
+                    //if nothing is playing, play what we inserted
+                    if (playerid_2 == null){
+                        ajaxPost(playVideo, function(response_2) {
+                            callback(response_2);
+                        });
+                    } else {
+                        callback(response);
+                    }
                 });
             });
         });
@@ -187,10 +181,18 @@ function insertItemToPlaylist(contentType, pluginPath, position, callback) {
     getPlaylistId(contentType, function(playlistId) {
         var insertToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Insert", "params":{"playlistid":' + playlistId + ', "position": ' + position + ', "item" :{ "file" : "' + pluginPath + '" }}, "id" : 1}';
 
-        getActivePlayerId(function(playerid) {
-            ajaxPost(insertToPlaylist, function(response){
-                callback(response);
-            });
+        ajaxPost(insertToPlaylist, function(response){
+            callback(response);
+        });
+    });
+}
+
+function removeItemFromPlaylist(position, callback) {
+    getActivePlayerId(function(playlistId) {
+        var removeFromPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Remove", "params":{"playlistid":' + playlistId + ', "position": ' + position + '}, "id" : 1}';
+
+        ajaxPost(removeFromPlaylist, function(response){
+            callback(response);
         });
     });
 }
@@ -204,7 +206,7 @@ function getActivePlayerId(callback) {
             var type = response.result[0].type;
             callback(playerid, type);
         } else {
-            callback(null);
+            callback(null, null);
         }
     });
 }
@@ -228,34 +230,34 @@ function playerSeek(value) {
     });
 }
 
-function playerGoPrevious() {
+function playerGoPrevious(callback) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var version = localStorage["jsonVersion"];
             var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerPreviousV6, function () {onChangeUpdate()});
+                ajaxPost(playerPreviousV6, function () {callback()});
 
             } else if (version >= 4) {
-                doAction(actions.GoPrevious, function () {onChangeUpdate()});
+                doAction(actions.GoPrevious, function () {callback()});
 
             }
         }
     });
 }
 
-function playerGoNext() {
+function playerGoNext(callback) {
     getActivePlayerId(function(playerid) {
         if (playerid != null) {
             var version = localStorage["jsonVersion"];
             var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerNextV6, function(){onChangeUpdate()});
+                ajaxPost(playerNextV6, function(){callback()});
 
             } else if (version >= 4) {
-                doAction(actions.GoNext, function(){onChangeUpdate()});
+                doAction(actions.GoNext, function(){callback()});
 
             }
         }
@@ -266,7 +268,7 @@ function getXbmcJsonVersion(callback) {
     var getJsonVersion = '{"jsonrpc": "2.0", "method": "JSONRPC.Version", "id" : 1}';
 
     ajaxPost(getJsonVersion, function(response) {
-        version = response.result.version.major;
+        var version = response.result.version.major;
         if (!version) {
             version = response.result.version;
         }
@@ -339,11 +341,23 @@ function getPlaylistPosition(callback) {
 
 function getActivePlaylistSize(callback) {
     getActivePlayerId(function(playerid, type) {
-        getPlaylistId(type, function(playlistId) {
-            getPlaylistSize(playlistId, function(playlistSize) {
-                callback(playlistSize);
+        if (playerid != null && type != null) {
+            getPlaylistId(type, function (playlistId) {
+                if (playlistId != null) {
+                    getPlaylistSize(playlistId, function (playlistSize) {
+                        if (playlistSize != null) {
+                            callback(playlistSize);
+                        } else {
+                            callback(null);
+                        }
+                    });
+                } else {
+                    callback(null);
+                }
             });
-        });
+        } else {
+            callback(null);
+        }
     });
 }
 
