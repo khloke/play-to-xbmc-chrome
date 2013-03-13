@@ -26,6 +26,7 @@ function hasUrlSetup() {
 function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
+    initPlaylistNumbers();
 }
 
 function setVolume(volume) {
@@ -242,6 +243,19 @@ function initVolumeSlider() {
             value: volume,
             slide: function(event, ui) {
                 setVolume(ui.value);
+            }
+        });
+    });
+}
+
+function initPlaylistNumbers() {
+    getActivePlaylistSize(function(size) {
+        getPlaylistPosition(function(position) {
+            if (size != null && position != null) {
+                $('#playlistText').html('Playing: ' + (position+1) + '/' + size);
+                $('#playlistTextContainer').show();
+            } else {
+                $('#playlistTextContainer').hide();
             }
         });
     });
