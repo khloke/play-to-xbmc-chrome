@@ -1,25 +1,41 @@
 
-// Saves options to localStorage.
-function showAlertMessage(status) {
-    status.html("Options Saved");
+function showAlertMessage(status, message) {
+    status.html(message);
     status.show();
     setTimeout(function() {
         status.fadeOut("fast");
     }, 3000);
 }
+
+// Saves options to localStorage.
 function save_options() {
+    var status = $("#status");
+    var urlControlGroup = $('#urlControlGroup');
+    var portControlGroup = $('#portControlGroup');
+
     var url = document.getElementById("url").value;
     var port = document.getElementById("port").value;
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    localStorage.setItem("url", url);
-    localStorage.setItem("port", port);
-    localStorage.setItem("username", username);
-    localStorage.setItem("password", password);
 
-    // Update status to let user know options were saved.
-    var status = $("#status");
-    showAlertMessage(status);
+    if (url && port && url != '' && port != '') {
+        localStorage.setItem("url", url);
+        localStorage.setItem("port", port);
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+
+        // Update status to let user know options were saved
+        showAlertMessage(status, "Options Saved");
+        urlControlGroup.removeClass('error');
+        portControlGroup.removeClass('error');
+        urlControlGroup.find('.controls').find('.help-inline').remove();
+        portControlGroup.find('.controls').find('.help-inline').remove();
+    } else {
+        urlControlGroup.addClass('error');
+        portControlGroup.addClass('error');
+        urlControlGroup.find('.controls').append('<span class="help-inline">Required</span>');
+        portControlGroup.find('.controls').append('<span class="help-inline">Required</span>');
+    }
 }
 
 // Restores select box state to saved value from localStorage.
