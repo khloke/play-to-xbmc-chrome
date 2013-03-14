@@ -27,11 +27,11 @@
         <button id="playCurrentVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Play now</button>
         <button id="queueVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">+Queue</button>
         <button id="addToFavButton" class="btn btn-small disabled-btn" disabled style="padding: 5px">+Favourite</button>
-        <button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>
         <button class="btn dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu pull-right">
+            <li id="dropdown-first" style="display: none;"></li>
             <li class="disabled disabled-link"><a tabindex="-1" href="#" id="playNextButton">Play this Next</a></li>
             <li class="divider"></li>
             <li><a href="#" id="removeThisButton">Remove current from Playlist</a></li>

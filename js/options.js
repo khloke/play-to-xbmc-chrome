@@ -23,6 +23,7 @@ function save_options() {
         localStorage.setItem("port", port);
         localStorage.setItem("username", username);
         localStorage.setItem("password", password);
+        localStorage.setItem("showRepeat", $('#showRepeat').val());
 
         // Update status to let user know options were saved
         showAlertMessage(status, "Options Saved");
@@ -44,6 +45,7 @@ function restore_options() {
     var port = localStorage["port"];
     var username = localStorage["username"];
     var password = localStorage["password"];
+    var showRepeat = localStorage["showRepeat"];
     if (!url || !port) {
         return;
     }
@@ -53,6 +55,13 @@ function restore_options() {
         document.getElementById("username").value = username;
         document.getElementById("password").value = password;
     }
+//    if (showRepeat == "never") {
+//        $('#showRepeat').attr("checked", true);
+////        document.getElementById("showRepeat").checked = showRepeat;
+//    } else {
+//        $('#showRepeat').removeAttr("checked");
+//    }
+    $('#showRepeat').val(showRepeat);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
