@@ -12,19 +12,19 @@
     <div class="span7">
         <form class="form-horizontal">
             <legend style="padding-left: 25px;">Options</legend>
-            <!--<div class="tabbable">-->
-                <!--<ul class="nav nav-tabs" style="padding: 0 25px;">-->
-                    <!--<li class="active">-->
-                        <!--<a href="#xbmcHost" data-toggle="tab">XBMC Host</a>-->
-                    <!--</li>-->
-                    <!--<li><a href="#general" data-toggle="tab">General</a></li>-->
-                <!--</ul>-->
+            <div class="tabbable">
+                <ul class="nav nav-tabs" style="padding: 0 25px;">
+                    <li class="active">
+                        <a href="#xbmcHost" data-toggle="tab">XBMC Host</a>
+                    </li>
+                    <li><a href="#general" data-toggle="tab">General</a></li>
+                </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="xbmcHost">
                         <div id="urlControlGroup" class="control-group">
                             <label class="control-label" for="url">URL</label>
                             <div class="controls">
-                                <input type="text" id="url" placeholder="URL">
+                                <input type="text" id="url" placeholder="Hostname / IP Address">
                             </div>
                         </div>
                         <div id="portControlGroup" class="control-group">
@@ -46,20 +46,29 @@
                             </div>
                         </div>
                     </div>
-                    <!--<div class="tab-pane" id="general">-->
-                        <!--Additional Options-->
-                    <!--</div>-->
-                </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <a href="remote.html" class="btn">Back</a>
-                        <button id="saveBtn" type="button" class="btn btn-primary">Save</button>
+                    <div class="tab-pane" id="general">
+                        <div class="control-group">
+                            <label class="control-label" for="showRepeat">Show Repeat Button</label>
+                            <div class="controls">
+                                <select id="showRepeat">
+                                    <option value="never">Never</option>
+                                    <option value="always">Always</option>
+                                    <option value="dropdown">Hide in Dropdown</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls"><span id="status" class="alert alert-success" style="display: none;"></span></div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <a href="remote.html" class="btn">Back</a>
+                    <button id="saveBtn" type="button" class="btn btn-primary">Save</button>
                 </div>
-            <!--</div>-->
+            </div>
+            <div class="control-group">
+                <div class="controls"><span id="status" class="alert alert-success" style="display: none;"></span></div>
+            </div>
         </form>
     </div>
 </div>

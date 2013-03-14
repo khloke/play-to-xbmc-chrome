@@ -228,26 +228,45 @@ function initQueueCount() {
 }
 
 function initRepeatMode() {
-    getRepeatMode(function (repeat) {
-        var buttonLabel = "Repeat: ";
-        var repeatButton = $('#repeatButton');
+    var hasRepeat = 1;
 
-        if (repeat == "one" || repeat == "One") {
-            buttonLabel += "One";
-            repeatButton.removeAttr('disabled');
-        } else if (repeat == "all" || repeat == "All") {
-            buttonLabel += "All";
-            repeatButton.removeAttr('disabled');
-        } else if (repeat == "off" || repeat == "Off") {
-            buttonLabel += "Off";
-            repeatButton.removeAttr('disabled');
+    if ($('#repeatButton').length <= 0) {
+        if (localStorage["showRepeat"] == 'always') {
+            $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
+        } else if (localStorage["showRepeat"] == 'dropdown') {
+            $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>')
         } else {
-            buttonLabel += "Stopped";
-            repeatButton.attr('disabled', true);
+            hasRepeat = 0;
         }
+    }
 
-        repeatButton.html(buttonLabel);
-    });
+    if (hasRepeat) {
+        getRepeatMode(function (repeat) {
+            var buttonLabel = "Repeat: ";
+            var repeatButton = $('#repeatButton');
+
+            if (repeat == "one" || repeat == "One") {
+                buttonLabel += "One";
+                repeatButton.removeAttr('disabled');
+                repeatButton.parent().removeClass('disabled');
+            } else if (repeat == "all" || repeat == "All") {
+                buttonLabel += "All";
+                repeatButton.removeAttr('disabled');
+                repeatButton.parent().removeClass('disabled');
+            } else if (repeat == "off" || repeat == "Off") {
+                buttonLabel += "Off";
+                repeatButton.removeAttr('disabled');
+                repeatButton.parent().removeClass('disabled');
+            } else {
+                buttonLabel += "Stopped";
+                repeatButton.attr('disabled', true);
+                repeatButton.parent().addClass('disabled');
+            }
+
+            repeatButton.html(buttonLabel);
+            repeatButton.click(function() {toggleRepeat()});
+        });
+    }
 }
 
 function initVolumeSlider() {
@@ -300,6 +319,8 @@ function toggleRepeat() {
         } else {
             initRepeatMode();
         }
+
+        $('#repeatButton').find('img').remove();
     });
 }
 
