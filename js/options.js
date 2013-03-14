@@ -1,3 +1,4 @@
+var currentVersion = 1300;
 
 function showAlertMessage(status, message) {
     status.html(message);
@@ -68,3 +69,18 @@ document.addEventListener('DOMContentLoaded', function () {
     restore_options();
     document.querySelector('#saveBtn').addEventListener('click', save_options);
 });
+
+function checkVersion() {
+    var storageVersion = localStorage["storage-version"];
+
+    if (storageVersion == null) {
+        localStorage.setItem("storage-version", currentVersion);
+    } else if (storageVersion < currentVersion) {
+        doUpgrade(storageVersion, currentVersion);
+        localStorage.setItem("storage-version", currentVersion);
+    }
+}
+
+function doUpgrade(from, to) {
+    //Do nothing now
+}
