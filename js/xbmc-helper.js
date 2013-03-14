@@ -99,7 +99,10 @@ function ajaxPost(data, callback) {
         },
         contentType: "application/json",
         data : data,
-        dataType: 'json'
+        dataType: 'json',
+        error: function(jqXHR, textStatus, erroThrown) {
+            callback(0);
+        }
     });
 }
 
@@ -268,11 +271,15 @@ function getXbmcJsonVersion(callback) {
     var getJsonVersion = '{"jsonrpc": "2.0", "method": "JSONRPC.Version", "id" : 1}';
 
     ajaxPost(getJsonVersion, function(response) {
-        var version = response.result.version.major;
-        if (!version) {
-            version = response.result.version;
+        if (response && response.result) {
+            var version = response.result.version.major;
+            if (!version) {
+                version = response.result.version;
+            }
+            callback(version);
+        } else {
+            callback(null);
         }
-        callback(version);
     });
 }
 

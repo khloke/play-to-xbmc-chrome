@@ -146,6 +146,20 @@ function createFavouritesActionButtons(i) {
     });
 }
 
+function initConnectivity(callback) {
+    getXbmcJsonVersion(function(version) {
+        var warningTextContainer = $('#warningTextContainer');
+        if (version == null) {
+            warningTextContainer.html('<span class="label label-important">Unable to connect to XBMC <i id="tooltipIcon" class="icon-question-sign icon-white" data-toggle="tootip" data-placement="top" data-original-title="Please make sure that your settings are correct and XBMC is running."></i></span>');
+            $('#tooltipIcon').tooltip();
+            warningTextContainer.show();
+        } else {
+            warningTextContainer.hide();
+            callback();
+        }
+    });
+}
+
 function initFavouritesTable() {
     var favouritesTable = $('#favourites');
     favouritesTable.hide();

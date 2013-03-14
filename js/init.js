@@ -1,13 +1,15 @@
 $(document).ready( function() {
-    initJsonVersion();
-    initVolumeSlider();
+    initConnectivity(function() {
+        initJsonVersion();
+        initVolumeSlider();
 
-    clearNonPlayingPlaylist(function() {
-        initVideoButton();
-        initFavouritesTable();
-        initQueueCount();
-        initRepeatMode();
-        initPlaylistNumbers();
+        clearNonPlayingPlaylist(function() {
+            initVideoButton();
+            initFavouritesTable();
+            initQueueCount();
+            initRepeatMode();
+            initPlaylistNumbers();
+        });
     });
 
     $('#previousBtn').click(function() {previous()});
@@ -24,7 +26,7 @@ $(document).ready( function() {
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
-//    $('#testBtn').click(function() { initQueueCount() });
+//    $('#testBtn').click(function() { initConnectivity() });
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
