@@ -12,10 +12,32 @@ var actions = {
 };
 
 function getURL() {
-    var url = localStorage["url"];
-    var port = localStorage["port"];
-    var username = localStorage["username"];
-    var password = localStorage["password"];
+    var url;
+    var port;
+    var username;
+    var password;
+
+    if (isMultiHostEnabled()) {
+        var selectedHost = localStorage[storageKeys.selectedHost];
+        var allProfiles = JSON.parse(getAllProfiles());
+
+        for (var i = 0; i < allProfiles.length; i++) {
+            var profile = allProfiles[i];
+            if (profile.id == selectedHost) {
+                url = profile.url;
+                port = profile.port;
+                username = profile.username;
+                password = profile.password;
+                break;
+            }
+        }
+
+    } else {
+        url = localStorage["url"];
+        port = localStorage["port"];
+        username = localStorage["username"];
+        password = localStorage["password"];
+    }
 
     var loginPortion = '';
     if (username && password) {
@@ -299,6 +321,28 @@ function initPlaylistNumbers() {
             $('#playlistTextContainer').hide();
         }
     });
+}
+
+function initProfiles() {
+    if (isMultiHostEnabled()) {
+        var allProfiles = JSON.parse(getAllProfiles());
+        var profiles = $('#profiles');
+
+        profiles.children().each(function(){$(this).remove()});
+        for (var i = 0; i < allProfiles.length; i++) {
+            var profile = allProfiles[i];
+            profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
+        }
+
+        profiles.val(localStorage[storageKeys.selectedHost]);
+
+        profiles.change(function () {
+            localStorage.setItem(storageKeys.selectedHost, profiles.val());
+            document.location.reload(true)
+        });
+
+        $('#profileRow').show();
+    }
 }
 
 function toggleRepeat() {

@@ -7,12 +7,17 @@
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.23.custom.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/shared.js"></script>
     <script type="text/javascript" src="js/remote.js"></script>
     <script type="text/javascript" src="js/xbmc-helper.js"></script>
     <script type="text/javascript" src="js/init.js"></script>
 </head>
 
 <body style="min-width:350px; padding-left: 20px">
+
+<div id="profileRow" class="row" style="display: none; text-align: center;">
+    <select id="profiles"></select>
+</div>
 
 <div id="remoteRow" class="row">
     <button id="previousBtn"><img src="images/prev.png" alt="Previous"></button><button id="rewindBtn"><img src="images/rw.jpg" alt="Step Back"/></button><span class="playpause"><button id="stopBtn"><img src="images/stop.jpg" alt="Stop"/></button><button id="playBtn"><img src="images/playpause.gif" alt="PlayPause"/></button></span><button id="fastForwardBtn"><img src="images/ff.jpg" alt="Step Forward"/></button><button id="nextBtn"><img src="images/skip.png" alt="Skip"/></button>
