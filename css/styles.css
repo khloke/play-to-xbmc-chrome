@@ -37,3 +37,7 @@
 .row {
     margin: 15px auto;
 }
+
+.dropdown-menu .disabled>a:hover {
+    background: none;
+}

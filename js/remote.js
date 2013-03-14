@@ -204,7 +204,8 @@ function initVideoButton() {
         var valid = validUrl(url);
         // if valid, enable button
         if (valid) {
-            $(".disabled-btn").each(function() { $(this).removeAttr('disabled') });;
+            $(".disabled-btn").each(function() { $(this).removeAttr('disabled') });
+            $(".disabled-link").each(function() { $(this).removeClass('disabled') });
         }
     });
 }
