@@ -202,7 +202,7 @@ function initVideoButton() {
     chrome.tabs.getSelected(null, function(tab) {
         var url = tab.url;
         var valid = validUrl(url);
-        // if valid, enable button
+        // if valid, enable buttons
         if (valid) {
             $(".disabled-btn").each(function() { $(this).removeAttr('disabled') });
             $(".disabled-link").each(function() { $(this).removeClass('disabled') });
