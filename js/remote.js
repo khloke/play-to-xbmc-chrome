@@ -2,56 +2,30 @@
  * This file contains Google Chrome specific methods.
  */
 
-var actions = {
-    "PlayPause": "Player.PlayPause",
-    "Stop": "Player.Stop",
-    "SmallSkipBackward":"VideoPlayer.SmallSkipBackward",
-    "SmallSkipForward":"VideoPlayer.SmallSkipForward",
-    "GoPrevious": "Player.GoPrevious",
-    "GoNext": "Player.GoNext"
-};
-
-function getURL() {
-    var url;
-    var port;
-    var username;
-    var password;
-
+function hasUrlSetup() {
     if (isMultiHostEnabled()) {
-        var selectedHost = localStorage[storageKeys.selectedHost];
-        var allProfiles = JSON.parse(getAllProfiles());
+        var allProfiles = getAllProfiles();
 
-        for (var i = 0; i < allProfiles.length; i++) {
-            var profile = allProfiles[i];
-            if (profile.id == selectedHost) {
-                url = profile.url;
-                port = profile.port;
-                username = profile.username;
-                password = profile.password;
-                break;
+        if (allProfiles != null) {
+            var selectedHost = localStorage[storageKeys.selectedHost];
+            var profiles = JSON.parse(allProfiles);
+
+            if (selectedHost != null && selectedHost > 0) {
+                if (profiles[i] != null) {
+                    return profiles[i].url != null && profiles[i].url != '' && profiles[i].port != null && profiles[i].port != '';
+                }
+            } else {
+                return profiles[0].url != null && profiles[0].url != '' && profiles[0].port != null && profiles[0].port != '';
             }
         }
 
+        return false;
     } else {
-        url = localStorage["url"];
-        port = localStorage["port"];
-        username = localStorage["username"];
-        password = localStorage["password"];
+        var url = localStorage["url"];
+        var port = localStorage["port"];
+
+        return url != null && url != '' && port != null && port != '';
     }
-
-    var loginPortion = '';
-    if (username && password) {
-        loginPortion = username + ':' + password + '@';
-    }
-    
-    return 'http://'+ loginPortion + url + ':' + port;
-}
-
-function hasUrlSetup() {
-    var url = localStorage["url"];
-    var port = localStorage["port"];
-
-    return url != null && url != '' && port != null && port != '';
 }
 
 function onChangeUpdate() {
@@ -251,14 +225,15 @@ function initQueueCount() {
 
 function initRepeatMode() {
     var hasRepeat = 1;
+    var button = $('#repeatButton');
 
-    if ($('#repeatButton').length <= 0) {
+    if (button.length <= 0) {
         if (localStorage["showRepeat"] == 'always') {
             $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
-            $('#repeatButton').click(function() {toggleRepeat()});
+            button.click(function() {toggleRepeat()});
         } else if (localStorage["showRepeat"] == 'dropdown') {
             $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
-            $('#repeatButton').click(function() {toggleRepeat()});
+            button.click(function() {toggleRepeat()});
         } else {
             hasRepeat = 0;
         }

@@ -3,10 +3,14 @@ var currentVersion = 1310;
 $(document).ready(function(){
     checkVersion();
     populateProfiles();
-    restore_options();
-    document.querySelector('#saveBtn').addEventListener('click', save_options);
+    restoreOptions();
+    document.querySelector('#saveBtn').addEventListener('click', saveOptions);
     $('#newProfileBtn').click(function(){createNewProfile()});
     $('#deleteProfileBtn').click(function(){deleteThisProfile()});
+    $('#enableMultiHost').change(function(){
+        localStorage.setItem(storageKeys.enableMultiHost, $(this).attr('checked') == 'checked');
+        populateProfiles();
+    });
 });
 
 function showAlertMessage(status, message) {
@@ -18,10 +22,12 @@ function showAlertMessage(status, message) {
 }
 
 // Saves options to localStorage.
-function save_options() {
+function saveOptions() {
     var status = $("#status");
+    var profiles = $('#profiles');
     var urlControlGroup = $('#urlControlGroup');
     var portControlGroup = $('#portControlGroup');
+    var selectedProfile = profiles.val();
 
     var url = document.getElementById("url").value;
     var port = document.getElementById("port").value;
@@ -46,6 +52,17 @@ function save_options() {
         portControlGroup.find('.controls').find('.help-inline').remove();
 
         localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
+        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')=='checked');
+
+        // Update status to let user know options were saved
+        showAlertMessage(status, "Options Saved");
+
+        //Show the previously selected profile
+        populateProfiles(function() {
+            profiles.val(selectedProfile);
+            changeProfile();
+        });
+
         localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')?true:false);
     } else {
         urlControlGroup.addClass('error');
@@ -56,7 +73,24 @@ function save_options() {
 }
 
 // Restores select box state to saved value from localStorage.
-function restore_options() {
+function restoreOptions() {
+    if (isMultiHostEnabled()) {
+        changeProfile();
+    } else {
+        restoreUrl();
+    }
+
+    if (isMultiHostEnabled()) {
+        $('#enableMultiHost').attr("checked", true);
+    } else {
+        $('#enableMultiHost').removeAttr("checked");
+    }
+
+    var showRepeat = localStorage[storageKeys.showRepeat];
+    $('#showRepeat').val(showRepeat);
+}
+
+function restoreUrl() {
     if (isMultiHostEnabled()) {
         changeProfile();
     } else {
@@ -100,7 +134,7 @@ function checkVersion() {
 }
 
 function doUpgrade(from, to) {
-    if (from < 1310) {
+    if (from > 0 && from < 1310) {
         var storageUrl = localStorage["url"];
         var storagePort = localStorage["port"];
         var storageUsername = localStorage["username"];
@@ -138,42 +172,58 @@ function doUpgrade(from, to) {
 
 function saveProfile() {
     var profileId = $('#profiles').val();
-    var allProfiles = JSON.parse(getAllProfiles());
+    var allProfilesObj = getAllProfiles();
+    var allProfiles;
 
-    for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
-        if (profile.id == profileId) {
-            profile.name = document.getElementById("name").value;
-            profile.url = document.getElementById("url").value;
-            profile.port = document.getElementById("port").value;
-            profile.username = document.getElementById("username").value;
-            profile.password = document.getElementById("password").value;
+    if (allProfilesObj != null) {
+        allProfiles = JSON.parse(allProfilesObj);
 
-            break;
+        for (var i = 0; i < allProfiles.length; i++) {
+            var profile = allProfiles[i];
+            if (profile.id == profileId) {
+                profile.name = document.getElementById("name").value;
+                profile.url = document.getElementById("url").value;
+                profile.port = document.getElementById("port").value;
+                profile.username = document.getElementById("username").value;
+                profile.password = document.getElementById("password").value;
+
+                break;
+            }
         }
+    } else {
+        allProfiles = [{
+            id:0,
+            name: document.getElementById("name").value,
+            "url": document.getElementById("url").value,
+            "port": document.getElementById("port").value,
+            "username": document.getElementById("username").value,
+            "password": document.getElementById("password").value
+        }];
     }
 
     localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
 }
 
 function changeProfile() {
-    var profileId = $('#profiles').val();
-    var allProfiles = JSON.parse(getAllProfiles());
+    if (isMultiHostEnabled()) {
+        var profileId = $('#profiles').val();
+        var allProfiles = JSON.parse(getAllProfiles());
 
-    for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
-        if (profile.id == profileId) {
-            document.getElementById("name").value = profile.name;
-            document.getElementById("url").value = profile.url;
-            document.getElementById("port").value = profile.port;
-            document.getElementById("username").value = profile.username;
-            document.getElementById("password").value = profile.password;
-            break;
+        for (var i = 0; i < allProfiles.length; i++) {
+            var profile = allProfiles[i];
+            if (profile.id == profileId) {
+                document.getElementById("name").value = profile.name;
+                document.getElementById("url").value = profile.url;
+                document.getElementById("port").value = profile.port;
+                document.getElementById("username").value = profile.username;
+                document.getElementById("password").value = profile.password;
+                break;
+            }
         }
     }
 }
 
-function populateProfiles() {
+function populateProfiles(callback) {
     var profiles = $('#profiles');
     var allProfilesObj = getAllProfiles();
 
@@ -192,21 +242,27 @@ function populateProfiles() {
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
         }
     } else {
-        profiles.append('<option>Default</option>');
-        document.getElementById("name").value = 'Default';
-        document.getElementById("url").value = '';
-        document.getElementById("port").value = '';
-        document.getElementById("username").value = '';
-        document.getElementById("password").value = '';
+        if (isMultiHostEnabled()) {
+            profiles.append('<option>Default</option>');
+            document.getElementById("name").value = 'Default';
+            document.getElementById("url").value = '';
+            document.getElementById("port").value = '';
+            document.getElementById("username").value = '';
+            document.getElementById("password").value = '';
+        }
 
     }
 
     if (isMultiHostEnabled()) {
         $('.profile-group').show();
-        profiles.val(localStorage[storageKeys.selectedHost]);
         changeProfile();
     } else {
+        $('.profile-group').hide();
+        restoreUrl();
+    }
 
+    if (callback) {
+        callback();
     }
 }
 
@@ -233,6 +289,7 @@ function createNewProfile() {
     localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
     populateProfiles();
     $('#profiles').val(largestId+1);
+    changeProfile();
 }
 
 function deleteThisProfile() {

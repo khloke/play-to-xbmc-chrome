@@ -13,6 +13,6 @@
         "128": "images/tv.png"
     },
     "background": {
-        "scripts": ["js/background_scripts/background.js", "js/xbmc-helper.js", "js/jquery-1.7.2.min.js"]
+        "scripts": ["js/shared.js", "js/background_scripts/background.js", "js/xbmc-helper.js", "js/jquery-1.7.2.min.js"]
     }
 }

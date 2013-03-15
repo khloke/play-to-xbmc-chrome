@@ -1,12 +1,3 @@
-var actions = {
-    "PlayPause": "Player.PlayPause",
-    "Stop": "Player.Stop",
-    "SmallSkipBackward":"VideoPlayer.SmallSkipBackward",
-    "SmallSkipForward":"VideoPlayer.SmallSkipForward",
-    "GoPrevious": "Player.GoPrevious",
-    "GoNext": "Player.GoNext"
-};
-
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
         switch (request.action) {
@@ -37,20 +28,6 @@ chrome.extension.onMessage.addListener(
         return true;
     }
 );
-
-function getURL() {
-    var url = localStorage["url"];
-    var port = localStorage["port"];
-    var username = localStorage["username"];
-    var password = localStorage["password"];
-
-    var loginPortion = '';
-    if (username && password) {
-        loginPortion = username + ':' + password + '@';
-    }
-
-    return 'http://'+ loginPortion + url + ':' + port;
-}
 
 function getCurrentUrl(callback) {
     chrome.tabs.getSelected(null, function(tab) {
