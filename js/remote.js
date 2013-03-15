@@ -157,7 +157,7 @@ var favArray = JSON.parse(getAllFavourites());
 function createFavouritesActionButtons(i) {
     var name = favArray[i][0];
     var url = favArray[i][1];
-    $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><a class='btn btn-mini btn-primary' id='favQueueBtn" + i + "' href=\"#\">Play</a>&#32;<a class='btn btn-mini' id='favRemoveBtn" + i + "' href=\"#\">Remove</a></div></td></tr>");
+    $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Play</a>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</a></div></td></tr>");
     $('#favQueueBtn' + i).click(function() {
         queueItem(favArray[i][1], function() {
             onChangeUpdate();
@@ -255,8 +255,10 @@ function initRepeatMode() {
     if ($('#repeatButton').length <= 0) {
         if (localStorage["showRepeat"] == 'always') {
             $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
+            $('#repeatButton').click(function() {toggleRepeat()});
         } else if (localStorage["showRepeat"] == 'dropdown') {
-            $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>')
+            $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
+            $('#repeatButton').click(function() {toggleRepeat()});
         } else {
             hasRepeat = 0;
         }
@@ -286,7 +288,7 @@ function initRepeatMode() {
             }
 
             repeatButton.html(buttonLabel);
-            repeatButton.click(function() {toggleRepeat()});
+            repeatButton.find('img').remove();
         });
     }
 }
@@ -363,8 +365,6 @@ function toggleRepeat() {
         } else {
             initRepeatMode();
         }
-
-        $('#repeatButton').find('img').remove();
     });
 }
 
@@ -386,7 +386,9 @@ function previous() {
 
 function stop() {
     doAction(actions.Stop, function() {
-        onChangeUpdate();
+        clearPlaylist(function() {
+            onChangeUpdate();
+        });
     });
 }
 

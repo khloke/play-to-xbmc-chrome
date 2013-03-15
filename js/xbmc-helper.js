@@ -100,6 +100,7 @@ function ajaxPost(data, callback) {
         contentType: "application/json",
         data : data,
         dataType: 'json',
+        timeout: 1000,
         error: function(jqXHR, textStatus, erroThrown) {
             callback(0);
         }
