@@ -266,6 +266,7 @@ function initRepeatMode() {
             }
 
             repeatButton.html(buttonLabel);
+            repeatButton.find('img').remove();
         });
     }
 }
@@ -320,8 +321,6 @@ function toggleRepeat() {
         } else {
             initRepeatMode();
         }
-
-        $('#repeatButton').find('img').remove();
     });
 }
 
