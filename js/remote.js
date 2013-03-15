@@ -225,15 +225,14 @@ function initQueueCount() {
 
 function initRepeatMode() {
     var hasRepeat = 1;
-    var button = $('#repeatButton');
 
-    if (button.length <= 0) {
+    if ($('#repeatButton').length <= 0) {
         if (localStorage["showRepeat"] == 'always') {
             $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
-            button.click(function() {toggleRepeat()});
+            $('#repeatButton').click(function() {toggleRepeat()});
         } else if (localStorage["showRepeat"] == 'dropdown') {
             $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
-            button.click(function() {toggleRepeat()});
+            $('#repeatButton').click(function() {toggleRepeat()});
         } else {
             hasRepeat = 0;
         }
