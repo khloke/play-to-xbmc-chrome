@@ -342,7 +342,9 @@ function previous() {
 
 function stop() {
     doAction(actions.Stop, function() {
-        onChangeUpdate();
+        clearPlaylist(function() {
+            onChangeUpdate();
+        });
     });
 }
 
