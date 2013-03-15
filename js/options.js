@@ -125,6 +125,7 @@ function checkVersion() {
 
     if (storageVersion == null) {
         localStorage.setItem("storage-version", 0);
+        storageVersion = 0;
     }
 
     if (storageVersion < currentVersion) {
@@ -134,7 +135,7 @@ function checkVersion() {
 }
 
 function doUpgrade(from, to) {
-    if (from > 0 && from < 1310) {
+    if (from < 1310) {
         var storageUrl = localStorage["url"];
         var storagePort = localStorage["port"];
         var storageUsername = localStorage["username"];
