@@ -66,6 +66,10 @@ function buildPluginPath(type, videoId) {
         case 'soundcloud':
             return 'plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15';
 
+        case 'mixcloud':
+            //%2FLaidBackRadio%2Fmr-leenknecht-aint-no-sunshine%2F
+            return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
+
         default:
             return '';
     }
