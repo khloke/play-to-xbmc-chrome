@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/shared.js"></script>
     <script type="text/javascript" src="js/options.js"></script>
 </head>
 
@@ -14,13 +15,27 @@
             <legend style="padding-left: 25px;">Options</legend>
             <div class="tabbable">
                 <ul class="nav nav-tabs" style="padding: 0 25px;">
-                    <li class="active">
-                        <a href="#xbmcHost" data-toggle="tab">XBMC Host</a>
-                    </li>
-                    <li><a href="#general" data-toggle="tab">General</a></li>
+                    <li class="active"><a href="#xbmcHost" data-toggle="tab">XBMC Host(s)</a></li>
+                    <li><a href="#general" data-toggle="tab">Others</a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="xbmcHost">
+                        <div id="profileControlGroup" class="control-group profile-group" style="display: none;">
+                            <label class="control-label" for="profiles">Profile</label>
+                            <div class="controls">
+                                <select id="profiles"></select>
+                            </div>
+                            <div class="controls" style="margin-top: 10px;">
+                                <button id="newProfileBtn" class="btn" type="button">New</button>
+                                <button id="deleteProfileBtn" class="btn" type="button">Delete</button>
+                            </div>
+                        </div>
+                        <div class="control-group profile-group" style="display: none;">
+                            <label class="control-label" for="name">Name</label>
+                            <div class="controls">
+                                <input type="text" id="name" placeholder="Name (eg. Lounge Room TV)">
+                            </div>
+                        </div>
                         <div id="urlControlGroup" class="control-group">
                             <label class="control-label" for="url">URL</label>
                             <div class="controls">
@@ -55,6 +70,12 @@
                                     <option value="always">Always</option>
                                     <option value="dropdown">Hide in Dropdown</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="enableMultiHost">Enable Multi XBMC Hosts</label>
+                            <div class="controls">
+                                <input id="enableMultiHost" type="checkbox"/>
                             </div>
                         </div>
                     </div>

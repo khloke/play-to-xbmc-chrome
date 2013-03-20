@@ -1,4 +1,5 @@
 $(document).ready( function() {
+    initProfiles();
     initConnectivity(function() {
         initJsonVersion();
         initVolumeSlider();

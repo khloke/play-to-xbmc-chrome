@@ -2,34 +2,30 @@
  * This file contains Google Chrome specific methods.
  */
 
-var actions = {
-    "PlayPause": "Player.PlayPause",
-    "Stop": "Player.Stop",
-    "SmallSkipBackward":"VideoPlayer.SmallSkipBackward",
-    "SmallSkipForward":"VideoPlayer.SmallSkipForward",
-    "GoPrevious": "Player.GoPrevious",
-    "GoNext": "Player.GoNext"
-};
-
-function getURL() {
-    var url = localStorage["url"];
-    var port = localStorage["port"];
-    var username = localStorage["username"];
-    var password = localStorage["password"];
-
-    var loginPortion = '';
-    if (username && password) {
-        loginPortion = username + ':' + password + '@';
-    }
-    
-    return 'http://'+ loginPortion + url + ':' + port;
-}
-
 function hasUrlSetup() {
-    var url = localStorage["url"];
-    var port = localStorage["port"];
+    if (isMultiHostEnabled()) {
+        var allProfiles = getAllProfiles();
 
-    return url != null && url != '' && port != null && port != '';
+        if (allProfiles != null) {
+            var selectedHost = localStorage[storageKeys.selectedHost];
+            var profiles = JSON.parse(allProfiles);
+
+            if (selectedHost != null && selectedHost > 0) {
+                if (profiles[i] != null) {
+                    return profiles[i].url != null && profiles[i].url != '' && profiles[i].port != null && profiles[i].port != '';
+                }
+            } else {
+                return profiles[0].url != null && profiles[0].url != '' && profiles[0].port != null && profiles[0].port != '';
+            }
+        }
+
+        return false;
+    } else {
+        var url = localStorage["url"];
+        var port = localStorage["port"];
+
+        return url != null && url != '' && port != null && port != '';
+    }
 }
 
 function onChangeUpdate() {
@@ -301,6 +297,28 @@ function initPlaylistNumbers() {
             $('#playlistTextContainer').hide();
         }
     });
+}
+
+function initProfiles() {
+    if (isMultiHostEnabled()) {
+        var allProfiles = JSON.parse(getAllProfiles());
+        var profiles = $('#profiles');
+
+        profiles.children().each(function(){$(this).remove()});
+        for (var i = 0; i < allProfiles.length; i++) {
+            var profile = allProfiles[i];
+            profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
+        }
+
+        profiles.val(localStorage[storageKeys.selectedHost]);
+
+        profiles.change(function () {
+            localStorage.setItem(storageKeys.selectedHost, profiles.val());
+            document.location.reload(true)
+        });
+
+        $('#profileRow').show();
+    }
 }
 
 function toggleRepeat() {
