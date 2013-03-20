@@ -7,47 +7,58 @@ function getPluginPath(url, callback) {
     var videoId;
 
     var typeRegex = '(https|http)://(www\.)?([^\.]+)\.([^/]+).+';
-    var type = url.match(typeRegex)[3];
+    var name = url.match(typeRegex)[3];
+    var type;
 
     var youtubeRegex = 'v=([^&]+)';
     var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&/#\?]+)';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
+    var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
 
-    switch (type) {
+    switch (name) {
         case 'youtube':
             videoId = url.match(youtubeRegex)[1];
+            type = 'video';
             break;
 
         case 'vimeo':
             videoId = url.match(vimeoRegex)[3];
+            type = 'video';
             break;
 
         case 'collegehumor':
             videoId = url.match(collegehumorRegex)[3];
+            type = 'video';
             break;
 
         case 'dailymotion':
             videoId = url.match(dailymotionRegex)[3];
+            type = 'video';
             break;
 
         case 'ebaumsworld':
             videoId = url.match(ebaumsworldRegex)[3];
+            type = 'video';
             break;
 
         case 'soundcloud':
             getSoundcloudTrackId(url, function(trackId){
-                callback('audio', buildPluginPath(type, trackId));
+                callback('audio', buildPluginPath(name, trackId));
             });
             return;
 
+        case 'mixcloud':
+            videoId = url.match(mixcloudRegex)[3];
+            type = 'audio';
+            break;
 
         default:
             console.log('An error has occurred while attempting to obtain content id.');
     }
 
-    callback('video', buildPluginPath(type, videoId));
+    callback(type, buildPluginPath(name, videoId));
 }
 
 function buildPluginPath(type, videoId) {
@@ -67,7 +78,6 @@ function buildPluginPath(type, videoId) {
             return 'plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15';
 
         case 'mixcloud':
-            //%2FLaidBackRadio%2Fmr-leenknecht-aint-no-sunshine%2F
             return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
 
         default:
@@ -91,9 +101,13 @@ function insertItem(url, position, callback) {
     });
 }
 
-function ajaxPost(data, callback) {
+function ajaxPost(data, callback, timeout) {
     var url = getURL();
     var fullPath = url + "/jsonrpc";
+    var defaultTimeout = 5000;
+    if (timeout) {
+        defaultTimeout = timeout;
+    }
 
     jQuery.ajax({
         type: 'POST',
@@ -104,7 +118,7 @@ function ajaxPost(data, callback) {
         contentType: "application/json",
         data : data,
         dataType: 'json',
-        timeout: 5000,
+        timeout: defaultTimeout,
         error: function(jqXHR, textStatus, erroThrown) {
             callback(0);
         }
@@ -138,6 +152,7 @@ function validUrl(url) {
     var reDailyMotion = ".*dailymotion.com/video/.*";
     var reEbaumsworld = ".*ebaumsworld.com/video/.*";
     var reSoundcloud = ".*soundcloud.com.*";
+    var reMixCloud = ".*mixcloud.com.*";
 
     return (
             url.match(reYoutube) ||
@@ -145,7 +160,8 @@ function validUrl(url) {
             url.match(reCollegeHumor) ||
             url.match(reDailyMotion) ||
             url.match(reEbaumsworld) ||
-            url.match(reSoundcloud)
+            url.match(reSoundcloud) ||
+            url.match(reMixCloud)
         );
 
 }
@@ -175,7 +191,7 @@ function addItemToPlaylist(contentType, pluginPath, callback) {
                     if (playerid_2 == null){
                         ajaxPost(playVideo, function(response_2) {
                             callback(response_2);
-                        });
+                        }, 10000);
                     } else {
                         callback(response);
                     }
@@ -245,7 +261,7 @@ function playerGoPrevious(callback) {
             var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerPreviousV6, function () {callback()});
+                ajaxPost(playerPreviousV6, function () {callback()}, 10000);
 
             } else if (version >= 4) {
                 doAction(actions.GoPrevious, function () {callback()});
@@ -262,7 +278,7 @@ function playerGoNext(callback) {
             var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
-                ajaxPost(playerNextV6, function(){callback()});
+                ajaxPost(playerNextV6, function(){callback()}, 10000);
 
             } else if (version >= 4) {
                 doAction(actions.GoNext, function(){callback()});
