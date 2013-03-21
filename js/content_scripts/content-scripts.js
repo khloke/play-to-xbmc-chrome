@@ -1,9 +1,9 @@
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.method == "getPlaylistVideoIds") {
+        if (request.action == "getPlaylistVideoIds") {
 
-            var videoIds = new Array();
+            var videoIds = [];
 
             $('li.video-list-item').each(
                 function (index) {
@@ -17,8 +17,8 @@ chrome.extension.onMessage.addListener(
 
             sendResponse({video_ids: JSON.stringify(videoIds)});
 
-        } else {
-            sendResponse({});
+        } else if ("getLiveLeakVideoUrl" == request.action) {
+            sendResponse({url:$('html').html().match('file: "(.+?)",')[1]});
         }
     }
 );

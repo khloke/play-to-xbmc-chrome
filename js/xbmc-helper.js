@@ -49,6 +49,17 @@ function getPluginPath(url, callback) {
             });
             return;
 
+        case 'liveleak':
+            chrome.tabs.getSelected(null, function(tab) {
+                chrome.tabs.sendMessage(tab.id, {action: 'getLiveLeakVideoUrl'}, function(response) {
+                    if (response) {
+                        var liveLeakUrl = response.url;
+                        callback('video', liveLeakUrl);
+                    }
+                });
+            });
+            return;
+
         case 'mixcloud':
             videoId = url.match(mixcloudRegex)[3];
             type = 'audio';
@@ -143,6 +154,10 @@ function getSoundcloudTrackId(url, callback) {
     });
 }
 
+function getLiveLeakFilePath(callback) {
+
+}
+
 function validUrl(url) {
     // regex checking for the websites --
     // chrome tab should be at a specific video.
@@ -153,6 +168,7 @@ function validUrl(url) {
     var reEbaumsworld = ".*ebaumsworld.com/video/.*";
     var reSoundcloud = ".*soundcloud.com.*";
     var reMixCloud = ".*mixcloud.com.*";
+    var reLiveLeak = ".*liveleak.com/view.*"
 
     return (
             url.match(reYoutube) ||
@@ -161,7 +177,8 @@ function validUrl(url) {
             url.match(reDailyMotion) ||
             url.match(reEbaumsworld) ||
             url.match(reSoundcloud) ||
-            url.match(reMixCloud)
+            url.match(reMixCloud) ||
+            url.match(reLiveLeak)
         );
 
 }

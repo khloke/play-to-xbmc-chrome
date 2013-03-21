@@ -11,8 +11,8 @@ function hasUrlSetup() {
             var profiles = JSON.parse(allProfiles);
 
             if (selectedHost != null && selectedHost > 0) {
-                if (profiles[i] != null) {
-                    return profiles[i].url != null && profiles[i].url != '' && profiles[i].port != null && profiles[i].port != '';
+                if (profiles[selectedHost] != null) {
+                    return profiles[selectedHost].url != null && profiles[selectedHost].url != '' && profiles[selectedHost].port != null && profiles[selectedHost].port != '';
                 }
             } else {
                 return profiles[0].url != null && profiles[0].url != '' && profiles[0].port != null && profiles[0].port != '';
