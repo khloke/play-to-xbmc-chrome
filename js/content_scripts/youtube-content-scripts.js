@@ -16,9 +16,6 @@ chrome.extension.onMessage.addListener(
             );
 
             sendResponse({video_ids: JSON.stringify(videoIds)});
-
-        } else if ("getLiveLeakVideoUrl" == request.action) {
-            sendResponse({url:$('html').html().match('file: "(.+?)",')[1]});
         }
     }
 );
