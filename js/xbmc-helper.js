@@ -318,7 +318,7 @@ function getXbmcJsonVersion(callback) {
         } else {
             callback(null);
         }
-    });
+    }, 2000);
 }
 
 function getRepeatMode(callback) {
