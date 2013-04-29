@@ -321,6 +321,42 @@ function initProfiles() {
     }
 }
 
+function initKeyBindings() {
+    $(document).keydown(function(e) {
+        var keyCode = e.keyCode || e.which,
+            keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
+
+        console.log(e.keyCode);
+
+        switch (keyCode) {
+            case keypress.left:
+                navigate('Left');
+                break;
+            case keypress.up:
+                navigate('Up');
+                break;
+            case keypress.right:
+                navigate('Right');
+                break;
+            case keypress.down:
+                navigate('Down');
+                break;
+            case keypress.backspace:
+                navigate('Back');
+                break;
+            case keypress.enter:
+                navigate('Select');
+                break;
+            case keypress.i:
+                navigate('Info');
+                break;
+            case keypress.c:
+                navigate('ContextMenu');
+                break;
+        }
+    });
+}
+
 function toggleRepeat() {
     $('#repeatButton').html('<img src="/images/loading.gif"/>');
     getRepeatMode(function (repeat) {

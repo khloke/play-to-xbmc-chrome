@@ -3,6 +3,7 @@ $(document).ready( function() {
     initConnectivity(function() {
         initJsonVersion();
         initVolumeSlider();
+        initKeyBindings();
 
         clearNonPlayingPlaylist(function() {
             initVideoButton();

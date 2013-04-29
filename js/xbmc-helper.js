@@ -305,6 +305,12 @@ function playerGoNext(callback) {
     });
 }
 
+function navigate(type) {
+    var navigateTo = '{"jsonrpc": "2.0", "method": "Input.' + type + '", "id": 1}';
+
+    ajaxPost(navigateTo, function() {}, 1000);
+}
+
 function getXbmcJsonVersion(callback) {
     var getJsonVersion = '{"jsonrpc": "2.0", "method": "JSONRPC.Version", "id" : 1}';
 
