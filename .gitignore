@@ -163,6 +163,6 @@ pip-log.txt
 .DS_Store
 
 #IntelliJ Files
+
+.idea/*
 *.iml
-*.ipr
-*.iws
