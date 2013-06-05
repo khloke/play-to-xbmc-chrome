@@ -36,11 +36,12 @@ function onChangeUpdate() {
 
 function setVolume(volume) {
     var setVolume = '{"jsonrpc": "2.0", "method": "Application.SetVolume", "params": {"volume":' + volume + '} , "id" : 1}';
-    ajaxPost(setVolume, function() {});
+    ajaxPost(setVolume, function () {
+    });
 }
 
 function doAction(item, callback) {
-    getActivePlayerId(function(playerid) {
+    getActivePlayerId(function (playerid) {
         if (playerid != null) {
             var action = '{"jsonrpc": "2.0", "method": "' + item + '", "params":{"playerid":' + playerid + '}, "id" : 1}';
             ajaxPost(action, function (result) {
@@ -54,28 +55,48 @@ function doAction(item, callback) {
 
 function playCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'playNow'}, function(response) {
+    chrome.extension.sendMessage({action: 'playNow'}, function (response) {
         onChangeUpdate();
         turnOffLoading(caller);
     });
 }
 
 function playNextCurrentUrl(caller) {
-    chrome.extension.sendMessage({action: 'playNextCurrent'}, function(response) {
+    chrome.extension.sendMessage({action: 'playNextCurrent'}, function (response) {
         onChangeUpdate();
     });
 }
 
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'queue'}, function(response) {
+    chrome.extension.sendMessage({action: 'queue'}, function (response) {
         onChangeUpdate();
+        console.log("queue current url called");
+
+
+        turnOffLoading(caller);
+    });
+
+}
+
+function queueYoutubeList(caller) {
+    turnOnLoading(caller);
+    chrome.extension.sendMessage({action: 'queueList'}, function (response) {
+        //onChangeUpdate();
+
+        var listHtml = response.listHtml;
+        console.log("queue list returned:" + listHtml);
+
+        $(listHtml).appendTo("#youTubeList");
         turnOffLoading(caller);
     });
 }
 
+
+
+
 function removeThisFromPlaylist(caller) {
-    chrome.extension.sendMessage({action: 'removeThis'}, function(response) {
+    chrome.extension.sendMessage({action: 'removeThis'}, function (response) {
         onChangeUpdate();
     });
 }
@@ -87,7 +108,7 @@ function getAllFavourites() {
 }
 
 function addToFavourites() {
-    chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
         var title = tab.title.replace(' - YouTube', '').trim();
 
@@ -132,18 +153,18 @@ function createFavouritesActionButtons(i) {
     var name = favArray[i][0];
     var url = favArray[i][1];
     $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Play</a>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</a></div></td></tr>");
-    $('#favQueueBtn' + i).click(function() {
-        queueItem(favArray[i][1], function() {
+    $('#favQueueBtn' + i).click(function () {
+        queueItem(favArray[i][1], function () {
             onChangeUpdate();
         });
     });
-    $('#favRemoveBtn' + i).click(function() {
+    $('#favRemoveBtn' + i).click(function () {
         removeFromFavourites(i);
     });
 }
 
 function initConnectivity(callback) {
-    getXbmcJsonVersion(function(version) {
+    getXbmcJsonVersion(function (version) {
         var warningTextContainer = $('#warningTextContainer');
         if (version == null) {
             warningTextContainer.html('<span class="label label-important">Unable to connect to XBMC <i id="tooltipIcon" class="icon-question-sign icon-white" data-toggle="tootip" data-placement="top" data-original-title="Please make sure that your settings are correct and XBMC is running."></i></span>');
@@ -173,10 +194,10 @@ function initFavouritesTable() {
     $('.sort').sortable({
         cursor: 'move',
         axis: 'y',
-        update: function(e, ui) {
+        update: function (e, ui) {
             var sortedBody = $(this);
             var newOrder = [];
-            sortedBody.find('tr').each(function(){
+            sortedBody.find('tr').each(function () {
                 var link = $(this).find('.youtube-link').first();
                 var fav = [];
                 fav[0] = link.html().trim();
@@ -189,25 +210,29 @@ function initFavouritesTable() {
 }
 
 function initJsonVersion() {
-    getXbmcJsonVersion(function(version) {
+    getXbmcJsonVersion(function (version) {
         localStorage.setItem('jsonVersion', version);
     });
 }
 
 function initVideoButton() {
-    chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
         var valid = validUrl(url);
         // if valid, enable buttons
         if (valid) {
-            $(".disabled-btn").each(function() { $(this).removeAttr('disabled') });
-            $(".disabled-link").each(function() { $(this).removeClass('disabled') });
+            $(".disabled-btn").each(function () {
+                $(this).removeAttr('disabled')
+            });
+            $(".disabled-link").each(function () {
+                $(this).removeClass('disabled')
+            });
         }
     });
 }
 
 function initQueueCount() {
-    getActivePlaylistSize(function(playlistSize) {
+    getActivePlaylistSize(function (playlistSize) {
         if (playlistSize != null) {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
@@ -229,10 +254,14 @@ function initRepeatMode() {
     if ($('#repeatButton').length <= 0) {
         if (localStorage["showRepeat"] == 'always') {
             $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
-            $('#repeatButton').click(function() {toggleRepeat()});
+            $('#repeatButton').click(function () {
+                toggleRepeat()
+            });
         } else if (localStorage["showRepeat"] == 'dropdown') {
             $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
-            $('#repeatButton').click(function() {toggleRepeat()});
+            $('#repeatButton').click(function () {
+                toggleRepeat()
+            });
         } else {
             hasRepeat = 0;
         }
@@ -268,14 +297,14 @@ function initRepeatMode() {
 }
 
 function initVolumeSlider() {
-    getVolumeLevel(function(volume) {
+    getVolumeLevel(function (volume) {
         $('#volume_control').slider({
             orientation: "horizontal",
             range: "min",
             min: 0,
             max: 100,
             value: volume,
-            slide: function(event, ui) {
+            slide: function (event, ui) {
                 setVolume(ui.value);
             }
         });
@@ -283,7 +312,7 @@ function initVolumeSlider() {
 }
 
 function initPlaylistNumbers() {
-    getActivePlaylistSize(function(size) {
+    getActivePlaylistSize(function (size) {
         if (size != null) {
             getPlaylistPosition(function (position) {
                 if (size != null && position != null) {
@@ -304,7 +333,9 @@ function initProfiles() {
         var allProfiles = JSON.parse(getAllProfiles());
         var profiles = $('#profiles');
 
-        profiles.children().each(function(){$(this).remove()});
+        profiles.children().each(function () {
+            $(this).remove()
+        });
         for (var i = 0; i < allProfiles.length; i++) {
             var profile = allProfiles[i];
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
@@ -322,7 +353,7 @@ function initProfiles() {
 }
 
 function initKeyBindings() {
-    $(document).keydown(function(e) {
+    $(document).keydown(function (e) {
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 
@@ -361,15 +392,15 @@ function toggleRepeat() {
     $('#repeatButton').html('<img src="/images/loading.gif"/>');
     getRepeatMode(function (repeat) {
         if (repeat == "one" || repeat == "One") {
-            setRepeatMode('all', function(){
+            setRepeatMode('all', function () {
                 initRepeatMode();
             });
         } else if (repeat == "all" || repeat == "All") {
-            setRepeatMode('off', function(){
+            setRepeatMode('off', function () {
                 initRepeatMode();
             });
         } else if (repeat == "off" || repeat == "Off") {
-            setRepeatMode('one', function(){
+            setRepeatMode('one', function () {
                 initRepeatMode();
             });
         } else {
@@ -389,33 +420,33 @@ function turnOffLoading(jObj) {
 }
 
 function previous() {
-    playerGoPrevious(function() {
+    playerGoPrevious(function () {
         onChangeUpdate();
     })
 }
 
 function stop() {
-    doAction(actions.Stop, function() {
-        clearPlaylist(function() {
+    doAction(actions.Stop, function () {
+        clearPlaylist(function () {
             onChangeUpdate();
         });
     });
 }
 
 function playPause() {
-    doAction(actions.PlayPause, function() {
+    doAction(actions.PlayPause, function () {
         onChangeUpdate();
     });
 }
 
 function next() {
-    playerGoNext(function() {
+    playerGoNext(function () {
         onChangeUpdate();
     })
 }
 
 function emptyPlaylist() {
-    clearPlaylist(function() {
+    clearPlaylist(function () {
         onChangeUpdate();
     });
 }
