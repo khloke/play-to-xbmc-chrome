@@ -59,3 +59,22 @@ function isMultiHostEnabled() {
 function getAllProfiles() {
     return localStorage[storageKeys.profiles];
 }
+
+function getCurrentUrl(callback) {
+    chrome.tabs.getSelected(null, function (tab) {
+        var tabUrl = tab.url;
+        callback(tabUrl);
+    });
+}
+
+function getURLParameter(tabUrl, sParam) {
+    var sPageURL = tabUrl;
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) {
+            return sParameterName[1];
+        }
+    }
+    return null;
+}

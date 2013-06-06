@@ -81,13 +81,10 @@ function queueCurrentUrl(caller) {
 
 function queueYoutubeList(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'queueList'}, function (response) {
+    console.log("Queue youtube list called " + urlList.length);
+    chrome.extension.sendMessage({action: 'queueList',urlList:urlList}, function (response) {
         //onChangeUpdate();
 
-        var listHtml = response.listHtml;
-        console.log("queue list returned:" + listHtml);
-
-        $(listHtml).appendTo("#youTubeList");
         turnOffLoading(caller);
     });
 }
@@ -147,7 +144,7 @@ function clearFavouritesTable() {
     initFavouritesTable();
 }
 
-var favArray = JSON.parse(getAllFavourites());
+
 
 function createFavouritesActionButtons(i) {
     var name = favArray[i][0];
@@ -352,6 +349,60 @@ function initProfiles() {
     }
 }
 
+/**
+ * if this is youtube page which is part of a playlist , show all videos and the option to queue them all
+ *
+ */
+function initYouTubeList(){
+    console.log('init youtube');
+    getCurrentUrl(function(tabUrl){
+        var queueListButton = $('#queueListButton');
+        var youTubeListId = getURLParameter(tabUrl, 'list');
+        console.log("checking youtube list");
+        if (youTubeListId){
+            extractVideosFromYouTubePlaylist(youTubeListId);
+            queueListButton.attr('disabled', false);
+        }else{
+
+            queueListButton.attr('disabled', true);
+            console.log("queue list should be disabled");
+
+        }
+    });
+
+}
+
+function extractVideosFromYouTubePlaylist(playListID) {
+    var playListURL = 'http://gdata.youtube.com/feeds/api/playlists/' + playListID + '?v=2&alt=json';
+    var videoURL = 'http://www.youtube.com/watch?v=';
+    $.getJSON(playListURL, function (data) {
+        var list_data = "";
+        //GLOBAL
+        urlList = [];
+        $.each(data.feed.entry, function (i, item) {
+
+            var feedTitle = item.title.$t;
+            var feedURL = item.link[1].href;
+            var fragments = feedURL.split("/");
+            var videoID = fragments[fragments.length - 2];
+            var url = videoURL + videoID;
+            var thumb = "http://img.youtube.com/vi/" + videoID + "/default.jpg";
+
+            urlList.push(url);
+            console.log(url + " " + urlList.length);
+
+
+            list_data += '<li><img alt="'+ feedTitle+'" src="'+ thumb +'"</img>' + feedTitle + '</li>';
+
+
+        });
+        //console.log(list_data);
+        $(list_data).appendTo("#youTubeList");
+    });
+}
+
+
+
 function initKeyBindings() {
     $(document).keydown(function (e) {
         var keyCode = e.keyCode || e.which,
@@ -475,3 +526,7 @@ function emptyPlaylist() {
 //        });
 //    });
 //}
+
+
+var urlList = [];
+var favArray = JSON.parse(getAllFavourites());

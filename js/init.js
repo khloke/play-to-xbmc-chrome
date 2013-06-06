@@ -11,6 +11,7 @@ $(document).ready( function() {
             initQueueCount();
             initRepeatMode();
             initPlaylistNumbers();
+            initYouTubeList();
         });
     });
 

@@ -1,6 +1,6 @@
 chrome.extension.onMessage.addListener(
     function (request, sender, sendResponse) {
-        console.log("in switch");
+
         switch (request.action) {
 
             case 'playNow':
@@ -15,9 +15,9 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
             case 'queueList':
-                queueList(function (listHtml) {
+                queueList(request.urlList,0, function () {
 
-                    sendResponse({response: "OK",listHtml:listHtml});
+                    sendResponse({response: "OK"});
                 });
                 break;
 
@@ -37,24 +37,6 @@ chrome.extension.onMessage.addListener(
     }
 );
 
-function getCurrentUrl(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
-        var tabUrl = tab.url;
-        callback(tabUrl);
-    });
-}
-
-function getURLParameter(tabUrl, sParam) {
-    var sPageURL = tabUrl;
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-    return null;
-}
 
 function doAction(item, callback) {
     getActivePlayerId(function (playerid) {
@@ -93,22 +75,20 @@ function queueCurrentUrl(callback) {
     });
 }
 
-function queueList(callback) {
-    getCurrentUrl(function (tabUrl) {
+function queueList(urlList, idx, callback) {
 
+    if (urlList.length === 0) {
+        callback();
+    }
 
-        console.log("tab=" + tabUrl);
-        var youTubeListId = getURLParameter(tabUrl, 'list');
-        if (youTubeListId) {
-            extractVideosFromYouTubePlaylist(youTubeListId,function(listHtml){
-
-                callback(listHtml);
-            });
-        }
-        else{
+    queueItem(urlList[idx], function () {
+        idx++;
+        if (idx < urlList.length) {
+            queueList(urlList, idx, callback);
+        } else {
+            console.log("sent all items");
             callback();
         }
-
     });
 }
 
@@ -123,29 +103,3 @@ function removeThisFromPlaylist(callback) {
     });
 }
 
-function extractVideosFromYouTubePlaylist(playListID,callback) {
-    var playListURL = 'http://gdata.youtube.com/feeds/api/playlists/' + playListID + '?v=2&alt=json';
-    var videoURL = 'http://www.youtube.com/watch?v=';
-    $.getJSON(playListURL, function (data) {
-        var list_data = "";
-
-        $.each(data.feed.entry, function (i, item) {
-
-            var feedTitle = item.title.$t;
-            var feedURL = item.link[1].href;
-            var fragments = feedURL.split("/");
-            var videoID = fragments[fragments.length - 2];
-            var url = videoURL + videoID;
-            var thumb = "http://img.youtube.com/vi/" + videoID + "/default.jpg";
-            console.log(url);
-
-           list_data += '<li><a href="'+ url +'" title="'+ feedTitle +'"><img alt="'+ feedTitle+'" src="'+ thumb +'"</a></li>';
-
-
-        });
-        console.log(list_data);
-
-        callback(list_data);
-
-    });
-}
