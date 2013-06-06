@@ -235,7 +235,7 @@ function addItemsToPlaylist(items, callback) {
                 if (i>0){
                     addToPlaylist+=",";
                 }
-                addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" : 1}';
+                addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + i +'}';
 
             }
             addToPlaylist+="]";
