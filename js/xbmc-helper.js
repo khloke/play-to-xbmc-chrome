@@ -115,7 +115,7 @@ function queueItems(urlList, callback) {
             contentArr.push(element);
             // do we have the whole items.
             if (contentArr.length == urlList.length) {
-                console.log("contentArr.length"+ contentArr.length);
+
                 addItemsToPlaylist(contentArr, function (result) {
                     callback(result);
                 });
@@ -243,7 +243,7 @@ function addItemsToPlaylist(items, callback) {
             ajaxPost(addToPlaylist, function (response) {
                 getActivePlayerId(function (playerid_2) {
                     getPlaylistSize(playlistId, function (playlistSize) {
-                        console.log("playlistSize=" + playlistSize);
+                       // console.log("playlistSize=" + playlistSize);
                         var position = playlistSize - 1;
                         var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + position + '}}, "id": 1}';
 
