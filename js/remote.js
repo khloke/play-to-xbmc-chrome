@@ -83,7 +83,7 @@ function queueYoutubeList(caller) {
     turnOnLoading(caller);
     console.log("Queue youtube list called " + urlList.length);
     chrome.extension.sendMessage({action: 'queueList',urlList:urlList}, function (response) {
-        //onChangeUpdate();
+        onChangeUpdate();
 
         turnOffLoading(caller);
     });

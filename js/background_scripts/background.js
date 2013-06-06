@@ -15,7 +15,7 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
             case 'queueList':
-                queueList(request.urlList,0, function () {
+                queueList(request.urlList, function () {
 
                     sendResponse({response: "OK"});
                 });
@@ -75,20 +75,15 @@ function queueCurrentUrl(callback) {
     });
 }
 
-function queueList(urlList, idx, callback) {
+function queueList(urlList, callback) {
 
     if (urlList.length === 0) {
         callback();
+        return;
     }
+    queueItems(urlList, function (result) {
+        callback();
 
-    queueItem(urlList[idx], function () {
-        idx++;
-        if (idx < urlList.length) {
-            queueList(urlList, idx, callback);
-        } else {
-            console.log("sent all items");
-            callback();
-        }
     });
 }
 
