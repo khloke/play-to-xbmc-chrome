@@ -245,7 +245,7 @@ function addItemsToPlaylist(items, callback) {
                     getPlaylistSize(playlistId, function (playlistSize) {
                        // console.log("playlistSize=" + playlistSize);
                         var position = playlistSize - 1;
-                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + 1 + '}}, "id": 1}';
+                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + 0 + '}}, "id": 1}';
 
                         //if nothing is playing, play what we inserted
                         if (playerid_2 == null) {
