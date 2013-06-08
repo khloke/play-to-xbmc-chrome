@@ -235,7 +235,7 @@ function addItemsToPlaylist(items, callback) {
                 if (i>0){
                     addToPlaylist+=",";
                 }
-                addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + i +'}';
+                addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + (i+1) +'}';
 
             }
             addToPlaylist+="]";
@@ -245,7 +245,7 @@ function addItemsToPlaylist(items, callback) {
                     getPlaylistSize(playlistId, function (playlistSize) {
                        // console.log("playlistSize=" + playlistSize);
                         var position = playlistSize - 1;
-                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + position + '}}, "id": 1}';
+                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + 1 + '}}, "id": 1}';
 
                         //if nothing is playing, play what we inserted
                         if (playerid_2 == null) {
