@@ -11,6 +11,7 @@ $(document).ready( function() {
             initQueueCount();
             initRepeatMode();
             initPlaylistNumbers();
+            initYouTubeList();
         });
     });
 
@@ -23,6 +24,7 @@ $(document).ready( function() {
 
     $('#playCurrentVideoButton').click(function() {playCurrentUrl($(this))});
     $('#queueVideoButton').click(function() {queueCurrentUrl($(this))});
+    $('#queueListButton').click(function() {queueYoutubeList($(this))});
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
