@@ -49,7 +49,9 @@ function doAction(item, callback) {
 
 function playCurrentUrl(callback) {
     doAction(actions.Stop, function () {
-        queueCurrentUrl(callback);
+        clearPlaylist(function() {
+            queueCurrentUrl(callback);
+        })
     });
 }
 
