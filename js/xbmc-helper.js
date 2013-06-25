@@ -115,18 +115,12 @@ function queueItems(urlList, callback) {
             contentArr.push(element);
             // do we have the whole items.
             if (contentArr.length == urlList.length) {
-
                 addItemsToPlaylist(contentArr, function (result) {
                     callback(result);
                 });
             }
-
         });
-
-
     });
-
-
 }
 
 function insertItem(url, position, callback) {
@@ -220,42 +214,35 @@ function clearPlaylist(callback) {
     });
 }
 
-function addItemsToPlaylist(items, callback) {
-    if (!items || items.length <= 0) {
-       callback(null);
-        return;
-
-    }
+    function addItemsToPlaylist(items, callback) {
+        if (!items || items.length <= 0) {
+            callback(null);
+            return;
+        }
         // assuming all of the same type
         var contentType = items[0].contentType;
         getPlaylistId(contentType, function (playlistId) {
-
             var addToPlaylist = "[";
             for (var i = 0; i < items.length; i++) {
                 if (i>0){
                     addToPlaylist+=",";
                 }
                 addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + (i+1) +'}';
-
             }
             addToPlaylist+="]";
 
             ajaxPost(addToPlaylist, function (response) {
                 getActivePlayerId(function (playerid_2) {
-                    getPlaylistSize(playlistId, function (playlistSize) {
-                       // console.log("playlistSize=" + playlistSize);
-                        var position = playlistSize - 1;
-                        var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : ' + 0 + '}}, "id": 1}';
+                    var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : 0}}, "id": 1}';
 
-                        //if nothing is playing, play what we inserted
-                        if (playerid_2 == null) {
-                            ajaxPost(playVideo, function (response_2) {
-                                callback(response_2);
-                            }, 10000);
-                        } else {
-                            callback(response);
-                        }
-                    });
+                    //if nothing is playing, play what we inserted
+                    if (playerid_2 == null) {
+                        ajaxPost(playVideo, function (response_2) {
+                            callback(response_2);
+                        }, 10000);
+                    } else {
+                        callback(response);
+                    }
                 });
             });
         });

@@ -31,7 +31,6 @@
     <div class="btn-group" style="left:-10px;">
         <button id="playCurrentVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Play now</button>
         <button id="queueVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">+Queue</button>
-        <button id="queueListButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Queue List</button>
         <button id="addToFavButton" class="btn btn-small disabled-btn" disabled style="padding: 5px">+Favourite</button>
         <button class="btn dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
@@ -39,6 +38,7 @@
         <ul class="dropdown-menu pull-right">
             <li id="dropdown-first" style="display: none;"></li>
             <li class="disabled disabled-link"><a tabindex="-1" href="#" id="playNextButton">Play this Next</a></li>
+            <li class="disabled disabled-link"><a href="#" id="queueListButton">Queue YouTube Playlist</a></li>
             <li class="divider"></li>
             <li><a href="#" id="removeThisButton">Remove current from Playlist</a></li>
             <li><a href="#" id="clearPlaylistButton">Clear Playlist</a></li>
@@ -76,9 +76,5 @@
 </div>
 <div id="setupTooltip" class="tooltip fade right in" style="display: none; left: 50px; top: 130px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">Click here to setup your Play to XBMC extension</div></div>
 
-
-<div id="youTubeList">
-
-</div>
 </body>
 </html>

@@ -166,3 +166,5 @@ pip-log.txt
 
 .idea/*
 *.iml
+*.ipr
+*.iws

@@ -1,8 +1,6 @@
 chrome.extension.onMessage.addListener(
     function (request, sender, sendResponse) {
-
         switch (request.action) {
-
             case 'playNow':
                 playCurrentUrl(function () {
                     sendResponse({response: "OK"});
@@ -16,7 +14,6 @@ chrome.extension.onMessage.addListener(
                 break;
             case 'queueList':
                 queueList(request.urlList, function () {
-
                     sendResponse({response: "OK"});
                 });
                 break;
@@ -36,7 +33,6 @@ chrome.extension.onMessage.addListener(
         return true;
     }
 );
-
 
 function doAction(item, callback) {
     getActivePlayerId(function (playerid) {
@@ -76,7 +72,6 @@ function queueCurrentUrl(callback) {
 }
 
 function queueList(urlList, callback) {
-
     if (urlList.length === 0) {
         callback();
         return;
