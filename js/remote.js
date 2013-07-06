@@ -352,6 +352,8 @@ function initYouTubeList(){
         if (youTubeListId){
             extractVideosFromYouTubePlaylist(youTubeListId);
             queueListButton.attr('disabled', false);
+            queueListButton.parent().removeClass('disabled');
+
         } else {
             queueListButton.attr('disabled', true);
         }

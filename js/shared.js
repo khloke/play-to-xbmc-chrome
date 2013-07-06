@@ -68,7 +68,7 @@ function getCurrentUrl(callback) {
 }
 
 function getURLParameter(tabUrl, sParam) {
-    var sPageURL = tabUrl;
+    var sPageURL = tabUrl.substring(tabUrl.indexOf('?') + 1 );
     var sURLVariables = sPageURL.split('&');
     for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
