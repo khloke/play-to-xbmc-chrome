@@ -11,7 +11,7 @@ function getPluginPath(url, callback) {
     var type;
 
     var youtubeRegex = 'v=([^&]+)';
-    var vimeoRegex = '(https|http)://(www\.)?vimeo.com/([^_&/#\?]+)';
+    var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+)$';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
@@ -182,7 +182,7 @@ function validUrl(url) {
     // regex checking for the websites --
     // chrome tab should be at a specific video.
     var reYoutube = ".*youtube.com/watch.*";
-    var reVimeo = ".*vimeo.com/\\d+";
+    var reVimeo = "^.*vimeo.com.*/\\d+$";
     var reCollegeHumor = ".*collegehumor.com/[video|embed]+/\\d+/\\w+";
     var reDailyMotion = ".*dailymotion.com/video/.*";
     var reEbaumsworld = ".*ebaumsworld.com/video/.*";
