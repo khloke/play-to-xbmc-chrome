@@ -1,3 +1,5 @@
+var currentVersion = 1400;
+
 var storageKeys = {
     "showRepeat": "showRepeat",
     "profiles": "profiles",

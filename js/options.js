@@ -1,5 +1,3 @@
-var currentVersion = 1310;
-
 $(document).ready(function(){
     checkVersion();
     populateProfiles();

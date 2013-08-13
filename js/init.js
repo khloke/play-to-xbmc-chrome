@@ -34,6 +34,8 @@ $(document).ready( function() {
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
+    } else if (hasBeenUpdated()) {
+        $('#updateTooltip').css("display", "block");
     }
 
 });

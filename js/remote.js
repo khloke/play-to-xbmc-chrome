@@ -28,6 +28,10 @@ function hasUrlSetup() {
     }
 }
 
+function hasBeenUpdated() {
+    return currentVersion > localStorage["storage-version"];
+}
+
 function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
