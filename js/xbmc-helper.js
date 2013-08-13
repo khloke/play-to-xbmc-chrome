@@ -174,33 +174,15 @@ function getSoundcloudTrackId(url, callback) {
     });
 }
 
-function getLiveLeakFilePath(callback) {
-
-}
-
 function validUrl(url) {
-    // regex checking for the websites --
-    // chrome tab should be at a specific video.
-    var reYoutube = ".*youtube.com/watch.*";
-    var reVimeo = "^.*vimeo.com.*/\\d+$";
-    var reCollegeHumor = ".*collegehumor.com/[video|embed]+/\\d+/\\w+";
-    var reDailyMotion = ".*dailymotion.com/video/.*";
-    var reEbaumsworld = ".*ebaumsworld.com/video/.*";
-    var reSoundcloud = ".*soundcloud.com.*";
-    var reMixCloud = ".*mixcloud.com.*";
-    var reLiveLeak = ".*liveleak.com/view.*"
+    for (var i = 0; i < validUrlPatterns.length; i++) {
+        var pattern = validUrlPatterns[i];
+        if (url.match(pattern)) {
+            return true;
+        }
+    }
 
-    return (
-        url.match(reYoutube) ||
-            url.match(reVimeo) ||
-            url.match(reCollegeHumor) ||
-            url.match(reDailyMotion) ||
-            url.match(reEbaumsworld) ||
-            url.match(reSoundcloud) ||
-            url.match(reMixCloud) ||
-            url.match(reLiveLeak)
-        );
-
+    return false;
 }
 
 function clearPlaylist(callback) {

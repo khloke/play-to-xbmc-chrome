@@ -1,10 +1,10 @@
 {
     "manifest_version": 2,
-    "version": "1.3.4.3",
+    "version": "1.4.0.0",
     "name": "Play to XBMC",
     "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, SoundCloud and MixCloud content on XBMC.",
     "options_page": "options.html",
-    "permissions": [ "tabs", "http://*/*" ],
+    "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"
@@ -13,7 +13,7 @@
         "128": "images/tv.png"
     },
     "background": {
-        "scripts": ["js/shared.js", "js/background_scripts/background.js", "js/xbmc-helper.js", "js/jquery-1.7.2.min.js"]
+        "scripts": ["js/shared.js", "js/background_scripts/background.js", "js/xbmc-helper.js", "js/jquery-1.7.2.min.js", "js/background_scripts/context-menu.js"]
     },
     "content_scripts": [
         {

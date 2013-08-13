@@ -14,6 +14,17 @@ var actions = {
     "GoNext": "Player.GoNext"
 };
 
+var validUrlPatterns = [
+    ".*youtube.com/watch.*",
+    "^.*vimeo.com.*/\\d+$",
+    ".*collegehumor.com/[video|embed]+/\\d+/\\w+",
+    ".*dailymotion.com/video/.*",
+    ".*ebaumsworld.com/video/.*",
+    ".*soundcloud.com.*",
+    ".*mixcloud.com.*",
+    ".*liveleak.com/view.*"
+];
+
 function getURL() {
     var url;
     var port;
