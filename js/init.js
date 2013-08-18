@@ -37,5 +37,6 @@ $(document).ready( function() {
     } else if (hasBeenUpdated()) {
         $('#updateTooltip').css("display", "block");
     }
+    updateVersion();
 
 });

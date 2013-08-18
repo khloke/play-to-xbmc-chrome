@@ -29,7 +29,12 @@ function hasUrlSetup() {
 }
 
 function hasBeenUpdated() {
-    return currentVersion > localStorage["storage-version"];
+    var installedVersion = localStorage["installed-version"];
+    return !installedVersion || installedVersion < currentVersion;
+}
+
+function updateVersion() {
+    localStorage.setItem("installed-version", currentVersion);
 }
 
 function onChangeUpdate() {

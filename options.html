@@ -6,8 +6,12 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/shared.js"></script>
     <script type="text/javascript" src="js/options.js"></script>
+    <style>
+        .tab-pane {
+            height: 300px;
+        }
+    </style>
 </head>
-
 <body>
 <div class="row">
     <div class="span7">
@@ -82,6 +86,13 @@
                     </div>
                     <div class="tab-pane" id="changelist">
                         <div style="margin: 0 25px">
+                            <p>
+                                <strong>Update 1.4.1.0:</strong>
+                                <ul>
+                                    <li>Show a tooltip to inform the user that the extension has been updated.</li>
+                                    <li>Changelist now available in the options menu. If you haven't seen this list before, I recommend that you go through this list once. You might find a feature that you've been waiting for.</li>
+                                </ul>
+                            </p>
                             <p>
                                 <strong>Update 1.4.0.0:</strong>
                                 <ul>
@@ -158,8 +169,8 @@
                     </div>
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
+            <div class="control-group" style="border-top: #e5e5e5 solid 1px; ">
+                <div class="controls" style="margin-top: 30px;">
                     <a href="remote.html" class="btn">Back</a>
                     <button id="saveBtn" type="button" class="btn btn-primary">Save</button>
                 </div>
