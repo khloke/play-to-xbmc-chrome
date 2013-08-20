@@ -1,4 +1,4 @@
-var currentVersion = 1400;
+var currentVersion = 1410;
 
 var storageKeys = {
     "showRepeat": "showRepeat",
@@ -24,7 +24,8 @@ var validUrlPatterns = [
     ".*ebaumsworld.com/video/.*",
     ".*soundcloud.com.*",
     ".*mixcloud.com.*",
-    ".*liveleak.com/view.*"
+    ".*liveleak.com/view.*",
+    "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$"
 ];
 
 function getURL() {

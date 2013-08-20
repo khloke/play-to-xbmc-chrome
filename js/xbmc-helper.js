@@ -15,6 +15,7 @@ function getPluginPath(url, callback) {
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
+    var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
 
     switch (name) {
@@ -40,6 +41,11 @@ function getPluginPath(url, callback) {
 
         case 'ebaumsworld':
             videoId = url.match(ebaumsworldRegex)[3];
+            type = 'video';
+            break;
+
+        case 'twitch':
+            videoId = url.match(twitchtvRegex)[3];
             type = 'video';
             break;
 
@@ -84,6 +90,9 @@ function buildPluginPath(type, videoId) {
         case 'dailymotion':
         case 'ebaumsworld':
             return 'plugin://plugin.video.' + type + '_com/?url=' + videoId + '&mode=playVideo';
+
+        case 'twitch':
+            return 'plugin://plugin.video.twitch/playLive/' + videoId + '/';
 
         case 'soundcloud':
             return 'plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15';
