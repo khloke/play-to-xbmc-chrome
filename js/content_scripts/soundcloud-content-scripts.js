@@ -16,9 +16,13 @@ chrome.extension.onMessage.addListener(
 function initSoundcloudList(){
     var tabUrl = window.location.href;
     var queueListButton = $('#queueListButton');
-    getSoundcloudSetId(tabUrl, function(setId) {
-        getSoundcloudSetTrackIds(setId, function(){});
-    });
+    var soundcloudRegex = '(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+';
+    if (tabUrl.match(soundcloudRegex)) {
+        getSoundcloudSetId(tabUrl, function (setId) {
+            getSoundcloudSetTrackIds(setId, function () {
+            });
+        });
+    }
 }
 
 function getSoundcloudSetId(url, callback) {

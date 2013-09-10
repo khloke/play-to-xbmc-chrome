@@ -15,13 +15,9 @@ chrome.extension.onMessage.addListener(
  */
 function initYouTubeList(){
     var tabUrl = window.location.href;
-    var queueListButton = $('#queueListButton');
     var youTubeListId = getURLParameter(tabUrl, 'list');
     if (youTubeListId){
         extractVideosFromYouTubePlaylist(youTubeListId);
-        queueListButton.attr('disabled', false);
-        queueListButton.parent().removeClass('disabled');
-
     } else {
         queueListButton.attr('disabled', true);
     }

@@ -89,7 +89,6 @@ function queuePlaylist(caller) {
     turnOnLoading(caller);
     getCurrentUrl(function(tabUrl) {
         var name = getSiteName(tabUrl);
-
         switch (name) {
             case 'youtube':
                 queueYoutubeList(caller);
@@ -106,9 +105,11 @@ function queueYoutubeList(caller) {
     chrome.tabs.getSelected(null, function (tab) {
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.urlList) {
-                chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.urlList)}, function (response) {
-                    onChangeUpdate();
-                    turnOffLoading(caller);
+                getCurrentUrl(function(tabUrl) {
+                    chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
+                        onChangeUpdate();
+                        turnOffLoading(caller);
+                    });
                 });
             }
         });
@@ -254,6 +255,7 @@ function initVideoButton() {
     chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
         var valid = validUrl(url);
+        var validPlaylist = validPlaylistUrl(url);
         // if valid, enable buttons
         if (valid) {
             $(".disabled-btn").each(function () {
@@ -262,6 +264,12 @@ function initVideoButton() {
             $(".disabled-link").each(function () {
                 $(this).removeClass('disabled')
             });
+        }
+
+        if (validPlaylist) {
+            var queueListButton = $('#queueListButton');
+            queueListButton.attr('disabled', false);
+            queueListButton.parent().removeClass('disabled');
         }
     });
 }

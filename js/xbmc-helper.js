@@ -213,6 +213,17 @@ function validUrl(url) {
     return false;
 }
 
+function validPlaylistUrl(url) {
+    for (var i = 0; i < validPlaylistPatterns.length; i++) {
+        var pattern = validPlaylistPatterns[i];
+        if (url.match(pattern)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function clearPlaylist(callback) {
     var clearVideoPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Clear", "params":{"playlistid":1}, "id": 1}';
     var clearAudioPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Clear", "params":{"playlistid":0}, "id": 1}';

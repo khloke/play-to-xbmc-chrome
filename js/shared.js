@@ -1,4 +1,4 @@
-var currentVersion = 1410;
+var currentVersion = 1420;
 
 var storageKeys = {
     "showRepeat": "showRepeat",
@@ -26,6 +26,12 @@ var validUrlPatterns = [
     ".*mixcloud.com.*",
     ".*liveleak.com/view.*",
     "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$"
+];
+
+var validPlaylistPatterns = [
+    ".*youtube.com/playlist.*list=.*",
+    "(https|http)://(www\.)?youtube.com/watch?.*list=.+",
+    "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
 ];
 
 function getURL() {
