@@ -3,11 +3,15 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
+function getSiteName(url) {
+    var typeRegex = '(https|http)://(www\.)?([^\.]+)\.([^/]+).+';
+    return url.match(typeRegex)[3];
+}
+
 function getPluginPath(url, callback) {
     var videoId;
 
-    var typeRegex = '(https|http)://(www\.)?([^\.]+)\.([^/]+).+';
-    var name = url.match(typeRegex)[3];
+    var name = getSiteName(url);
     var type;
 
     var youtubeRegex = 'v=([^&]+)';
@@ -115,20 +119,35 @@ function queueItem(url, callback) {
     });
 }
 
-function queueItems(urlList, callback) {
+function queueItems(tabUrl, urlList, callback) {
     var contentArr = [];
+    var name = getSiteName(tabUrl);
     $.each(urlList, function (i, item) {
         var url = item;
-        getPluginPath(url, function (contentType, pluginPath) {
-            var element = {"contentType": contentType, "pluginPath": pluginPath};
-            contentArr.push(element);
-            // do we have the whole items.
-            if (contentArr.length == urlList.length) {
-                addItemsToPlaylist(contentArr, function (result) {
-                    callback(result);
+        switch (name) {
+            case 'youtube':
+                getPluginPath(url, function (contentType, pluginPath) {
+                    var element = {"contentType": contentType, "pluginPath": pluginPath};
+                    contentArr.push(element);
+                    // do we have the whole items.
+                    if (contentArr.length == urlList.length) {
+                        addItemsToPlaylist(contentArr, function (result) {
+                            callback(result);
+                        });
+                    }
                 });
-            }
-        });
+                break;
+
+            case 'soundcloud':
+                var element = {"contentType": 'audio', "pluginPath": buildPluginPath('soundcloud', url)};
+                contentArr.push(element);
+                if (contentArr.length == urlList.length) {
+                    addItemsToPlaylist(contentArr, function (result) {
+                        callback(result);
+                    });
+                }
+                break;
+        }
     });
 }
 

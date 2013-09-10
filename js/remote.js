@@ -85,11 +85,48 @@ function queueCurrentUrl(caller) {
 
 }
 
-function queueYoutubeList(caller) {
+function queuePlaylist(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'queueList',urlList:urlList}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    getCurrentUrl(function(tabUrl) {
+        var name = getSiteName(tabUrl);
+
+        switch (name) {
+            case 'youtube':
+                queueYoutubeList(caller);
+                break;
+
+            case 'soundcloud':
+                queueSoundcloudSet(caller);
+                break;
+        }
+    });
+}
+
+function queueYoutubeList(caller) {
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
+            if (response && response.urlList) {
+                chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.urlList)}, function (response) {
+                    onChangeUpdate();
+                    turnOffLoading(caller);
+                });
+            }
+        });
+    });
+}
+
+function queueSoundcloudSet(caller) {
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
+            if (response && response.trackIds) {
+                getCurrentUrl(function(tabUrl) {
+                    chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
+                        onChangeUpdate();
+                        turnOffLoading(caller);
+                    });
+                });
+            }
+        });
     });
 }
 
@@ -348,42 +385,6 @@ function initProfiles() {
 
         $('#profileRow').show();
     }
-}
-
-/**
- * if this is youtube page which is part of a playlist , show all videos and the option to queue them all
- *
- */
-function initYouTubeList(){
-    getCurrentUrl(function(tabUrl){
-        var queueListButton = $('#queueListButton');
-        var youTubeListId = getURLParameter(tabUrl, 'list');
-        if (youTubeListId){
-            extractVideosFromYouTubePlaylist(youTubeListId);
-            queueListButton.attr('disabled', false);
-            queueListButton.parent().removeClass('disabled');
-
-        } else {
-            queueListButton.attr('disabled', true);
-        }
-    });
-}
-
-function extractVideosFromYouTubePlaylist(playListID) {
-    var playListURL = 'http://gdata.youtube.com/feeds/api/playlists/' + playListID + '?v=2&alt=json';
-    var videoURL = 'http://www.youtube.com/watch?v=';
-    $.getJSON(playListURL, function (data) {
-        //GLOBAL
-        urlList = [];
-        $.each(data.feed.entry, function (i, item) {
-            var feedURL = item.link[1].href;
-            var fragments = feedURL.split("/");
-            var videoID = fragments[fragments.length - 2];
-            var url = videoURL + videoID;
-
-            urlList.push(url);
-        });
-    });
 }
 
 function initKeyBindings() {

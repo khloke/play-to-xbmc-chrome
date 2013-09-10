@@ -1,27 +1,47 @@
 
+initYouTubeList();
+
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.action == "getPlaylistVideoIds") {
-
-            var videoIds = [];
-
-            $('li.video-list-item').each(
-                function (index) {
-                    var thisElement = $(this);
-                    var videoId = thisElement.attr('data-video-id');
-                    if (videoId) {
-                        videoIds.push(videoId);
-                    }
-                }
-            );
-
-            sendResponse({video_ids: JSON.stringify(videoIds)});
+        if (request.action == "getPlaylistUrls") {
+            sendResponse({urlList: JSON.stringify(urlList)});
         }
     }
 );
 
-function extractId(srcUrl) {
-    var matches = srcUrl.match('/vi\/(.*)\/default\\.jpg');
-    return matches[1];
+/**
+ * if this is youtube page which is part of a playlist , show all videos and the option to queue them all
+ *
+ */
+function initYouTubeList(){
+    var tabUrl = window.location.href;
+    var queueListButton = $('#queueListButton');
+    var youTubeListId = getURLParameter(tabUrl, 'list');
+    if (youTubeListId){
+        extractVideosFromYouTubePlaylist(youTubeListId);
+        queueListButton.attr('disabled', false);
+        queueListButton.parent().removeClass('disabled');
+
+    } else {
+        queueListButton.attr('disabled', true);
+    }
 }
 
+function extractVideosFromYouTubePlaylist(playListID) {
+    var playListURL = 'http://gdata.youtube.com/feeds/api/playlists/' + playListID + '?v=2&alt=json';
+    var videoURL = 'http://www.youtube.com/watch?v=';
+    $.getJSON(playListURL, function (data) {
+        //GLOBAL
+        urlList = [];
+        $.each(data.feed.entry, function (i, item) {
+            var feedURL = item.link[1].href;
+            var fragments = feedURL.split("/");
+            var videoID = fragments[fragments.length - 2];
+            var url = videoURL + videoID;
+
+            urlList.push(url);
+        });
+    });
+}
+
+var urlList = [];

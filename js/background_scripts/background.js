@@ -13,7 +13,7 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
             case 'queueList':
-                queueList(request.urlList, function () {
+                queueList(request.url, request.urlList, function () {
                     sendResponse({response: "OK"});
                 });
                 break;
@@ -73,12 +73,12 @@ function queueCurrentUrl(callback) {
     });
 }
 
-function queueList(urlList, callback) {
+function queueList(tabUrl, urlList, callback) {
     if (urlList.length === 0) {
         callback();
         return;
     }
-    queueItems(urlList, function (result) {
+    queueItems(tabUrl, urlList, function (result) {
         callback();
 
     });
