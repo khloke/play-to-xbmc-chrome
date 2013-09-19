@@ -75,6 +75,11 @@ function getPluginPath(url, callback) {
             type = 'audio';
             break;
 
+        case 'hulu':
+            videoId = url;
+            type = 'video';
+            break;
+
         default:
             console.log('An error has occurred while attempting to obtain content id.');
     }
@@ -103,6 +108,9 @@ function buildPluginPath(type, videoId) {
 
         case 'mixcloud':
             return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
+
+        case 'hulu':
+            return 'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(videoId) + '\\"';
 
         default:
             return '';
