@@ -21,6 +21,7 @@ function getPluginPath(url, callback) {
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
     var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
+    var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
 
     switch (name) {
         case 'youtube':
@@ -84,10 +85,23 @@ function getPluginPath(url, callback) {
                     }
                 });
             });
+            break;
 
         case 'hulu':
-            videoId = url;
-            type = 'video';
+            videoId = url.match(huluRegex)[3];
+            chrome.tabs.getSelected(null, function (tab) {
+                chrome.tabs.sendMessage(tab.id, {action: 'getContentId'}, function (response) {
+                    if (response) {
+                        var contentId = JSON.parse(response.contentId);
+                        chrome.tabs.sendMessage(tab.id, {action: 'getEid'}, function (response2) {
+                            if (response2) {
+                                var eId = JSON.parse(response2.eid);
+                                callback('video', 'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(contentId) + '\\"&videoid=\\"' + encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"');
+                            }
+                        })
+                    }
+                });
+            });
             break;
 
         default:
@@ -118,9 +132,6 @@ function buildPluginPath(type, videoId) {
 
         case 'mixcloud':
             return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
-
-        case 'hulu':
-            return 'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(videoId) + '\\"';
 
         default:
             return '';
@@ -190,6 +201,7 @@ function ajaxPost(data, callback, timeout) {
         type: 'POST',
         url: fullPath,
         success: function (response) {
+            console.log(response);
             callback(response);
         },
         contentType: "application/json",
