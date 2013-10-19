@@ -75,6 +75,17 @@ function getPluginPath(url, callback) {
             type = 'audio';
             break;
 
+        case 'khanacademy':
+            chrome.tabs.getSelected(null, function (tab) {
+                chrome.tabs.sendMessage(tab.id, {action: 'getYoutubeId'}, function (response) {
+                    if (response) {
+                        var youtubeId = JSON.parse(response.youtubeId);
+                        callback('video', buildPluginPath('youtube', youtubeId));
+                    }
+                });
+            });
+
+
         default:
             console.log('An error has occurred while attempting to obtain content id.');
     }
@@ -222,6 +233,16 @@ function validPlaylistUrl(url) {
     }
 
     return false;
+}
+
+function validPage(callback) {
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.sendMessage(tab.id, {action: 'getYoutubeId'}, function (response) {
+            if (response) {
+                callback();
+            }
+        });
+    });
 }
 
 function clearPlaylist(callback) {

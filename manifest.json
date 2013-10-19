@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "version": "1.4.2.0",
     "name": "Play to XBMC",
-    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, Twitch.tv, SoundCloud and MixCloud content on XBMC.",
+    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, Twitch.tv, Khan Academy, SoundCloud and MixCloud content on XBMC.",
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {
@@ -24,5 +24,8 @@
     }, {
         "matches": ["*://soundcloud.com/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
+    }, {
+        "matches": ["*://*.khanacademy.org/*"],
+        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
     }]
 }

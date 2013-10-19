@@ -251,6 +251,15 @@ function initJsonVersion() {
     });
 }
 
+function activateVideoButton() {
+    $(".disabled-btn").each(function () {
+        $(this).removeAttr('disabled')
+    });
+    $(".disabled-link").each(function () {
+        $(this).removeClass('disabled')
+    });
+}
+
 function initVideoButton() {
     chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
@@ -258,12 +267,7 @@ function initVideoButton() {
         var validPlaylist = validPlaylistUrl(url);
         // if valid, enable buttons
         if (valid) {
-            $(".disabled-btn").each(function () {
-                $(this).removeAttr('disabled')
-            });
-            $(".disabled-link").each(function () {
-                $(this).removeClass('disabled')
-            });
+            activateVideoButton();
         }
 
         if (validPlaylist) {
@@ -271,6 +275,10 @@ function initVideoButton() {
             queueListButton.attr('disabled', false);
             queueListButton.parent().removeClass('disabled');
         }
+
+        validPage(function() {
+            activateVideoButton();
+        });
     });
 }
 

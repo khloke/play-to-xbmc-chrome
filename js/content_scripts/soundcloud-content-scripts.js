@@ -9,10 +9,6 @@ chrome.extension.onMessage.addListener(
     }
 );
 
-/**
- * if this is youtube page which is part of a playlist , show all videos and the option to queue them all
- *
- */
 function initSoundcloudList(){
     var tabUrl = window.location.href;
     var queueListButton = $('#queueListButton');
