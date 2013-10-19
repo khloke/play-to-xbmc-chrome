@@ -19,7 +19,7 @@ function getPluginPath(url, callback) {
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
-    var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$';
+    var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
     var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
 

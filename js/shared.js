@@ -25,7 +25,7 @@ var validUrlPatterns = [
     ".*soundcloud.com.*",
     ".*mixcloud.com.*",
     ".*liveleak.com/view.*",
-    "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+)/*$",
+    "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
     ".*hulu.com/watch.*"
 ];
 
