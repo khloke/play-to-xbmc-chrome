@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "version": "1.4.2.0",
     "name": "Play to XBMC",
-    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, Twitch.tv, Khan Academy, Hulu, SoundCloud and MixCloud content on XBMC.",
+    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, Twitch.tv, Khan Academy, Hulu and more on XBMC.",
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {
