@@ -1,5 +1,5 @@
 function initContextMenu() {
-    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*watch*'];
+    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*watch*', 'magnet:*'];
 
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({

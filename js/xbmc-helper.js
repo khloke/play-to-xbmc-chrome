@@ -4,6 +4,9 @@
  */
 
 function getSiteName(url) {
+    if (url.match("magnet:")) {
+        return "magnet"
+    }
     var typeRegex = '(https|http)://(www\.)?([^\.]+)\.([^/]+).+';
     return url.match(typeRegex)[3];
 }
@@ -104,6 +107,11 @@ function getPluginPath(url, callback) {
             });
             break;
 
+        case 'magnet':
+            videoId = url;
+            type = 'video';
+            break;
+
         default:
             console.log('An error has occurred while attempting to obtain content id.');
     }
@@ -132,6 +140,9 @@ function buildPluginPath(type, videoId) {
 
         case 'mixcloud':
             return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
+
+        case 'magnet':
+            return 'plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(videoId);
 
         default:
             return '';
