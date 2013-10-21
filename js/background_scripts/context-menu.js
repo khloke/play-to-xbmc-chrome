@@ -1,5 +1,5 @@
 function initContextMenu() {
-    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*'];
+    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*watch*'];
 
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
@@ -28,7 +28,6 @@ function initContextMenu() {
             if (url.match(googleRedirectRegex)) {
                 url = parseGoogleRedirectUrl(url);
             }
-            queue
             queueItem(url, function () {});
         }
     });
@@ -44,7 +43,6 @@ function initContextMenu() {
                     if (url.match(googleRedirectRegex)) {
                         url = parseGoogleRedirectUrl(url);
                     }
-                    queue
                     insertItem(url, position + 1, function () {});
                 });
             });

@@ -1,4 +1,4 @@
-var currentVersion = 1421;
+var currentVersion = 1422;
 
 var storageKeys = {
     "showRepeat": "showRepeat",
