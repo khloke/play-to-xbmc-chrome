@@ -18,8 +18,6 @@ function initYouTubeList(){
     var youTubeListId = getURLParameter(tabUrl, 'list');
     if (youTubeListId){
         extractVideosFromYouTubePlaylist(youTubeListId);
-    } else {
-        queueListButton.attr('disabled', true);
     }
 }
 

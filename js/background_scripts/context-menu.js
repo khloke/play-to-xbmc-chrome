@@ -1,5 +1,5 @@
 function initContextMenu() {
-    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*'];
+    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*'];
 
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
@@ -9,7 +9,11 @@ function initContextMenu() {
         onclick: function(info) {
             doAction(actions.Stop, function () {
                 clearPlaylist(function() {
-                    queueItem(info.linkUrl, function () {});
+                    var url = info.linkUrl;
+                    if (url.match(googleRedirectRegex)) {
+                        url = parseGoogleRedirectUrl(url);
+                    }
+                    queueItem(url, function () {});
                 })
             });
         }
@@ -20,7 +24,12 @@ function initContextMenu() {
         contexts: ["link"],
         targetUrlPatterns: targetPatterns,
         onclick: function(info) {
-            queueItem(info.linkUrl, function () {});
+            var url = info.linkUrl;
+            if (url.match(googleRedirectRegex)) {
+                url = parseGoogleRedirectUrl(url);
+            }
+            queue
+            queueItem(url, function () {});
         }
     });
 
@@ -31,11 +40,29 @@ function initContextMenu() {
         onclick: function(info) {
             getCurrentUrl(function (tabUrl) {
                 getPlaylistPosition(function (position) {
-                    insertItem(info.linkUrl, position + 1, function () {});
+                    var url = info.linkUrl;
+                    if (url.match(googleRedirectRegex)) {
+                        url = parseGoogleRedirectUrl(url);
+                    }
+                    queue
+                    insertItem(url, position + 1, function () {});
                 });
             });
         }
     });
+}
+
+var googleRedirectRegex = '(https|http)://(www\.)?google.com.*/url?.*youtube.*';
+
+function parseGoogleRedirectUrl(aUrl) {
+    var split = aUrl.split('&');
+    for (var i = 0; i < split.length; i++) {
+        var param = split[i];
+        if (param.indexOf('url') == 0) {
+            var url = param.split('=')[1];
+            return decodeURIComponent(url);
+        }
+    }
 }
 
 initContextMenu();
