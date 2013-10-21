@@ -18,7 +18,7 @@ var actions = {
 
 var validUrlPatterns = [
     ".*youtube.com/watch.*",
-    "^.*vimeo.com.*/\\d+$",
+    "^.*vimeo.com.*/\\d+.*$",
     ".*collegehumor.com/[video|embed]+/\\d+/\\w+",
     ".*dailymotion.com/video/.*",
     ".*ebaumsworld.com/video/.*",

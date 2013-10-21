@@ -15,7 +15,7 @@ function getPluginPath(url, callback) {
     var type;
 
     var youtubeRegex = 'v=([^&]+)';
-    var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+)$';
+    var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
