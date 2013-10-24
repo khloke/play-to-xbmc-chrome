@@ -265,14 +265,18 @@ function validPlaylistUrl(url) {
     return false;
 }
 
-function validPage(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.tabs.sendMessage(tab.id, {action: 'getYoutubeId'}, function (response) {
-            if (response) {
-                callback();
-            }
+function validVideoPage(url, callback) {
+    if (validUrl(url)) {
+        callback();
+    } else {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
+                if (response) {
+                    callback();
+                }
+            });
         });
-    });
+    }
 }
 
 function clearPlaylist(callback) {

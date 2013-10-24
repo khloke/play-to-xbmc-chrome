@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "version": "1.4.2.2",
+    "version": "1.4.3.0",
     "name": "Play to XBMC",
-    "description": "Play YouTube, Vimeo, DailyMotion, CollegeHumor, eBaumsWorld, LiveLeak, Twitch.tv, Khan Academy, Hulu and more on XBMC.",
+    "description": "Play, queue and control your favourite Internet media on XBMC.",
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {

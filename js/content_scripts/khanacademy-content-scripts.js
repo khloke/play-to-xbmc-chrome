@@ -4,7 +4,14 @@ init();
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.action == "getYoutubeId") {
+        if (request.action == "isValid") {
+            if (youtubeid) {
+                sendResponse({valid: JSON.stringify(true)});
+            } else {
+                sendResponse({valid: JSON.stringify(false)})
+            }
+
+        } else if (request.action == "getYoutubeId") {
             if (youtubeid) {
                 sendResponse({youtubeId: JSON.stringify(youtubeid)});
             }
