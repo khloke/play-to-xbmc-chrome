@@ -23,6 +23,7 @@ var validUrlPatterns = [
     ".*dailymotion.com/video/.*",
     ".*ebaumsworld.com/video/.*",
     ".*soundcloud.com.*",
+    ".*mycloudplayers.com.*",
     ".*mixcloud.com.*",
     ".*liveleak.com/view.*",
     "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
@@ -32,7 +33,9 @@ var validUrlPatterns = [
 var validPlaylistPatterns = [
     ".*youtube.com/playlist.*list=.*",
     "(https|http)://(www\.)?youtube.com/watch?.*list=.+",
-    "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
+    "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+",
+    "(https|http)://(www\.)?mycloudplayers.com/?spid=[^_&/#\?]+",
+    "(https|http)://(www\.)?mycloudplayers.com/?pid=[^_&/#\?]+"
 ];
 
 function getURL() {

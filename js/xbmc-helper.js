@@ -13,11 +13,12 @@ function getSiteName(url) {
 
 function getPluginPath(url, callback) {
     var videoId;
-
+debugger;
     var name = getSiteName(url);
     var type;
 
     var youtubeRegex = 'v=([^&]+)';
+    var mycloudplayersPlayRegex = 'play=([^&]+)';
     var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
@@ -61,6 +62,12 @@ function getPluginPath(url, callback) {
             getSoundcloudTrackId(url, function (trackId) {
                 callback('audio', buildPluginPath(name, trackId));
             });
+            return;
+
+		case 'mycloudplayers':
+			var trackId = url.match(mycloudplayersPlayRegex) && url.match(mycloudplayersPlayRegex)[1];
+			if (trackId)
+				callback('audio', buildPluginPath('soundcloud', trackId));
             return;
 
         case 'liveleak':
