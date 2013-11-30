@@ -13,8 +13,10 @@ function getSiteName(url) {
 
 function getPluginPath(url, callback) {
     var videoId;
+
     var name = getSiteName(url);
     var type;
+
     var youtubeRegex = 'v=([^&]+)';
     var mycloudplayersPlayRegex = 'play=([^&]+)';
     var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$';
