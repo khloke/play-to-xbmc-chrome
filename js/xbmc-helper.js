@@ -13,7 +13,6 @@ function getSiteName(url) {
 
 function getPluginPath(url, callback) {
     var videoId;
-debugger;
     var name = getSiteName(url);
     var type;
 
