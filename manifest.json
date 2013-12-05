@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.4.3.0",
+    "version": "1.5.0.0",
     "name": "Play to XBMC",
     "description": "Play, queue and control your favourite Internet media on XBMC.",
     "options_page": "options.html",
@@ -16,6 +16,9 @@
         "scripts": ["js/shared.js", "js/background_scripts/background.js", "js/xbmc-helper.js", "js/jquery-1.7.2.min.js", "js/background_scripts/context-menu.js"]
     },
     "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["js/content_scripts/context-menu-content-scripts.js"]
+    },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]
     }, {
