@@ -28,6 +28,9 @@
         "matches": ["*://soundcloud.com/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
     }, {
+        "matches": ["*://mycloudplayers.com/*"],
+        "js": ["js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
+    }, {
         "matches": ["*://*.khanacademy.org/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
     }, {

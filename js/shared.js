@@ -23,6 +23,7 @@ var validUrlPatterns = [
     ".*dailymotion.com/video/.*",
     ".*ebaumsworld.com/video/.*",
     ".*soundcloud.com.*",
+    ".*mycloudplayers.com.*",
     ".*mixcloud.com.*",
     ".*liveleak.com/view.*",
     "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
