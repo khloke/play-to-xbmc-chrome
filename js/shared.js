@@ -27,7 +27,8 @@ var validUrlPatterns = [
     ".*mixcloud.com.*",
     ".*liveleak.com/view.*",
     "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
-    ".*hulu.com/watch.*"
+    ".*hulu.com/watch.*",
+	".*ardmediathek.de/.*documentId=.*"
 ];
 
 var validPlaylistPatterns = [
