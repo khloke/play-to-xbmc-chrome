@@ -26,7 +26,7 @@ function getPluginPath(url, callback) {
     var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
     var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
-	var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/([^_&/#\?]+)?documentId=([^_&/#\?]+)';
+	var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/.*?documentId=([^_&/#\?]+)';
 	
     switch (name) {
         case 'youtube':
@@ -121,7 +121,7 @@ function getPluginPath(url, callback) {
             break;
 		
 		case 'ardmediathek':
-			videoId = url.match(daserstemediathekRegex)[4];
+			videoId = url;
 			type = 'video';
 			break;
 			
@@ -158,8 +158,7 @@ function buildPluginPath(type, videoId) {
             return 'plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(videoId);
 	
 		case 'ardmediathek':
-			return 'plugin://plugin.video.ardmediathek_de/playVideo/' + videoId;
-		
+			return 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(videoId);
         default:
             return '';
     }
