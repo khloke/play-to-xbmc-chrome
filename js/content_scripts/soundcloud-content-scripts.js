@@ -53,27 +53,7 @@ function getSoundcloudSetTrackIds(setId, callback) {
 
             callback(trackIds);
         }
-//        $.each(result.tracks, function (i, item) {
-//            trackIds.push(item.id);
-//        });
     });
-
-//    jQuery.ajax({
-//        type: 'POST',
-//        url: apiUrl,
-//        success: function (result) {
-//            if (result && result.tracks) {
-//                var tracksJson = result.tracks;
-//                for (var i in tracksJson) {
-//                    if (tracksJson.hasOwnProperty(i)) {
-//                        trackIds.push(tracksJson[i].id);
-//                    }
-//                }
-//
-//                callback(trackIds);
-//            }
-//        }
-//    });
 }
 
 var trackIds = [];

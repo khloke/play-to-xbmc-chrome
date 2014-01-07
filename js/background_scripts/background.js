@@ -1,6 +1,16 @@
 chrome.extension.onMessage.addListener(
     function (request, sender, sendResponse) {
         switch (request.action) {
+            case 'isAvailable':
+                getXbmcJsonVersion(function (version) {
+                    if (version == null) {
+                        sendResponse({response: "NOT_DETECTED"});
+                    } else {
+                        sendResponse({response: "OK"});
+                    }
+                });
+                break;
+
             case 'playNow':
                 playCurrentUrl(function () {
                     sendResponse({response: "OK"});

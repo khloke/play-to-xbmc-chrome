@@ -60,19 +60,32 @@ function concatMusicExtensions() {
     return concatSelector;
 }
 
-addContextMenuTo(concatMusicExtensions(),
-    [{
-        title: "Play now",
-        contexts: ["link"],
-        onclick: 'musicPlayNow'
-    },{
-        title: "Queue",
-        contexts: ["link"],
-        onclick: 'musicPlayNow'
-    },{
-        title: "Play this Next",
-        contexts: ["link"],
-        onclick: 'musicPlayNow'
-    }]
-);
-//addContextM
+//function checkConnectivity(callback) {
+//    chrome.extension.sendMessage({action: 'isAvailable'}, function (response) {
+//        if (response.response == 'OK') {
+//            callback(true);
+//        } else {
+//            callback(false);
+//        }
+//    });
+//}
+//
+//checkConnectivity(function(isAvailable) {
+//    if (isAvailable) {
+//        addContextMenuTo(concatMusicExtensions(),
+//            [{
+//                title: "Play now",
+//                contexts: ["link"],
+//                onclick: 'musicPlayNow'
+//            },{
+//                title: "Queue",
+//                contexts: ["link"],
+//                onclick: 'musicPlayNow'
+//            },{
+//                title: "Play this Next",
+//                contexts: ["link"],
+//                onclick: 'musicPlayNow'
+//            }]
+//        );
+//    }
+//});

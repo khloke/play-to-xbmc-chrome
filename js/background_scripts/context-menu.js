@@ -81,29 +81,48 @@ function removeContextMenus(tabId) {
 // chrome.contextMenus onclick handlers:
 var clickHandlers = {
     'musicPlayNow': function(info, tab) {
-        doAction(actions.Stop, function () {
-            clearPlaylist(function () {
-                var url = info.linkUrl;
-                addItemsToPlaylist([{"contentType": 'audio', "pluginPath": url}], function(){});
-            })
+        getXbmcJsonVersion(function (version) {
+            if (version) {
+                doAction(actions.Stop, function () {
+                    clearPlaylist(function () {
+                        var url = info.linkUrl;
+                        addItemsToPlaylist([
+                            {"contentType": 'audio', "pluginPath": url}
+                        ], function () {
+                        });
+                    })
+                })
+            }
         });
     },
     'musicQueue': function(info, tab) {
-        var url = info.linkUrl;
-        if (url.match(googleRedirectRegex)) {
-            url = parseGoogleRedirectUrl(url);
-        }
-        addItemsToPlaylist([{"contentType": 'audio', "pluginPath": url}], function(){});
-    },
-    'musicPlayNext': function(info, tab) {
-        getCurrentUrl(function (tabUrl) {
-            getPlaylistPosition(function (position) {
+        getXbmcJsonVersion(function (version) {
+            if (version) {
                 var url = info.linkUrl;
                 if (url.match(googleRedirectRegex)) {
                     url = parseGoogleRedirectUrl(url);
                 }
-                insertItemToPlaylist('audio', url, position+1, function() {});
-            });
+                addItemsToPlaylist([
+                    {"contentType": 'audio', "pluginPath": url}
+                ], function () {
+                });
+            }
+        });
+    },
+    'musicPlayNext': function(info, tab) {
+        getXbmcJsonVersion(function (version) {
+            if (version) {
+                getCurrentUrl(function (tabUrl) {
+                    getPlaylistPosition(function (position) {
+                        var url = info.linkUrl;
+                        if (url.match(googleRedirectRegex)) {
+                            url = parseGoogleRedirectUrl(url);
+                        }
+                        insertItemToPlaylist('audio', url, position + 1, function () {
+                        });
+                    });
+                });
+            }
         });
     }
 };
