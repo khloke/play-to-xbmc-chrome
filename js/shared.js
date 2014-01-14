@@ -1,4 +1,4 @@
-var currentVersion = 1500;
+var currentVersion = 1510;
 
 var storageKeys = {
     "showRepeat": "showRepeat",
@@ -19,6 +19,7 @@ var actions = {
 var validUrlPatterns = [
     ".*youtube.com/watch.*",
     "^.*vimeo.com.*/\\d+.*$",
+    "^.*freeride.se.*/\\d+.*$",
     ".*collegehumor.com/[video|embed]+/\\d+/\\w+",
     ".*dailymotion.com/video/.*",
     ".*ebaumsworld.com/video/.*",

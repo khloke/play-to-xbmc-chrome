@@ -20,6 +20,7 @@ function getPluginPath(url, callback) {
     var youtubeRegex = 'v=([^&]+)';
     var mycloudplayersPlayRegex = 'play=([^&]+)';
     var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$';
+    var freerideRegex = '^(https|http)://(www\.)?freeride.se.*/(\\d+).*$';
     var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
     var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
     var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
@@ -37,6 +38,11 @@ function getPluginPath(url, callback) {
         case 'vimeo':
             videoId = url.match(vimeoRegex)[3];
             type = 'video';
+            break;
+
+        case 'freeride':
+            videoId = url.match(freerideRegex)[3];
+            callback('video', 'http://v.freeride.se/encoded/mp4-hd/' + videoId + '.mp4');
             break;
 
         case 'collegehumor':
