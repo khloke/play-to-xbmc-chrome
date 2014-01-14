@@ -36,8 +36,5 @@
     }, {
         "matches": ["*://*.hulu.com/watch/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
-    }, {
-        "matches": ["*://*.ardmediathek.de/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/daserstemediathek-content-scripts.js"]
     }]
 }
