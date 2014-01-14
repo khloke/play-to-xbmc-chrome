@@ -26,7 +26,8 @@ function getPluginPath(url, callback) {
     var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
     var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
-
+	var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/.*?documentId=([^_&/#\?]+)';
+	
     switch (name) {
         case 'youtube':
             videoId = url.match(youtubeRegex)[1];
@@ -118,7 +119,12 @@ function getPluginPath(url, callback) {
             videoId = url;
             type = 'video';
             break;
-
+		
+		case 'ardmediathek':
+			videoId = url;
+			type = 'video';
+			break;
+			
         default:
             console.log('An error has occurred while attempting to obtain content id.');
     }
@@ -150,7 +156,9 @@ function buildPluginPath(type, videoId) {
 
         case 'magnet':
             return 'plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(videoId);
-
+	
+		case 'ardmediathek':
+			return 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(videoId);
         default:
             return '';
     }
