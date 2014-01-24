@@ -90,6 +90,8 @@
                             <p>
                                 <strong>Update 1.5.1.0:</strong>
                                 <ul>
+                                    <li>With all the Chrome Extension adware news around, I thought I'd make this clear. I will never put ads in this extension, even if no one ever donates.</li>
+                                    <li>Added context menu support for direct video links!! (Let me know if I missed any file extensions via email)</li>
                                     <li>Added support for Freeride.se videos.</li>
                                     <li>Added support for ARD Mediathek videos. (Code work was done by Sebastian Monzel, everyone say thanks!)</li>
                                 </ul>
@@ -211,7 +213,16 @@
                         <div>If you like what I did and would like to buy me a coffee, <br/>you can send me some bitcoins to the address below!</div>
                         <div><img src="images/bitcoin_qr.png" height="200"></div>
                         <div>1GcpoegwrJv7VBw51JCbbmiY6oun7kcn9c</div>
-                        <div>You can also donate to my PayPal account: khloke@gmail.com!</div>
+                        <div>
+                            Or you could do it via PayPal:
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                <input type="hidden" name="cmd" value="_s-xclick">
+                                <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHRwYJKoZIhvcNAQcEoIIHODCCBzQCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYAGkbWt45jJovCBuzEYtYWrgd9VjRBA0hgP6SIRUKjUsX5nvyxMwduTYd6rS5qwCl9UV8VQpkusEcXUj9wRgRZWjfcB4w6POo8a5QZ+jhvZvUbCsQ6LevfuFth69TC6LheGIrujpMxeK1JTplNjqaEUDS2qPKFWTAFXUL2vrN/lMzELMAkGBSsOAwIaBQAwgcQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQI37QkT3oZCCmAgaAAsuyS7bH14okSVpHYlflAQ5MvCQrcV3XsLFzVJgKPlLOv4cWXAlFyI5vgY3cLUhTKryNduwokYc9OcBvXCCvihr2iGAVLR6wdzjiu8ahRYrLdGAllBEgilyXI+jIj8UfX5USZTr3+s0clDaj/DIiJx2IWzSNUhi97brdd78XOoqNPsRV1BZvtHRoD3Jgb9pmLvc7JKuLSZqH2oBnXAyifoIIDhzCCA4MwggLsoAMCAQICAQAwDQYJKoZIhvcNAQEFBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMB4XDTA0MDIxMzEwMTMxNVoXDTM1MDIxMzEwMTMxNVowgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBR07d/ETMS1ycjtkpkvjXZe9k+6CieLuLsPumsJ7QC1odNz3sJiCbs2wC0nLE0uLGaEtXynIgRqIddYCHx88pb5HTXv4SZeuv0Rqq4+axW9PLAAATU8w04qqjaSXgbGLP3NmohqM6bV9kZZwZLR/klDaQGo1u9uDb9lr4Yn+rBQIDAQABo4HuMIHrMB0GA1UdDgQWBBSWn3y7xm8XvVk/UtcKG+wQ1mSUazCBuwYDVR0jBIGzMIGwgBSWn3y7xm8XvVk/UtcKG+wQ1mSUa6GBlKSBkTCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb22CAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCBXzpWmoBa5e9fo6ujionW1hUhPkOBakTr3YCDjbYfvJEiv/2P+IobhOGJr85+XHhN0v4gUkEDI8r2/rNk1m0GA8HKddvTjyGw/XqXa+LSTlDYkqI8OwR8GEYj4efEtcRpRYBxV8KxAW93YDWzFGvruKnnLbDAF6VR5w/cCMn5hzGCAZowggGWAgEBMIGUMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbQIBADAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTQwMTIwMTIzMTQ4WjAjBgkqhkiG9w0BCQQxFgQU8qRUkO4XqK/o6H37geTVlfpyCpwwDQYJKoZIhvcNAQEBBQAEgYCxG7tTzN1pghJ147RMKHVSlAXJQHwm8DvSWyqEjfUe3HTFKYeJUlG63ICte0LD2sRQugTNL6DIpSV8Lm/0OaNFyNMpn7eGUwiu01Dt0VMNRG2ug9r7/5UQdTKJvSLQUJpuMHu2KT/YqfQD///AMqeklYeq3bSCB/hbQG+gUxwGtw==-----END PKCS7-----
+">
+                                <input type="image" src="https://www.paypalobjects.com/en_AU/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+                                <img alt="" border="0" src="https://www.paypalobjects.com/en_AU/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
