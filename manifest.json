@@ -17,7 +17,7 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/content_scripts/context-menu-content-scripts.js"]
+        "js": ["js/shared.js", "js/content_scripts/context-menu-content-scripts.js"]
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]

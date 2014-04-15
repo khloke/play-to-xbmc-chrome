@@ -171,13 +171,27 @@ function buildPluginPath(type, videoId) {
 }
 
 function queueItem(url, callback) {
-    getPluginPath(url, function (contentType, pluginPath) {
+    if (isDirectVideoLink(url)) {
         addItemsToPlaylist([
-            {"contentType": contentType, "pluginPath": pluginPath}
+            {"contentType": 'video', "pluginPath": url}
         ], function (result) {
             callback(result);
         });
-    });
+    } else if (isDirectAudioLink(url)) {
+        addItemsToPlaylist([
+            {"contentType": 'audio', "pluginPath": url}
+        ], function (result) {
+            callback(result);
+        });
+    } else {
+        getPluginPath(url, function (contentType, pluginPath) {
+            addItemsToPlaylist([
+                {"contentType": contentType, "pluginPath": pluginPath}
+            ], function (result) {
+                callback(result);
+            });
+        });
+    }
 }
 
 function queueItems(tabUrl, urlList, callback) {
@@ -268,6 +282,38 @@ function validUrl(url) {
     for (var i = 0; i < validUrlPatterns.length; i++) {
         var pattern = validUrlPatterns[i];
         if (url.match(pattern)) {
+            return true;
+        }
+    }
+
+    if (isDirectLink(url)) {
+        return true;
+    }
+
+    return false;
+}
+
+function isDirectLink(url) {
+    return isDirectVideoLink(url) || isDirectAudioLink(url);
+}
+
+function isDirectVideoLink(url) {
+    for (var i = 0; i < supportedVideoExtensions.length; i++) {
+        var extension = supportedVideoExtensions[i];
+        var regex = '.*\.' + extension;
+        if (url.match(regex)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function isDirectAudioLink(url) {
+    for (var j = 0; j < supportedAudioExtensions.length; j++) {
+        var extension1 = supportedAudioExtensions[j];
+        var regex1 = '.*\.' + extension1;
+        if (url.match(regex1)) {
             return true;
         }
     }

@@ -38,6 +38,14 @@ var validPlaylistPatterns = [
     "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
 ];
 
+var supportedVideoExtensions = [
+    'mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'                                         //Video extension
+];
+
+var supportedAudioExtensions = [      //Audio extensions
+    'avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'                                               //Video extension
+];
+
 function getURL() {
     var url;
     var port;

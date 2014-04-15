@@ -1,9 +1,3 @@
-var supportedExtensions = [
-    'mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka',        //Audio extensions
-    'avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'                                               //Video extension
-];
-
-
 var _port;
 var getPort = function() {
     if (_port) return _port;
@@ -45,13 +39,21 @@ function addContextMenuTo(selector, listOfCreateProperties) {
 function concatMusicExtensions() {
     var concatSelector = '';
     var first = true;
-    for (var i=0;i<supportedExtensions.length;i++) {
+    for (var i=0;i<supportedVideoExtensions.length;i++) {
         if (first) {
             first = false;
         } else {
             concatSelector += ',';
         }
-        concatSelector += "a[href$='." + supportedExtensions[i] + "']"
+        concatSelector += "a[href$='." + supportedVideoExtensions[i] + "']"
+    }
+    for (var j=0;j<supportedAudioExtensions.length;j++) {
+        if (first) {
+            first = false;
+        } else {
+            concatSelector += ',';
+        }
+        concatSelector += "a[href$='." + supportedAudioExtensions[j] + "']"
     }
     return concatSelector;
 }
