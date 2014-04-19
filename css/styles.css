@@ -30,6 +30,24 @@
     width: 195px;
 }
 
+#seekerRow {
+    text-align: center;
+    margin-left: 30px;
+    margin-right: auto;
+    width: 195px;
+}
+
+#seekerRow a.ui-slider-handle {
+    border: 1px solid #0060cc;
+    background: #08c 50% 50% repeat-x;
+    font-weight: bold;
+    color: #4c3000;
+}
+
+#seekerRow .ui-widget-header {
+    background: #08c none;
+}
+
 #buttonsRow {
     text-align: center;
 }

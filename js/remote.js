@@ -41,11 +41,22 @@ function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
     initPlaylistNumbers();
+    initSeekerSlider();
 }
 
 function setVolume(volume) {
     var setVolume = '{"jsonrpc": "2.0", "method": "Application.SetVolume", "params": {"volume":' + volume + '} , "id" : 1}';
-    ajaxPost(setVolume, function () {
+    ajaxPost(setVolume, function() {});
+}
+
+function seek(timeInSeconds) {
+    var hours = Math.floor(timeInSeconds / 3600);
+    var minutes = Math.floor((timeInSeconds % 3600) / 60);
+    var seconds = Math.floor((timeInSeconds % 3600) % 60);
+
+    getActivePlayerId(function(playerId) {
+        var seek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerId + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
+        ajaxPost(seek, function() {});
     });
 }
 
@@ -356,6 +367,54 @@ function initVolumeSlider() {
                 setVolume(ui.value);
             }
         });
+    });
+}
+
+var interval;
+function initSeekerSlider() {
+    getActivePlayerId(function (playerId, type) {
+        if (playerId != null) {
+            getPlayerTimes(function (timeInSeconds, totalTimeInSeconds) {
+                var $seeker = $('#seeker');
+                if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
+                    $seeker.slider({
+                        orientation: "horizontal",
+                        range: "min",
+                        min: 0,
+                        max: totalTimeInSeconds,
+                        value: timeInSeconds,
+                        slide: function (event, ui) {
+                            //TODO: Show the time you're sliding to now
+                        },
+                        stop: function (event, ui) {
+                            getActivePlayerId(function (playerId, type) {
+                                if (playerId == 0 || playerId == 1) {
+                                    seek(ui.value)
+                                }
+                            });
+                        },
+                        disabled: false
+                    });
+                    if (playerId == 0 || playerId == 1) {
+                        clearInterval(interval);
+                        interval = setInterval(function () {
+                            $seeker.slider("value", $seeker.slider("value") + 1);
+                        }, 1000);
+                    }
+                }
+            });
+        } else {
+            clearInterval(interval);
+            var $seeker2 = $('#seeker');
+            $seeker2.slider({
+                orientation: "horizontal",
+                range: "min",
+                min: 0,
+                max: 100,
+                value: 0
+            });
+            $seeker2.slider({disabled:true});
+        }
     });
 }
 

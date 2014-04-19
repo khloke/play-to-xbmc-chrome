@@ -2,6 +2,7 @@ $(document).ready( function() {
     initProfiles();
     initConnectivity(function() {
         initJsonVersion();
+        initSeekerSlider();
         initVolumeSlider();
         initKeyBindings();
 
