@@ -241,13 +241,17 @@ function ajaxPost(data, callback, timeout) {
     if (timeout) {
         defaultTimeout = timeout;
     }
-    console.log("POST " + data);
+//    if (isDebugLogsEnabled()) {
+        console.log("POST " + data);
+//    }
 
     jQuery.ajax({
         type: 'POST',
         url: fullPath,
         success: function (response) {
-            console.log(response);
+//            if (isDebugLogsEnabled()) {
+                console.log(response);
+//            }
             callback(response);
         },
         contentType: "application/json",
@@ -642,4 +646,34 @@ function getVolumeLevel(callback) {
             callback(null);
         }
     });
+}
+
+function getPlayerTimes(callback) {
+    getActivePlayerId(function(playerId) {
+        var getPlayerTimes = '{"jsonrpc":"2.0", "method":"Player.GetProperties", "params":{"playerid":' + playerId + ', "properties":["time", "totaltime"]},"id":1}';
+
+        ajaxPost(getPlayerTimes, function(response) {
+            if (response && response.result) {
+                var timeInSeconds = toSeconds(response.result.time["hours"], response.result.time["minutes"], response.result.time["seconds"]);
+                var totalTimeInSeconds = toSeconds(response.result.totaltime["hours"], response.result.totaltime["minutes"], response.result.totaltime["seconds"]);
+
+                callback(
+                    timeInSeconds,
+                    totalTimeInSeconds
+                );
+            } else {
+                callback(null);
+            }
+        });
+    });
+}
+
+function toSeconds(hours, minutes, seconds) {
+    var secondsInHour = 3600;
+    var secondsInMinute = 60;
+    var totalSeconds = 0;
+
+    totalSeconds = seconds + (minutes*secondsInMinute) + (hours*secondsInHour);
+
+    return totalSeconds
 }
