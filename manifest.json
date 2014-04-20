@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "version": "1.5.2.0",
+    "version": "1.6.0.0",
     "name": "Play to XBMC",
-    "description": "Play, queue and control your favourite Internet media on XBMC.",
+    "description": "Play, queue and remote control your favourite online media on XBMC.",
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {

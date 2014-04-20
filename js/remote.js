@@ -296,7 +296,9 @@ function initQueueCount() {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
                 if (playlistPosition != null) {
-                    console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
+                    if (isDebugLogsEnabled()) {
+                        console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
+                    }
                     $("#queueVideoButton").html("+Queue(" + leftOvers + ")");
                     return;
                 }
@@ -383,8 +385,19 @@ function initSeekerSlider() {
                         min: 0,
                         max: totalTimeInSeconds,
                         value: timeInSeconds,
+                        start: function(event, ui) {
+                            $('#scrollerTime').show();
+                        },
                         slide: function (event, ui) {
                             //TODO: Show the time you're sliding to now
+                            $(document).bind('mousemove', function(e) {
+                                var $scrollerTime = $('#scrollerTime');
+                                $scrollerTime.css({
+                                    left: e.pageX + 18,
+                                    top: e.pageY + 8
+                                });
+                                $scrollerTime.html(formatSeconds(ui.value));
+                            });
                         },
                         stop: function (event, ui) {
                             getActivePlayerId(function (playerId, type) {
@@ -392,13 +405,28 @@ function initSeekerSlider() {
                                     seek(ui.value)
                                 }
                             });
+                            $('#scrollerTime').hide();
                         },
                         disabled: false
                     });
                     if (playerId == 0 || playerId == 1) {
                         clearInterval(interval);
                         interval = setInterval(function () {
-                            $seeker.slider("value", $seeker.slider("value") + 1);
+                            var sliderValue = $seeker.slider("value");
+                            if (sliderValue < totalTimeInSeconds) {
+                                if (sliderValue % 5 == 0) {
+                                    getPlayerTimes(function(timeInSeconds, totalTimeInSeconds) {
+                                        $seeker.slider("value", timeInSeconds);
+                                    });
+                                } else {
+                                    $seeker.slider("value", sliderValue + 1);
+                                }
+                            } else {
+                                setTimeout(function() {
+                                    initSeekerSlider();
+                                    onChangeUpdate();
+                                }, 2000);
+                            }
                         }, 1000);
                     }
                 }
@@ -416,6 +444,21 @@ function initSeekerSlider() {
             $seeker2.slider({disabled:true});
         }
     });
+}
+
+function formatSeconds(timeInSeconds) {
+    var hours = Math.floor(timeInSeconds / 3600);
+    var minutes = Math.floor((timeInSeconds % 3600) / 60);
+    var seconds = Math.floor((timeInSeconds % 3600) % 60);
+    var output = '';
+    if (hours > 0) {
+        output = output + hours.toString() + ":";
+    }
+
+    output = output + ('0' + minutes).slice(-2) + ':';
+    output = output + ('0' + seconds).slice(-2);
+
+    return output;
 }
 
 function initPlaylistNumbers() {
@@ -464,7 +507,9 @@ function initKeyBindings() {
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 
-        console.log(e.keyCode);
+        if (isDebugLogsEnabled()) {
+            console.log(e.keyCode);
+        }
 
         switch (keyCode) {
             case keypress.left:
