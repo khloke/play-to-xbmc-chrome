@@ -54,6 +54,7 @@ function saveOptions() {
 
         localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
         localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')=='checked');
+        localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').attr('checked')=='checked');
 
         // Update status to let user know options were saved
         showAlertMessage(status, "Options Saved");
@@ -64,7 +65,6 @@ function saveOptions() {
             changeProfile();
         });
 
-        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')?true:false);
     } else {
         urlControlGroup.addClass('error');
         portControlGroup.addClass('error');
@@ -85,6 +85,12 @@ function restoreOptions() {
         $('#enableMultiHost').attr("checked", true);
     } else {
         $('#enableMultiHost').removeAttr("checked");
+    }
+
+    if (isDebugLogsEnabled()) {
+        $('#enableDebugLogs').attr("checked", true);
+    } else {
+        $('#enableDebugLogs').removeAttr("checked");
     }
 
     var showRepeat = localStorage[storageKeys.showRepeat];

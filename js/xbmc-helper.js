@@ -3,6 +3,13 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
+var debugLogsEnabled = false;
+chrome.extension.sendMessage({action: 'isDebugLogsEnabled'}, function (response) {
+    if (response) {
+        debugLogsEnabled = response.response;
+    }
+});
+
 function getSiteName(url) {
     if (url.match("magnet:")) {
         return "magnet"
@@ -241,17 +248,17 @@ function ajaxPost(data, callback, timeout) {
     if (timeout) {
         defaultTimeout = timeout;
     }
-//    if (isDebugLogsEnabled()) {
+    if (debugLogsEnabled) {
         console.log("POST " + data);
-//    }
+    }
 
     jQuery.ajax({
         type: 'POST',
         url: fullPath,
         success: function (response) {
-//            if (isDebugLogsEnabled()) {
+            if (debugLogsEnabled) {
                 console.log(response);
-//            }
+            }
             callback(response);
         },
         contentType: "application/json",
@@ -370,17 +377,21 @@ function addItemsToPlaylist(items, callback) {
     var contentType = items[0].contentType;
     if (contentType != 'picture') {
         getPlaylistId(contentType, function (playlistId) {
-            var addToPlaylist = "[";
-            for (var i = 0; i < items.length; i++) {
-                if (i > 0) {
-                    addToPlaylist += ",";
+            getActivePlayerId(function (playerid_2) {
+                //if nothing is playing, clear the playlist
+                if (playerid_2 == null) {
+                    clearPlaylist(function() {});
                 }
-                addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + (i + 1) + '}';
-            }
-            addToPlaylist += "]";
+                var addToPlaylist = "[";
+                for (var i = 0; i < items.length; i++) {
+                    if (i > 0) {
+                        addToPlaylist += ",";
+                    }
+                    addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + (i + 1) + '}';
+                }
+                addToPlaylist += "]";
 
-            ajaxPost(addToPlaylist, function (response) {
-                getActivePlayerId(function (playerid_2) {
+                ajaxPost(addToPlaylist, function (response) {
                     var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : 0}}, "id": 1}';
 
                     //if nothing is playing, play what we inserted

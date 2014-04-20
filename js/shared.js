@@ -1,10 +1,11 @@
-var currentVersion = 1520;
+var currentVersion = 1600;
 
 var storageKeys = {
     "showRepeat": "showRepeat",
     "profiles": "profiles",
     "enableMultiHost": "enableMultiHost",
-    "selectedHost": "selectedHost"
+    "selectedHost": "selectedHost",
+    "enableDebugLogs": "enableDebugLogs"
 };
 
 var actions = {
@@ -39,11 +40,11 @@ var validPlaylistPatterns = [
 ];
 
 var supportedVideoExtensions = [
-    'mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'                                         //Video extension
+    'mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'
 ];
 
-var supportedAudioExtensions = [      //Audio extensions
-    'avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'                                               //Video extension
+var supportedAudioExtensions = [
+    'avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'
 ];
 
 function getURL() {
@@ -86,6 +87,12 @@ function isMultiHostEnabled() {
     var enableMultiHost = localStorage[storageKeys.enableMultiHost];
 
     return enableMultiHost != null && enableMultiHost == 'true';
+}
+
+function isDebugLogsEnabled() {
+    var enableDebugLogs = localStorage[storageKeys.enableDebugLogs];
+
+    return enableDebugLogs != null && enableDebugLogs == 'true';
 }
 
 function getAllProfiles() {

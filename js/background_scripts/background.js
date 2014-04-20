@@ -38,6 +38,11 @@ chrome.extension.onMessage.addListener(
                 playNextCurrentUrl(function () {
                     sendResponse({response: "OK"});
                 });
+                break;
+
+            case 'isDebugLogsEnabled':
+                sendResponse({response: isDebugLogsEnabled()});
+                break;
         }
 
         return true;
