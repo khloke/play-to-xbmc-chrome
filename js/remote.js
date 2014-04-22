@@ -41,14 +41,6 @@ function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
     initPlaylistNumbers();
-    initSeekerSlider();
-}
-
-function init() {
-    //Fix focus issues when using keyboard bindings
-    $('input,button,#volume_control').mouseout(function(event) {
-        $('#focusAnchor').focus();
-    });
 }
 
 function setVolume(volume) {
@@ -56,15 +48,13 @@ function setVolume(volume) {
     ajaxPost(setVolume, function() {});
 }
 
-function seek(timeInSeconds) {
+function seek(playerId, timeInSeconds) {
     var hours = Math.floor(timeInSeconds / 3600);
     var minutes = Math.floor((timeInSeconds % 3600) / 60);
     var seconds = Math.floor((timeInSeconds % 3600) % 60);
 
-    getActivePlayerId(function(playerId) {
-        var seek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerId + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
-        ajaxPost(seek, function() {});
-    });
+    var seek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerId + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
+    ajaxPost(seek, function() {});
 }
 
 function doAction(item, callback) {
@@ -201,8 +191,6 @@ function clearFavouritesTable() {
     initFavouritesTable();
 }
 
-
-
 function createFavouritesActionButtons(i) {
     var name = favArray[i][0];
     var url = favArray[i][1];
@@ -215,6 +203,57 @@ function createFavouritesActionButtons(i) {
     $('#favRemoveBtn' + i).click(function () {
         removeFromFavourites(i);
     });
+}
+
+function initFocusFix() {
+    //Fix focus issues when using keyboard bindings
+    $('input,button,#volume_control').mouseout(function(event) {
+        $('#focusAnchor').focus();
+    });
+}
+
+var watchdog;
+var lastIsActive = false;
+var watchDogCounter = 0;
+function initWatchdog() {
+    clearInterval(watchdog);
+    var $seeker = $('#seeker');
+    watchdog = setInterval(function () {
+        var sliderValue = $seeker.slider("value");
+        getActivePlayerId(function(playerId) {
+            if (playerId == 0 || playerId == 1) {
+                if (!lastIsActive) {
+                    $seeker.slider({
+                        disabled:false
+                    });
+
+                    onChangeUpdate();
+                    lastIsActive = true;
+                }
+
+                if (watchDogCounter % 5 == 0) {
+                    getPlayerTimes(playerId, function(timeInSeconds, totalTimeInSeconds){
+                        $seeker.slider("value", timeInSeconds);
+                        $seeker.slider("max", totalTimeInSeconds);
+                    });
+                } else {
+                    $seeker.slider("value", sliderValue + 1);
+                }
+            } else {
+                if (lastIsActive) {
+                    $seeker.slider({
+                        value: 0,
+                        disabled: true
+                    });
+
+                    onChangeUpdate();
+                    lastIsActive = false;
+                }
+            }
+        });
+
+        watchDogCounter++;
+    }, 1000);
 }
 
 function initConnectivity(callback) {
@@ -403,24 +442,24 @@ function initVolumeSlider() {
     });
 }
 
-var interval;
 function initSeekerSlider() {
+    var $seeker = $('#seeker');
     getActivePlayerId(function (playerId, type) {
-        if (playerId != null) {
-            getPlayerTimes(function (timeInSeconds, totalTimeInSeconds) {
-                var $seeker = $('#seeker');
+        if (playerId == 0 || playerId == 1) {
+            getPlayerTimes(playerId, function (timeInSeconds, totalTimeInSeconds) {
                 if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
                     $seeker.slider({
+                        animate: 'fast',
                         orientation: "horizontal",
                         range: "min",
                         min: 0,
                         max: totalTimeInSeconds,
                         value: timeInSeconds,
                         start: function(event, ui) {
+                            clearInterval(watchdog);
                             $('#scrollerTime').show();
                         },
                         slide: function (event, ui) {
-                            //TODO: Show the time you're sliding to now
                             $(document).bind('mousemove', function(e) {
                                 var $scrollerTime = $('#scrollerTime');
                                 $scrollerTime.css({
@@ -431,48 +470,26 @@ function initSeekerSlider() {
                             });
                         },
                         stop: function (event, ui) {
-                            getActivePlayerId(function (playerId, type) {
+                            initWatchdog();
+                            getActivePlayerId(function (playerId) {
                                 if (playerId == 0 || playerId == 1) {
-                                    seek(ui.value)
+                                    seek(playerId, ui.value);
                                 }
                             });
                             $('#scrollerTime').hide();
-                        },
-                        disabled: false
+                        }
                     });
-                    if (playerId == 0 || playerId == 1) {
-                        clearInterval(interval);
-                        interval = setInterval(function () {
-                            var sliderValue = $seeker.slider("value");
-                            if (sliderValue < totalTimeInSeconds) {
-                                if (sliderValue % 5 == 0) {
-                                    getPlayerTimes(function(timeInSeconds, totalTimeInSeconds) {
-                                        $seeker.slider("value", timeInSeconds);
-                                    });
-                                } else {
-                                    $seeker.slider("value", sliderValue + 1);
-                                }
-                            } else {
-                                setTimeout(function() {
-                                    initSeekerSlider();
-                                    onChangeUpdate();
-                                }, 2000);
-                            }
-                        }, 1000);
-                    }
                 }
             });
         } else {
-            clearInterval(interval);
-            var $seeker2 = $('#seeker');
-            $seeker2.slider({
+            $seeker.slider({
                 orientation: "horizontal",
                 range: "min",
                 min: 0,
                 max: 100,
                 value: 0
             });
-            $seeker2.slider({disabled:true});
+            $seeker.slider({disabled:true});    //Setting disabled on a separate line to make sure the slider appeared 'dimmed'.
         }
     });
 }

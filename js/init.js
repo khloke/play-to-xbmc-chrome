@@ -1,5 +1,6 @@
 $(document).ready( function() {
-    init();
+    initFocusFix();
+    initWatchdog();
     initProfiles();
     initConnectivity(function() {
         initJsonVersion();

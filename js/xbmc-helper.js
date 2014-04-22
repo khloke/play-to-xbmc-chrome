@@ -659,23 +659,21 @@ function getVolumeLevel(callback) {
     });
 }
 
-function getPlayerTimes(callback) {
-    getActivePlayerId(function(playerId) {
-        var getPlayerTimes = '{"jsonrpc":"2.0", "method":"Player.GetProperties", "params":{"playerid":' + playerId + ', "properties":["time", "totaltime"]},"id":1}';
+function getPlayerTimes(playerId, callback) {
+    var getPlayerTimes = '{"jsonrpc":"2.0", "method":"Player.GetProperties", "params":{"playerid":' + playerId + ', "properties":["time", "totaltime"]},"id":1}';
 
-        ajaxPost(getPlayerTimes, function(response) {
-            if (response && response.result) {
-                var timeInSeconds = toSeconds(response.result.time["hours"], response.result.time["minutes"], response.result.time["seconds"]);
-                var totalTimeInSeconds = toSeconds(response.result.totaltime["hours"], response.result.totaltime["minutes"], response.result.totaltime["seconds"]);
+    ajaxPost(getPlayerTimes, function(response) {
+        if (response && response.result) {
+            var timeInSeconds = toSeconds(response.result.time["hours"], response.result.time["minutes"], response.result.time["seconds"]);
+            var totalTimeInSeconds = toSeconds(response.result.totaltime["hours"], response.result.totaltime["minutes"], response.result.totaltime["seconds"]);
 
-                callback(
-                    timeInSeconds,
-                    totalTimeInSeconds
-                );
-            } else {
-                callback(null);
-            }
-        });
+            callback(
+                timeInSeconds,
+                totalTimeInSeconds
+            );
+        } else {
+            callback(null);
+        }
     });
 }
 
