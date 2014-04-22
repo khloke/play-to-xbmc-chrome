@@ -357,6 +357,7 @@ function initRepeatMode() {
     }
 }
 
+var lastRecordedWheelTime = 0;
 function initVolumeSlider() {
     getVolumeLevel(function (volume) {
         $('#volume_control').slider({
@@ -367,8 +368,31 @@ function initVolumeSlider() {
             value: volume,
             slide: function (event, ui) {
                 setVolume(ui.value);
+            },
+            change: function (event, ui) {
+                setVolume(ui.value);
             }
         });
+    });
+
+    $(document).bind("mousewheel", function (e) {
+        var $volumecontrol = $('#volume_control');
+        var addDiff = 1;
+        var diff = e.originalEvent.timeStamp - lastRecordedWheelTime;
+        if (diff < 10) {
+            addDiff+=15;
+        } else if (diff < 100) {
+            addDiff+=5;
+        } else if (diff < 150) {
+            addDiff+=2;
+        }
+        if (e.originalEvent.wheelDelta > 0) {
+            $volumecontrol.slider("value", $volumecontrol.slider("value") + addDiff);
+        } else {
+            $volumecontrol.slider("value", $volumecontrol.slider("value") - addDiff);
+        }
+
+        lastRecordedWheelTime = e.originalEvent.timeStamp;
     });
 }
 
