@@ -44,6 +44,13 @@ function onChangeUpdate() {
     initSeekerSlider();
 }
 
+function init() {
+    //Fix focus issues when using keyboard bindings
+    $('input,button,#volume_control').mouseout(function(event) {
+        $('#focusAnchor').focus();
+    });
+}
+
 function setVolume(volume) {
     var setVolume = '{"jsonrpc": "2.0", "method": "Application.SetVolume", "params": {"volume":' + volume + '} , "id" : 1}';
     ajaxPost(setVolume, function() {});
@@ -528,6 +535,7 @@ function initProfiles() {
 
 function initKeyBindings() {
     $(document).keydown(function (e) {
+        $('#focusAnchor').focus();
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 

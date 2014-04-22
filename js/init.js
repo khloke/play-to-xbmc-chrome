@@ -1,4 +1,5 @@
 $(document).ready( function() {
+    init();
     initProfiles();
     initConnectivity(function() {
         initJsonVersion();
