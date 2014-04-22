@@ -377,9 +377,9 @@ function addItemsToPlaylist(items, callback) {
     var contentType = items[0].contentType;
     if (contentType != 'picture') {
         getPlaylistId(contentType, function (playlistId) {
-            getActivePlayerId(function (playerid_2) {
+            getActivePlayerId(function (playerId) {
                 //if nothing is playing, clear the playlist
-                if (playerid_2 == null) {
+                if (playerId == null) {
                     clearPlaylist(function() {});
                 }
                 var addToPlaylist = "[";
@@ -395,7 +395,7 @@ function addItemsToPlaylist(items, callback) {
                     var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : 0}}, "id": 1}';
 
                     //if nothing is playing, play what we inserted
-                    if (playerid_2 == null) {
+                    if (playerId == null) {
                         ajaxPost(playVideo, function (response_2) {
                             callback(response_2);
                         }, 10000);
@@ -540,6 +540,24 @@ function getRepeatMode(callback) {
             ajaxPost(playerRepeat, function (response) {
                 if (response && response.result && response.result.repeat) {
                     callback(response.result.repeat);
+                } else {
+                    callback(null);
+                }
+            });
+        } else {
+            callback(null);
+        }
+    });
+}
+
+function getSpeed(callback) {
+    getActivePlayerId(function (playerid) {
+        if (playerid != null) {
+            var playerRepeat = '{"jsonrpc": "2.0", "method": "Player.GetProperties", "params":{"playerid":' + playerid + ', "properties":["speed"]}, "id" : 1}';
+
+            ajaxPost(playerRepeat, function (response) {
+                if (response && response.result && response.result.speed) {
+                    callback(response.result.speed);
                 } else {
                     callback(null);
                 }
