@@ -1,5 +1,11 @@
 function initContextMenu() {
-    var targetPatterns = ['*://*.youtube.com/watch?*v=*','*://*.youtu.be/*','*://*/url?*url=*.youtube*watch*', 'magnet:*', '*://*.vimeo.com/*'];
+    var targetPatterns = [
+        '*://*.youtube.com/watch?*v=*',
+        '*://*.youtu.be/*',
+        '*://*/url?*url=*.youtube*watch*',
+        'magnet:*',
+        '*://*.vimeo.com/*'
+    ];
 
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
@@ -54,7 +60,9 @@ function initContextMenu() {
         contexts: ["image"],
         onclick: function(info) {
             var url = info.srcUrl;
-            addItemsToPlaylist([{"contentType": 'picture', "pluginPath": url}], function(){});
+            wakeScreen(function() {
+                addItemsToPlaylist([{"contentType": 'picture', "pluginPath": url}], function(){});
+            });
         }
     });
 }

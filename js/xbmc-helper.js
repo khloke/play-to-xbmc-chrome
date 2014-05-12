@@ -695,6 +695,16 @@ function getPlayerTimes(playerId, callback) {
     });
 }
 
+function wakeScreen(callback) {
+    var doNothing = '{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"noop"},"id":1}';
+
+    ajaxPost(doNothing, function(response) {
+       if (response && response.result == 'OK') {
+           callback();
+       }
+    });
+}
+
 function toSeconds(hours, minutes, seconds) {
     var secondsInHour = 3600;
     var secondsInMinute = 60;
