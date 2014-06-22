@@ -34,7 +34,7 @@ function getPluginPath(url, callback) {
     var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$';
     var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
     var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
-	 var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/.*?documentId=([^_&/#\?]+)';
+    var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/.*?documentId=([^_&/#\?]+)';
 
     switch (name) {
         case 'youtube':
@@ -132,23 +132,23 @@ function getPluginPath(url, callback) {
             videoId = url;
             type = 'video';
             break;
-		
-		case 'ardmediathek':
-			videoId = url;
-			type = 'video';
-			break;
-			
-		case 'areena':
-		case 'ruutu':
-		case 'katsomo':		  
+
+        case 'ardmediathek':
             videoId = url;
             type = 'video';
             break;
 
-		case 'mtvkatsomo':
-				videoId = url.replace('mtvkatsomo', 'katsomo');
-				type= 'video';
-				break;
+        case 'areena':
+        case 'ruutu':
+        case 'katsomo':
+            videoId = url;
+            type = 'video';
+            break;
+
+        case 'mtvkatsomo':
+            videoId = url.replace('mtvkatsomo', 'katsomo');
+            type= 'video';
+            break;
 
         default:
             console.log('An error has occurred while attempting to obtain content id.');
@@ -182,20 +182,20 @@ function buildPluginPath(type, videoId) {
         case 'magnet':
             return 'plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(videoId);
 
-		  case 'ardmediathek':
-			return 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(videoId);
+        case 'ardmediathek':
+            return 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(videoId);
 
-		  case 'areena':
-			 return 'plugin://plugin.video.yleareena/?view=video&link=' + encodeURIComponent(videoId);
+        case 'areena':
+            return 'plugin://plugin.video.yleareena/?view=video&link=' + encodeURIComponent(videoId);
 
-		  case 'ruutu':
-			 return 'plugin://plugin.video.ruutu/?view=video&link=' + encodeURIComponent(videoId);
+        case 'ruutu':
+            return 'plugin://plugin.video.ruutu/?view=video&link=' + encodeURIComponent(videoId);
 
-		  case 'katsomo':
-			 return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
+        case 'katsomo':
+            return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
 
-		  case 'mtvkatsomo':
-			 return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
+        case 'mtvkatsomo':
+            return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
 
         default:
             return '';
