@@ -4,7 +4,12 @@ function initContextMenu() {
         '*://*.youtu.be/*',
         '*://*/url?*url=*.youtube*watch*',
         'magnet:*',
-        '*://*.vimeo.com/*'
+        '*://*.vimeo.com/*',
+		  '*://areena.yle.fi/tv/*',
+		  '*://www.ruutu.fi/ohjelmat/*',
+		  '*://www.ruutu.fi/video/*/*', /* teevee.fi*/
+		  '*://www.katsomo.fi/?progId=*',
+		  '*://www.mtvkatsomo.fi/?progId=*', /* teevee.fi*/
     ];
 
     chrome.contextMenus.removeAll();

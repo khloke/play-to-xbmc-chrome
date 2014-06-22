@@ -30,7 +30,12 @@ var validUrlPatterns = [
     ".*liveleak.com/view.*",
     "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
     ".*hulu.com/watch.*",
-	".*ardmediathek.de/.*documentId=.*"
+	".*ardmediathek.de/.*documentId=.*",
+	"^(https|http)://areena.yle.fi/tv/*",
+	"^(https|http)://www.ruutu.fi/ohjelmat/*",
+	"^(https|http)://www.ruutu.fi/video/f/*",
+	"^(https|http)://www.katsomo.fi/\\?progId=(\\d+)$",
+	"^(https|http)://www.mtv3katsomo.fi/\\?progId=(\\d+)$"
 ];
 
 var validPlaylistPatterns = [
