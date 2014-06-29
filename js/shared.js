@@ -1,4 +1,4 @@
-var currentVersion = 1601;
+var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
 
 var storageKeys = {
     "showRepeat": "showRepeat",
