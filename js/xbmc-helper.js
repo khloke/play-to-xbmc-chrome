@@ -30,27 +30,13 @@ function getPluginPath(url, callback) {
 }
 
 function queueItem(url, callback) {
-    if (isDirectVideoLink(url)) {
+    getPluginPath(url, function (contentType, pluginPath) {
         addItemsToPlaylist([
-            {"contentType": 'video', "pluginPath": url}
+            {"contentType": contentType, "pluginPath": pluginPath}
         ], function (result) {
             callback(result);
         });
-    } else if (isDirectAudioLink(url)) {
-        addItemsToPlaylist([
-            {"contentType": 'audio', "pluginPath": url}
-        ], function (result) {
-            callback(result);
-        });
-    } else {
-        getPluginPath(url, function (contentType, pluginPath) {
-            addItemsToPlaylist([
-                {"contentType": contentType, "pluginPath": pluginPath}
-            ], function (result) {
-                callback(result);
-            });
-        });
-    }
+    });
 }
 
 function queueItems(tabUrl, urlList, callback) {
@@ -132,7 +118,7 @@ function getSoundcloudTrackId(url, callback) {
         url: 'http://soundcloud.com/oembed?url=' + url,
         success: function (result) {
             var iframetext = $(result).find("html").text();
-            if (iframetext.indexOf('tracks')) {
+            if (iframetext.indexOf('tracks') && iframetext.match(soundcloudRegex)) {
                 var trackId = iframetext.match(soundcloudRegex)[1];
 
                 callback(trackId);
@@ -147,34 +133,6 @@ function validUrl(url) {
     for (var i = 0; i < allModules.length; i++) {
         var module = allModules[i];
         if (module.canHandleUrl(url)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-function isDirectLink(url) {
-    return isDirectVideoLink(url) || isDirectAudioLink(url);
-}
-
-function isDirectVideoLink(url) {
-    for (var i = 0; i < supportedVideoExtensions.length; i++) {
-        var extension = supportedVideoExtensions[i];
-        var regex = '.*\.' + extension;
-        if (url.match(regex)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-function isDirectAudioLink(url) {
-    for (var j = 0; j < supportedAudioExtensions.length; j++) {
-        var extension1 = supportedAudioExtensions[j];
-        var regex1 = '.*\.' + extension1;
-        if (url.match(regex1)) {
             return true;
         }
     }

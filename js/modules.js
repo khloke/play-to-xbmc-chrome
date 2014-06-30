@@ -10,6 +10,48 @@ function urlMatchesOneOfPatterns(url, patterns) {
     return false;
 }
 
+var DirectVideoLinkModule = {
+    canHandleUrl: function(url) {
+        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'];
+        for (var i = 0; i < supportedVideoExtensions.length; i++) {
+            var extension = supportedVideoExtensions[i];
+            var regex = '.*\.' + extension;
+            if (url.match(regex)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback(url);
+    }
+};
+
+var DirectAudioLinkModule = {
+    canHandleUrl: function(url) {
+        var supportedVideoExtensions = ['mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'];
+        for (var i = 0; i < supportedVideoExtensions.length; i++) {
+            var extension = supportedVideoExtensions[i];
+            var regex = '.*\.' + extension;
+            if (url.match(regex)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+    getMediaType: function() {
+        return 'audio';
+    },
+    getPluginPath: function(url, callback) {
+        callback(url);
+    }
+};
+
 var ArdMediaThekModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -21,7 +63,7 @@ var ArdMediaThekModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        callback(this.getMediaType(), 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(url));
+        callback('plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(url));
     }
 };
 
@@ -177,7 +219,7 @@ var MyCloudPlayersModule = {
 var SoundcloudModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            ".*soundcloud.com.*"
+            ".*soundcloud.com/[^/]*/.+"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
@@ -186,7 +228,9 @@ var SoundcloudModule = {
     },
     getPluginPath: function(url, callback) {
         getSoundcloudTrackId(url, function(videoId) {
-            callback('plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15');
+            if (videoId != null) {
+                callback('plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15');
+            }
         });
     }
 };
@@ -228,7 +272,7 @@ var TwitchTvModule = {
 var VimeoModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            "^.*vimeo.com.*/\\d+.*$"
+            "^.*vimeo.com[^/]*/\\d+.*$"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
@@ -236,7 +280,7 @@ var VimeoModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        var videoId = url.match('^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$')[3];
+        var videoId = url.match('^(https|http)://(www\.)?vimeo.com[^/]*/(\\d+).*$')[3];
         callback('plugin://plugin.video.vimeo/?action=play_video&videoid=' + videoId);
     }
 };
@@ -305,6 +349,8 @@ var KatsomoModule = {
 };
 
 var allModules = [
+    DirectVideoLinkModule,
+    DirectAudioLinkModule,
     YoutubeModule,
     VimeoModule,
     FreerideModule,

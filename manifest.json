@@ -18,13 +18,12 @@
             "js/modules.js",
             "js/shared.js",
             "js/background_scripts/background.js",
-            "js/xbmc-helper.js",
-            "js/background_scripts/context-menu.js"
+            "js/xbmc-helper.js"
         ]
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/shared.js", "js/content_scripts/context-menu-content-scripts.js"]
+        "js": ["js/jquery-1.7.2.min.js","js/content_scripts/context-menus.js"]
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]
