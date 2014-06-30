@@ -19,186 +19,13 @@ function getSiteName(url) {
 }
 
 function getPluginPath(url, callback) {
-    var videoId;
-
-    var name = getSiteName(url);
-    var type;
-
-    var youtubeRegex = 'v=([^&]+)';
-    var mycloudplayersPlayRegex = 'play=([^&]+)';
-    var vimeoRegex = '^(https|http)://(www\.)?vimeo.com.*/(\\d+).*$';
-    var freerideRegex = '^(https|http)://(www\.)?freeride.se.*/(\\d+).*$';
-    var collegehumorRegex = '(https|http)://(www\.)?collegehumor.com/[video|embed]+/([^_&/#\?]+)';
-    var dailymotionRegex = '(https|http)://(www\.)?dailymotion.com/video/([^_&/#\?]+)';
-    var ebaumsworldRegex = '(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)';
-    var twitchtvRegex = '^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$';
-    var mixcloudRegex = '(https|http)://(www\.)?mixcloud.com(/[^_&#\?]+/[^_&#\?]+)';
-    var huluRegex = '(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)';
-    var daserstemediathekRegex = '(https|http)://(www\.)?ardmediathek.de/.*?documentId=([^_&/#\?]+)';
-
-    switch (name) {
-        case 'youtube':
-            videoId = url.match(youtubeRegex)[1];
-            type = 'video';
-            break;
-
-        case 'vimeo':
-            videoId = url.match(vimeoRegex)[3];
-            type = 'video';
-            break;
-
-        case 'freeride':
-            videoId = url.match(freerideRegex)[3];
-            callback('video', 'http://v.freeride.se/encoded/mp4-hd/' + videoId + '.mp4');
-            break;
-
-        case 'collegehumor':
-            videoId = url.match(collegehumorRegex)[3];
-            type = 'video';
-            break;
-
-        case 'dailymotion':
-            videoId = url.match(dailymotionRegex)[3];
-            type = 'video';
-            break;
-
-        case 'ebaumsworld':
-            videoId = url.match(ebaumsworldRegex)[3];
-            type = 'video';
-            break;
-
-        case 'twitch':
-            videoId = url.match(twitchtvRegex)[3];
-            type = 'video';
-            break;
-
-        case 'soundcloud':
-            getSoundcloudTrackId(url, function (trackId) {
-                callback('audio', buildPluginPath(name, trackId));
+    for (var i = 0; i < allModules.length; i++) {
+        var module = allModules[i];
+        if (module.canHandleUrl(url)) {
+            module.getPluginPath(url, function(path) {
+                callback(module.getMediaType(), path);
             });
-            return;
-
-		case 'mycloudplayers':
-			var trackId = url.match(mycloudplayersPlayRegex) && url.match(mycloudplayersPlayRegex)[1];
-			if (trackId)
-				callback('audio', buildPluginPath('soundcloud', trackId));
-            return;
-
-        case 'liveleak':
-            chrome.tabs.getSelected(null, function (tab) {
-                chrome.tabs.sendMessage(tab.id, {action: 'getLiveLeakVideoUrl'}, function (response) {
-                    if (response) {
-                        var liveLeakUrl = response.url;
-                        callback('video', liveLeakUrl);
-                    }
-                });
-            });
-            return;
-
-        case 'mixcloud':
-            videoId = url.match(mixcloudRegex)[3];
-            type = 'audio';
-            break;
-
-        case 'khanacademy':
-            chrome.tabs.getSelected(null, function (tab) {
-                chrome.tabs.sendMessage(tab.id, {action: 'getYoutubeId'}, function (response) {
-                    if (response) {
-                        var youtubeId = JSON.parse(response.youtubeId);
-                        callback('video', buildPluginPath('youtube', youtubeId));
-                    }
-                });
-            });
-            break;
-
-        case 'hulu':
-            videoId = url.match(huluRegex)[3];
-            chrome.tabs.getSelected(null, function (tab) {
-                chrome.tabs.sendMessage(tab.id, {action: 'getContentId'}, function (response) {
-                    if (response) {
-                        var contentId = JSON.parse(response.contentId);
-                        chrome.tabs.sendMessage(tab.id, {action: 'getEid'}, function (response2) {
-                            if (response2) {
-                                var eId = JSON.parse(response2.eid);
-                                callback('video', 'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(contentId) + '\\"&videoid=\\"' + encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"');
-                            }
-                        })
-                    }
-                });
-            });
-            break;
-
-        case 'magnet':
-            videoId = url;
-            type = 'video';
-            break;
-
-        case 'ardmediathek':
-            videoId = url;
-            type = 'video';
-            break;
-
-        case 'areena':
-        case 'ruutu':
-        case 'katsomo':
-            videoId = url;
-            type = 'video';
-            break;
-
-        case 'mtvkatsomo':
-            videoId = url.replace('mtvkatsomo', 'katsomo');
-            type= 'video';
-            break;
-
-        default:
-            console.log('An error has occurred while attempting to obtain content id.');
-    }
-
-    callback(type, buildPluginPath(name, videoId));
-}
-
-function buildPluginPath(type, videoId) {
-    switch (type) {
-        case 'youtube':
-        case 'vimeo':
-            return 'plugin://plugin.video.' + type + '/?action=play_video&videoid=' + videoId;
-
-        case 'collegehumor':
-            return 'plugin://plugin.video.' + type + '/watch/' + encodeURIComponent(videoId) + '/';
-
-        case 'dailymotion':
-        case 'ebaumsworld':
-            return 'plugin://plugin.video.' + type + '_com/?url=' + videoId + '&mode=playVideo';
-
-        case 'twitch':
-            return 'plugin://plugin.video.twitch/playLive/' + videoId + '/';
-
-        case 'soundcloud':
-            return 'plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15';
-
-        case 'mixcloud':
-            return 'plugin://plugin.audio.mixcloud/?mode=40&key=' + encodeURIComponent(videoId);
-
-        case 'magnet':
-            return 'plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(videoId);
-
-        case 'ardmediathek':
-            return 'plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(videoId);
-
-        case 'areena':
-            return 'plugin://plugin.video.yleareena/?view=video&link=' + encodeURIComponent(videoId);
-
-        case 'ruutu':
-            return 'plugin://plugin.video.ruutu/?view=video&link=' + encodeURIComponent(videoId);
-
-        case 'katsomo':
-            return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
-
-        case 'mtvkatsomo':
-            return 'plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(videoId);
-
-        default:
-            return '';
+        }
     }
 }
 
@@ -246,13 +73,15 @@ function queueItems(tabUrl, urlList, callback) {
                 break;
 
             case 'soundcloud':
-                var element = {"contentType": 'audio', "pluginPath": buildPluginPath('soundcloud', url)};
-                contentArr.push(element);
-                if (contentArr.length == urlList.length) {
-                    addItemsToPlaylist(contentArr, function (result) {
-                        callback(result);
-                    });
-                }
+                SoundcloudModule.getPluginPath(url, function(path) {
+                    var element = {"contentType": 'audio', "pluginPath": path};
+                    contentArr.push(element);
+                    if (contentArr.length == urlList.length) {
+                        addItemsToPlaylist(contentArr, function (result) {
+                            callback(result);
+                        });
+                    }
+                });
                 break;
         }
     });
@@ -315,15 +144,11 @@ function getSoundcloudTrackId(url, callback) {
 }
 
 function validUrl(url) {
-    for (var i = 0; i < validUrlPatterns.length; i++) {
-        var pattern = validUrlPatterns[i];
-        if (url.match(pattern)) {
+    for (var i = 0; i < allModules.length; i++) {
+        var module = allModules[i];
+        if (module.canHandleUrl(url)) {
             return true;
         }
-    }
-
-    if (isDirectLink(url)) {
-        return true;
     }
 
     return false;

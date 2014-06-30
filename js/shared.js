@@ -17,27 +17,6 @@ var actions = {
     "GoNext": "Player.GoNext"
 };
 
-var validUrlPatterns = [
-    ".*youtube.com/watch.*",
-    "^.*vimeo.com.*/\\d+.*$",
-    "^.*freeride.se.*/\\d+.*$",
-    ".*collegehumor.com/[video|embed]+/\\d+/\\w+",
-    ".*dailymotion.com/video/.*",
-    ".*ebaumsworld.com/video/.*",
-    ".*soundcloud.com.*",
-    ".*mycloudplayers.com.*",
-    ".*mixcloud.com.*",
-    ".*liveleak.com/view.*",
-    "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
-    ".*hulu.com/watch.*",
-    ".*ardmediathek.de/.*documentId=.*",
-    "^(https|http)://areena.yle.fi/tv/*",
-    "^(https|http)://www.ruutu.fi/ohjelmat/*",
-    "^(https|http)://www.ruutu.fi/video/f/*",
-    "^(https|http)://www.katsomo.fi/\\?progId=(\\d+)$",
-    "^(https|http)://www.mtv3katsomo.fi/\\?progId=(\\d+)$"
-];
-
 var validPlaylistPatterns = [
     ".*youtube.com/playlist.*list=.*",
     "(https|http)://(www\.)?youtube.com/watch?.*list=.+",
