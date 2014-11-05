@@ -18,6 +18,11 @@ $("a").each(function() {
         }
     } else if (linkUrl && linkUrl.match('^(https|http)://.+$')) {
         chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
+    } else if (linkUrl && (
+        linkUrl.indexOf('#') == 0 ||
+            linkUrl.indexOf('mailto') == 0)
+        ) {
+        //Do nothing to these links.
     } else {
         console.log("Could not determine what to do with link: " + linkUrl);
     }
