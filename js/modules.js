@@ -288,7 +288,8 @@ var VimeoModule = {
 var YoutubeModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            ".*youtube.com/watch.*"
+            ".*youtube.com/watch.*",
+            ".*youtu.be/.*"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
@@ -296,8 +297,15 @@ var YoutubeModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        var videoId = url.match('v=([^&]+)')[1];
-        callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+        if (url.match('v=([^&]+)')) {
+            var videoId = url.match('v=([^&]+)')[1];
+            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+        }
+
+        if (url.match('.*youtu.be/(.+)')) {
+            var videoId = url.match('.*youtu.be/(.+)')[1];
+            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+        }
     }
 };
 
