@@ -59,6 +59,19 @@
     height: 2px;
 }
 
+.timeIndicator {
+    position: absolute;
+    top: 135px;
+}
+
+#currentTime {
+    left: 28px;
+}
+
+#totalTime {
+    right: 28px;
+}
+
 #buttonsRow {
     text-align: center;
 }
