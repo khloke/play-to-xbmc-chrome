@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.7.0.0",
+    "version": "1.7.0.1",
     "name": "Play to XBMC",
     "description": "Play, queue and remote control your favourite online media on XBMC.",
     "options_page": "options.html",
@@ -23,8 +23,7 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/jquery-1.7.2.min.js","js/content_scripts/context-menus.js"],
-        "run_at": "document_end"
+        "js": ["js/jquery-1.7.2.min.js","js/content_scripts/context-menu-content-scripts.js"]
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]
