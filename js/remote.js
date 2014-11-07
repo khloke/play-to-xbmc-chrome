@@ -98,7 +98,8 @@ function queueCurrentUrl(caller) {
 
 function queuePlaylist(caller) {
     turnOnLoading(caller);
-    getCurrentUrl(function(tabUrl) {
+    chrome.tabs.getSelected(null, function (tab) {
+        var tabUrl = tab.url;
         var name = getSiteName(tabUrl);
         switch (name) {
             case 'youtube':
@@ -116,7 +117,8 @@ function queueYoutubeList(caller) {
     chrome.tabs.getSelected(null, function (tab) {
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.urlList) {
-                getCurrentUrl(function(tabUrl) {
+                chrome.tabs.getSelected(null, function (tab) {
+                    var tabUrl = tab.url;
                     chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
@@ -131,7 +133,8 @@ function queueSoundcloudSet(caller) {
     chrome.tabs.getSelected(null, function (tab) {
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.trackIds) {
-                getCurrentUrl(function(tabUrl) {
+                chrome.tabs.getSelected(null, function (tab) {
+                    var tabUrl = tab.url;
                     chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
@@ -244,6 +247,7 @@ function initWatchdog() {
 
                 if (watchDogCounter % 5 == 0) {
                     getPlayerTimes(playerId, function(timeInSeconds, totalTimeInSeconds){
+                        $('#totalTime').html(formatSeconds(totalTimeInSeconds));
                         $seeker.slider("value", timeInSeconds);
                         $seeker.slider("max", totalTimeInSeconds);
                     });
@@ -253,6 +257,7 @@ function initWatchdog() {
                     });
                 } else {
                     if (isPlaying) {
+                        $('#currentTime').html(formatSeconds(sliderValue + 1));
                         $seeker.slider("value", sliderValue + 1);
                     }
                 }
@@ -495,6 +500,8 @@ function initSeekerSlider() {
         if (playerId == 0 || playerId == 1) {
             getPlayerTimes(playerId, function (timeInSeconds, totalTimeInSeconds) {
                 if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
+                    $('#currentTime').html(formatSeconds(timeInSeconds));
+                    $('#totalTime').html(formatSeconds(totalTimeInSeconds));
                     $seeker.slider({
                         max: totalTimeInSeconds,
                         value: timeInSeconds

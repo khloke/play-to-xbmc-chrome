@@ -22,6 +22,7 @@ chrome.extension.onMessage.addListener(
                     sendResponse({response: "OK"});
                 });
                 break;
+
             case 'queueList':
                 queueList(request.url, request.urlList, function () {
                     sendResponse({response: "OK"});
@@ -42,6 +43,12 @@ chrome.extension.onMessage.addListener(
 
             case 'isDebugLogsEnabled':
                 sendResponse({response: isDebugLogsEnabled()});
+                break;
+
+            case 'createContextMenu':
+                createContextMenu(request.link, function() {
+                    sendResponse({response: "OK"});
+                });
                 break;
         }
 
@@ -71,7 +78,8 @@ function playCurrentUrl(callback) {
 }
 
 function playNextCurrentUrl(callback) {
-    getCurrentUrl(function (tabUrl) {
+    chrome.tabs.getSelected(null, function (tab) {
+        var tabUrl = tab.url;
         getPlaylistPosition(function (position) {
             insertItem(tabUrl, position + 1, function () {
                 callback();
@@ -81,7 +89,8 @@ function playNextCurrentUrl(callback) {
 }
 
 function queueCurrentUrl(callback) {
-    getCurrentUrl(function (tabUrl) {
+    chrome.tabs.getSelected(null, function (tab) {
+        var tabUrl = tab.url;
         queueItem(tabUrl, function () {
             callback();
         });
@@ -99,7 +108,6 @@ function queueList(tabUrl, urlList, callback) {
     });
 }
 
-
 function removeThisFromPlaylist(callback) {
     getPlaylistPosition(function (position) {
         playerGoNext(function () {
@@ -109,4 +117,122 @@ function removeThisFromPlaylist(callback) {
         });
     });
 }
+
+var contextMenuLinks = [];
+
+function isContextMenuCreated(url) {
+    for (var i = 0; i < contextMenuLinks.length; i++) {
+        var link = contextMenuLinks[i];
+        if (link == url) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function createContextMenu(link, callback) {
+    for (var i = 0; i < allModules.length; i++) {
+        var module = allModules[i];
+        if (module.canHandleUrl(link) && !isContextMenuCreated(link)) {
+            contextMenuLinks.push(link);
+            chrome.contextMenus.create({
+                title: "Play now",
+                contexts: ["link"],
+                targetUrlPatterns: [link],
+                onclick: function(info) {
+                    doAction(actions.Stop, function () {
+                        clearPlaylist(function() {
+                            queueItem(info.linkUrl, function() {
+                                callback();
+                            });
+                        })
+                    });
+                }
+            });
+
+            chrome.contextMenus.create({
+                title: "Queue",
+                contexts: ["link"],
+                targetUrlPatterns: [link],
+                onclick: function(info) {
+                    queueItem(info.linkUrl, function() {
+                        callback();
+                    });
+                }
+            });
+
+            chrome.contextMenus.create({
+                title: "Play this Next",
+                contexts: ["link"],
+                targetUrlPatterns: [link],
+                onclick: function(info) {
+                    getPlaylistPosition(function (position) {
+                        insertItem(info.linkUrl, position + 1, function () {
+                            callback();
+                        });
+                    });
+                }
+            });
+
+        }
+    }
+}
+function createMagnetAndImageContextMenus() {
+    chrome.contextMenus.create({
+        title: "Show Image",
+        contexts: ["image"],
+        onclick: function (info) {
+            var url = info.srcUrl;
+            wakeScreen(function () {
+                addItemsToPlaylist([
+                    {"contentType": 'picture', "pluginPath": url}
+                ], function () {
+                });
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play now",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            doAction(actions.Stop, function () {
+                clearPlaylist(function () {
+                    queueItem(info.linkUrl, function () {
+                    });
+                })
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Queue",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            queueItem(info.linkUrl, function () {
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play this Next",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            getPlaylistPosition(function (position) {
+                insertItem(info.linkUrl, position + 1, function () {
+                });
+            });
+        }
+    });
+}
+
+chrome.contextMenus.removeAll();
+createMagnetAndImageContextMenus();
+
+
+
+
 

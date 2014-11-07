@@ -1,14 +1,4 @@
-var _port;
-var getPort = function() {
-    if (_port) return _port;
-    _port = chrome.extension.connect({name: 'contextMenus'});
-    _port.onDisconnect.addListener(function() {
-        _port = null;
-    });
-    return _port;   
-}
-
-function addContextMenuTo(selector, listOfCreateProperties) {
+function addContextMenuTo(selector) {
     selector = selector + ', ' + selector + ' *';
     var matches;
     ['matches', 'webkitMatchesSelector', 'webkitMatches', 'matchesSelector'].some(function(m) {
@@ -21,69 +11,49 @@ function addContextMenuTo(selector, listOfCreateProperties) {
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
         if (event.target && event.target[matches](selector)) {
-            getPort().postMessage(listOfCreateProperties);
-            isHovering = true;
+            for (var i = 0; i < event.path.length; i++) {
+                var element = event.path[i];
+                if (element[matches] && element[matches]('a')) {
+                    createContextMenu(element.href);
+                    isHovering = true;
+                    break;
+                }
+            }
         } else if (isHovering) {
-            getPort().postMessage([]);
             isHovering = false;
         }
     });
     document.addEventListener('mouseout', function(event) {
         if (isHovering && (!event.target || !event.target[matches](selector))) {
-            getPort().postMessage([]);
             isHovering = false;
         }
     });
 }
 
-function concatMusicExtensions() {
-    var concatSelector = '';
-    var first = true;
-    for (var i=0;i<supportedVideoExtensions.length;i++) {
-        if (first) {
-            first = false;
+function createContextMenu(linkUrl) {
+    if (linkUrl && linkUrl.match('^//.*$')) {
+        var tabUrl = window.location.href;
+        var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
+        if (patternMatch) {
+            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
         } else {
-            concatSelector += ',';
+            console.log("Could not determine what to do with link: " + linkUrl);
         }
-        concatSelector += "a[href$='." + supportedVideoExtensions[i] + "']"
-    }
-    for (var j=0;j<supportedAudioExtensions.length;j++) {
-        if (first) {
-            first = false;
+    } else if (linkUrl && linkUrl.match('^/.*$')) {
+        var tabUrl = window.location.href;
+        var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
+        if (patternMatch) {
+            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
         } else {
-            concatSelector += ',';
+            console.log("Could not determine what to do with link: " + linkUrl);
         }
-        concatSelector += "a[href$='." + supportedAudioExtensions[j] + "']"
+    } else if (linkUrl && (linkUrl.match('^(https|http)://.+$'))) {
+        chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
+    } else if (!linkUrl || (linkUrl && (linkUrl.indexOf('#') == 0 || linkUrl.indexOf('mailto') == 0 || linkUrl.indexOf('javascript') == 0))) {
+        //Do nothing to these links.
+    } else {
+        console.log("Could not determine what to do with link: " + linkUrl);
     }
-    return concatSelector;
 }
 
-function checkConnectivity(callback) {
-    chrome.extension.sendMessage({action: 'isAvailable'}, function (response) {
-        if (response.response == 'OK') {
-            callback(true);
-        } else {
-            callback(false);
-        }
-    });
-}
-
-checkConnectivity(function(isAvailable) {
-    if (isAvailable) {
-        addContextMenuTo(concatMusicExtensions(),
-            [{
-                title: "Play now",
-                contexts: ["link"],
-                onclick: 'musicPlayNow'
-            },{
-                title: "Queue",
-                contexts: ["link"],
-                onclick: 'musicPlayNow'
-            },{
-                title: "Play this Next",
-                contexts: ["link"],
-                onclick: 'musicPlayNow'
-            }]
-        );
-    }
-});
+addContextMenuTo('a');

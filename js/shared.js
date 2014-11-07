@@ -17,39 +17,10 @@ var actions = {
     "GoNext": "Player.GoNext"
 };
 
-var validUrlPatterns = [
-    ".*youtube.com/watch.*",
-    "^.*vimeo.com.*/\\d+.*$",
-    "^.*freeride.se.*/\\d+.*$",
-    ".*collegehumor.com/[video|embed]+/\\d+/\\w+",
-    ".*dailymotion.com/video/.*",
-    ".*ebaumsworld.com/video/.*",
-    ".*soundcloud.com.*",
-    ".*mycloudplayers.com.*",
-    ".*mixcloud.com.*",
-    ".*liveleak.com/view.*",
-    "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$",
-    ".*hulu.com/watch.*",
-    ".*ardmediathek.de/.*documentId=.*",
-    "^(https|http)://areena.yle.fi/tv/*",
-    "^(https|http)://www.ruutu.fi/ohjelmat/*",
-    "^(https|http)://www.ruutu.fi/video/f/*",
-    "^(https|http)://www.katsomo.fi/\\?progId=(\\d+)$",
-    "^(https|http)://www.mtv3katsomo.fi/\\?progId=(\\d+)$"
-];
-
 var validPlaylistPatterns = [
     ".*youtube.com/playlist.*list=.*",
     "(https|http)://(www\.)?youtube.com/watch?.*list=.+",
     "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
-];
-
-var supportedVideoExtensions = [
-    'mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'
-];
-
-var supportedAudioExtensions = [
-    'avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'
 ];
 
 function getURL() {
@@ -104,21 +75,3 @@ function getAllProfiles() {
     return localStorage[storageKeys.profiles];
 }
 
-function getCurrentUrl(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
-        var tabUrl = tab.url;
-        callback(tabUrl);
-    });
-}
-
-function getURLParameter(tabUrl, sParam) {
-    var sPageURL = tabUrl.substring(tabUrl.indexOf('?') + 1 );
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-    return null;
-}
