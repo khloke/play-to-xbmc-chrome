@@ -11,23 +11,27 @@ function addContextMenuTo(selector) {
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
         if (event.target && event.target[matches](selector)) {
-            createContextMenu(event.target.href);
-//            getPort().postMessage(listOfCreateProperties);
-            isHovering = true;
+            for (var i = 0; i < event.path.length; i++) {
+                var element = event.path[i];
+                if (element[matches] && element[matches]('a')) {
+                    createContextMenu(element.href);
+                    isHovering = true;
+                    break;
+                }
+            }
         } else if (isHovering) {
-//            getPort().postMessage([]);
             isHovering = false;
         }
     });
     document.addEventListener('mouseout', function(event) {
         if (isHovering && (!event.target || !event.target[matches](selector))) {
-//            getPort().postMessage([]);
             isHovering = false;
         }
     });
 }
 
 function createContextMenu(linkUrl) {
+    console.log("Checking link: " + linkUrl);
     if (linkUrl && linkUrl.match('^//.*$')) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
@@ -44,7 +48,7 @@ function createContextMenu(linkUrl) {
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
-    } else if (linkUrl && linkUrl.match('^(https|http)://.+$')) {
+    } else if (linkUrl && (linkUrl.match('^(https|http)://.+$') || linkUrl.indexOf('magnet') == 0)) {
         chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
     } else if (!linkUrl || (linkUrl && (linkUrl.indexOf('#') == 0 || linkUrl.indexOf('mailto') == 0 || linkUrl.indexOf('javascript') == 0))) {
         //Do nothing to these links.

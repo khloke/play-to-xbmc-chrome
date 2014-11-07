@@ -52,6 +52,18 @@ var DirectAudioLinkModule = {
     }
 };
 
+var MagnetLinkModule = {
+    canHandleUrl: function(url) {
+        return url.indexOf('magnet') == 0;
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback('plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(url));
+    }
+};
+
 var ArdMediaThekModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -359,6 +371,7 @@ var KatsomoModule = {
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
+    MagnetLinkModule,
     YoutubeModule,
     VimeoModule,
     FreerideModule,
