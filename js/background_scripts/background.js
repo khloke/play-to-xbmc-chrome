@@ -177,15 +177,62 @@ function createContextMenu(link, callback) {
         }
     }
 }
+function createMagnetAndImageContextMenus() {
+    chrome.contextMenus.create({
+        title: "Show Image",
+        contexts: ["image"],
+        onclick: function (info) {
+            var url = info.srcUrl;
+            wakeScreen(function () {
+                addItemsToPlaylist([
+                    {"contentType": 'picture', "pluginPath": url}
+                ], function () {
+                });
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play now",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            doAction(actions.Stop, function () {
+                clearPlaylist(function () {
+                    queueItem(info.linkUrl, function () {
+                    });
+                })
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Queue",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            queueItem(info.linkUrl, function () {
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play this Next",
+        contexts: ["link"],
+        targetUrlPatterns: ['magnet:*'],
+        onclick: function (info) {
+            getPlaylistPosition(function (position) {
+                insertItem(info.linkUrl, position + 1, function () {
+                });
+            });
+        }
+    });
+}
 
 chrome.contextMenus.removeAll();
-chrome.contextMenus.create({
-    title: "Show Image",
-    contexts: ["image"],
-    onclick: function(info) {
-        var url = info.srcUrl;
-        wakeScreen(function() {
-            addItemsToPlaylist([{"contentType": 'picture', "pluginPath": url}], function(){});
-        });
-    }
-});
+createMagnetAndImageContextMenus();
+
+
+
+
+

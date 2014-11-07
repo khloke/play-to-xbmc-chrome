@@ -31,7 +31,6 @@ function addContextMenuTo(selector) {
 }
 
 function createContextMenu(linkUrl) {
-    console.log("Checking link: " + linkUrl);
     if (linkUrl && linkUrl.match('^//.*$')) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
@@ -48,7 +47,7 @@ function createContextMenu(linkUrl) {
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
-    } else if (linkUrl && (linkUrl.match('^(https|http)://.+$') || linkUrl.indexOf('magnet') == 0)) {
+    } else if (linkUrl && (linkUrl.match('^(https|http)://.+$'))) {
         chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
     } else if (!linkUrl || (linkUrl && (linkUrl.indexOf('#') == 0 || linkUrl.indexOf('mailto') == 0 || linkUrl.indexOf('javascript') == 0))) {
         //Do nothing to these links.
