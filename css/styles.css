@@ -76,6 +76,16 @@
     text-align: center;
 }
 
+#playNowMenuButton {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    padding: 5px 7px;
+}
+
+#queueVideoButton {
+    margin-left: -1px;
+}
+
 .row {
     margin: 15px auto;
 }

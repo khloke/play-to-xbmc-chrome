@@ -17,11 +17,24 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
 
+            case 'playThis':
+                playThisUrl(request.url, function() {
+                    sendResponse({response: "OK"});
+                });
+                break;
+
             case 'queue':
                 queueCurrentUrl(function () {
                     sendResponse({response: "OK"});
                 });
                 break;
+
+            case 'queueThis':
+                queueThisUrl(request.url, function () {
+                    sendResponse({response: "OK"});
+                });
+                break;
+
 
             case 'queueList':
                 queueList(request.url, request.urlList, function () {
@@ -77,6 +90,16 @@ function playCurrentUrl(callback) {
     });
 }
 
+function playThisUrl(url, callback) {
+    doAction(actions.Stop, function () {
+        clearPlaylist(function() {
+            queueItem(url, function () {
+                callback();
+            });
+        })
+    });
+}
+
 function playNextCurrentUrl(callback) {
     chrome.tabs.getSelected(null, function (tab) {
         var tabUrl = tab.url;
@@ -94,6 +117,12 @@ function queueCurrentUrl(callback) {
         queueItem(tabUrl, function () {
             callback();
         });
+    });
+}
+
+function queueThisUrl(url, callback) {
+    queueItem(url, function () {
+        callback();
     });
 }
 

@@ -41,6 +41,7 @@ function onChangeUpdate() {
     initQueueCount();
     initRepeatMode();
     initPlaylistNumbers();
+    initPlayTimes();
 }
 
 function setVolume(volume) {
@@ -81,6 +82,14 @@ function playCurrentUrl(caller) {
     });
 }
 
+function playThisUrl(url, caller) {
+    turnOnLoading(caller);
+    chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
+    });
+}
+
 function playNextCurrentUrl(caller) {
     chrome.extension.sendMessage({action: 'playNextCurrent'}, function (response) {
         onChangeUpdate();
@@ -90,6 +99,15 @@ function playNextCurrentUrl(caller) {
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
     chrome.extension.sendMessage({action: 'queue'}, function (response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
+    });
+
+}
+
+function queueThisUrl(url, caller) {
+    turnOnLoading(caller);
+    chrome.extension.sendMessage({action: 'queueThis', url: url}, function (response) {
         onChangeUpdate();
         turnOffLoading(caller);
     });
@@ -110,6 +128,13 @@ function queuePlaylist(caller) {
                 queueSoundcloudSet(caller);
                 break;
         }
+    });
+}
+
+function queueList(videoList, caller) {
+    chrome.extension.sendMessage({action: 'queueList', urlList:videoList, url:'https://www.youtube.com/'}, function (response) {
+        onChangeUpdate();
+        turnOffLoading(caller);
     });
 }
 
@@ -344,17 +369,56 @@ function enablePlaylistButtons() {
     queueListButton.attr('disabled', false);
     queueListButton.parent().removeClass('disabled');
 }
+
 function initVideoButton() {
     chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
 
         validVideoPage(url, function() {
+            $('#playCurrentVideoButton').click(function() { playCurrentUrl($(this)) });
+            $('#queueVideoButton').click(function() { queueCurrentUrl($(this)) });
             enableVideoButtons();
         });
 
         if (validPlaylistUrl(url)) {
             enablePlaylistButtons();
         }
+
+        getEmbeddedVideos(function(videoList) {
+            if (videoList.length > 0) {
+                if (videoList.length == 1) {
+                    var videoUrl = videoList[0].url;
+                    $('#playCurrentVideoButton').click(function() { playThisUrl(videoUrl, $(this)) });
+                    $('#queueVideoButton').click(function() { queueThisUrl(videoUrl, $(this)) });
+                    enableVideoButtons();
+                } else {
+                    $('#playCurrentVideoButton').hide();
+                    $('#multiVideoButtonGroup').show();
+                    $('#videoButtons').empty();
+                    var urlList = [];
+                    for (var i = 0; i < videoList.length; i++) {
+                        var video = videoList[i];
+                        urlList.push(video.url);
+                        $('#videoButtons').append('<li><a id="' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
+                        $('#' + video.id).click(function() { playThisUrl($(this).attr('url'), $(this)) });
+                    }
+
+                    $('#videoButtons').append('<li class="divider"></li>');
+                    $('#videoButtons').append('<li><a id="queueAllBtn">Queue All</a></li>');
+                    $('#queueAllBtn').click(function() { queueList(urlList, $(this)); });
+                }
+            }
+        });
+    });
+}
+
+function getEmbeddedVideos(callback) {
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.sendMessage(tab.id, {action: 'getEmbeddedVideos'}, function (response) {
+            if (response && response.length > 0) {
+                callback(response);
+            }
+        });
     });
 }
 
@@ -531,6 +595,22 @@ function formatSeconds(timeInSeconds) {
     output = output + ('0' + seconds).slice(-2);
 
     return output;
+}
+
+function initPlayTimes() {
+    getActivePlayerId(function (playerId, type) {
+        if (playerId == 0 || playerId == 1) {
+            getPlayerTimes(playerId, function (timeInSeconds, totalTimeInSeconds) {
+                if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
+                    $('#currentTime').html(formatSeconds(timeInSeconds));
+                    $('#totalTime').html(formatSeconds(totalTimeInSeconds));
+                }
+            });
+        } else {
+            $('#currentTime').html('');
+            $('#totalTime').html('');
+        }
+    });
 }
 
 function initPlaylistNumbers() {

@@ -24,15 +24,13 @@ $(document).ready( function() {
     $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
     $('#nextBtn').click(function() {next()});
 
-    $('#playCurrentVideoButton').click(function() {playCurrentUrl($(this))});
-    $('#queueVideoButton').click(function() {queueCurrentUrl($(this))});
     $('#queueListButton').click(function() {queuePlaylist($(this))});
     $('#addToFavButton').click(function() {addToFavourites()});
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
-//    $('#testBtn').click(function() { initConnectivity() });
+    $('#testBtn').click(function() { initVideoButton() });
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
