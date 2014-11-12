@@ -30,7 +30,7 @@ $(document).ready( function() {
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
-    $('#testBtn').click(function() { initVideoButton() });
+//    $('#testBtn').click(function() { initVideoButton() });
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");
