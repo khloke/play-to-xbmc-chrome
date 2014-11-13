@@ -12,7 +12,7 @@ function urlMatchesOneOfPatterns(url, patterns) {
 
 var DirectVideoLinkModule = {
     canHandleUrl: function(url) {
-        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4'];
+        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'ogg'];
         for (var i = 0; i < supportedVideoExtensions.length; i++) {
             var extension = supportedVideoExtensions[i];
             var regex = '.*\.' + extension;
@@ -28,6 +28,9 @@ var DirectVideoLinkModule = {
     },
     getPluginPath: function(url, callback) {
         callback(url);
+    },
+    getEmbedSelector: function() {
+        return 'video';
     }
 };
 
@@ -318,6 +321,42 @@ var YoutubeModule = {
             var videoId = url.match('.*youtu.be/(.+)')[1];
             callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
         }
+    },
+    getEmbedSelector: function() {
+        return 'iframe[src*="youtube.com/embed"]';
+    },
+    getVideoListFromEmbedObjs: function(objList, callback) {
+        var regex = new RegExp(".*youtube.com/embed/([^&/?]+).*");
+        var videoIdList = [];
+        for (var i = 0; i < objList.length; i++) {
+            var obj = $(objList[i])[0];
+
+            if (obj && obj.src && obj.src.match(regex)) {
+                videoIdList.push(obj.src.match(regex)[1]);
+            }
+        }
+
+        var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + combineVideoIdList(videoIdList) + "&key=AIzaSyA3INgfTLddMbrJm8f68xpvfPZDAzDqk10";
+        $.getJSON(url, function (data) {
+            for (var i = 0; i < data.items.length; i++) {
+                var item = data.items[i];
+                var title = item.snippet.title;
+                var videoID = item.id;
+                var videoURL = 'https://www.youtube.com/watch?v=';
+                var url = videoURL + videoID;
+
+                videoList.push({
+                    id: videoID,
+                    title: title,
+                    url: url
+                });
+            }
+
+            console.log('Found these videos embedded: ' + videoList);
+            if (callback) {
+                callback(videoList);
+            }
+        });
     }
 };
 
