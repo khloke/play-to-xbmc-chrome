@@ -410,7 +410,7 @@ function initVideoButton() {
                         $('#fav-' + video.id).click(function() { addThisToFavourites($(this).html(), $(this).attr('url')) });
                     }
 
-                    $('#videoButtons').append('<li class="divider"></li>').append('<li><a id="queueAllBtn">Queue All</a></li>');
+                    $('#videoQueueButtons').append('<li class="divider"></li>').append('<li><a id="queueAllBtn">Queue All</a></li>');
                     $('#queueAllBtn').click(function() { queueList(urlList, $(this)); });
                 }
             }
@@ -452,7 +452,7 @@ function initRepeatMode() {
 
     if ($('#repeatButton').length <= 0) {
         if (localStorage["showRepeat"] == 'always') {
-            $('#addToFavButton').after('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px">Repeat: Stopped</button>');
+            $('#moreBtnGroup').before('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px; margin-left: -1px;">Repeat: Stopped</button>');
             $('#repeatButton').click(function () {
                 toggleRepeat()
             });
