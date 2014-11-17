@@ -47,7 +47,7 @@ function createContextMenu(linkUrl) {
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
-    } else if (linkUrl && (linkUrl.match('^(https|http)://.+$'))) {
+    } else if (linkUrl && (linkUrl.match('^(https|http|acestream|sop)://.+$'))) {
         chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
     } else if (!linkUrl || (linkUrl && (linkUrl.indexOf('#') == 0 || linkUrl.indexOf('mailto') == 0 || linkUrl.indexOf('javascript') == 0 || linkUrl.indexOf('irc') == 0))) {
         //Do nothing to these links.

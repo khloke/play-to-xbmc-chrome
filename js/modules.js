@@ -1,4 +1,3 @@
-
 function urlMatchesOneOfPatterns(url, patterns) {
     for (var i = 0; i < patterns.length; i++) {
         var pattern = patterns[i];
@@ -55,9 +54,13 @@ var DirectAudioLinkModule = {
     }
 };
 
-var MagnetLinkModule = {
+var TorrentsLinkModule = {
     canHandleUrl: function(url) {
-        return url.indexOf('magnet') == 0;
+        var validPatterns = [
+            "^magnet:",
+            ".torrent$"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
     },
     getMediaType: function() {
         return 'video';
@@ -407,10 +410,40 @@ var KatsomoModule = {
     }
 };
 
+var AcestreamModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^acestream://"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=1&name=acestream+title');
+    }
+};
+
+var SopcastModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^sop://"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=2&name=title+sopcast');
+    }
+};
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
-    MagnetLinkModule,
+    TorrentsLinkModule,
     YoutubeModule,
     VimeoModule,
     FreerideModule,
@@ -426,5 +459,7 @@ var allModules = [
     TwitchTvModule,
     YleAreenaModule,
     RuutuModule,
-    KatsomoModule
+    KatsomoModule,
+    AcestreamModule,
+    SopcastModule
 ];
