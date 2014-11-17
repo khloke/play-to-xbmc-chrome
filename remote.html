@@ -38,29 +38,43 @@
 
 <div id="buttonsRow" class="btn-toolbar">
     <div class="btn-group" style="left:-10px;">
-        <button id="playCurrentVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">Play now</button>
-        <div id="multiVideoButtonGroup" class="btn-group" style="display: none;"><button id="playNowMenuButton" class="btn btn-small dropdown-toggle" data-toggle="dropdown">
-            <span>Play Now <span class="caret"></span></span>
-        </button>
-        <ul id="videoButtons" class="dropdown-menu pull-left" style="overflow: hidden; max-width: 290px; text-align: left;">
-            <!--<li><a href="#">Video A</a></li>-->
-            <!--<li><a href="#">Video B</a></li>-->
-            <!--<li class="divider"></li>-->
-            <!--<li><a href="#">Queue All</a></li>-->
-        </ul></div>
-        <button id="queueVideoButton" class="btn btn-small disabled-btn" disabled style="padding: 5px;">+Queue</button>
-        <button id="addToFavButton" class="btn btn-small disabled-btn" disabled style="padding: 5px">+Favourite</button>
-        <span class="btn-group"><button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu pull-right">
-            <li id="dropdown-first" style="display: none;"></li>
-            <li class="disabled disabled-link"><a tabindex="-1" href="#" id="playNextButton">Play this Next</a></li>
-            <li class="disabled disabled-link"><a href="#" id="queueListButton">Queue Playlist</a></li>
-            <li class="divider"></li>
-            <li><a href="#" id="removeThisButton">Remove current from Playlist</a></li>
-            <li><a href="#" id="clearPlaylistButton">Clear Playlist</a></li>
-        </ul></span>
+        <button id="playCurrentVideoButton" class="btn btn-small disabled-btn single-action-btn" disabled>Play now</button>
+        <div id="multiVideoButtonGroup" class="btn-group multi-video-btn-group" style="display: none;">
+            <button id="playNowMenuButton" class="btn btn-small dropdown-toggle multi-video-btn" data-toggle="dropdown">
+                <span>Play Now <span class="caret"></span></span>
+            </button>
+            <ul id="videoButtons" class="dropdown-menu pull-left video-menu"></ul>
+        </div>
+
+        <button id="queueVideoButton" class="single-action-btn btn btn-small disabled-btn" disabled style="border-radius: 0;">+Queue</button>
+        <div class="btn-group multi-video-btn-group" style="display: none; margin-left: -1px">
+            <button class="btn btn-small dropdown-toggle multi-video-btn" data-toggle="dropdown" style="border-radius: 0;">
+                <span>Queue <span class="caret"></span></span>
+            </button>
+            <ul id="videoQueueButtons" class="dropdown-menu pull-left video-menu" style="left: -78px;"></ul>
+        </div>
+
+        <button id="addToFavButton" class="btn btn-small disabled-btn single-action-btn" disabled style="border-radius: 0;">+Favourite</button>
+        <div class="btn-group multi-video-btn-group" style="display: none; margin-left: -1px">
+            <button class="btn btn-small dropdown-toggle multi-video-btn" data-toggle="dropdown" style="border-radius: 0;">
+                <span>Favourite <span class="caret"></span></span>
+            </button>
+            <ul id="videoFavButtons" class="dropdown-menu pull-left video-menu" style="left: -141px;"></ul>
+        </div>
+
+        <span class="btn-group" style="margin: 0;">
+            <button id="moreBtn" class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right">
+                <li id="dropdown-first" style="display: none;"></li>
+                <li class="disabled disabled-link"><a tabindex="-1" href="#" id="playNextButton">Play this Next</a></li>
+                <li class="disabled disabled-link"><a href="#" id="queueListButton">Queue Playlist</a></li>
+                <li class="divider"></li>
+                <li><a href="#" id="removeThisButton">Remove current from Playlist</a></li>
+                <li><a href="#" id="clearPlaylistButton">Clear Playlist</a></li>
+            </ul>
+        </span>
     </div>
 </div>
 <!--<div class="btn-toolbar">-->

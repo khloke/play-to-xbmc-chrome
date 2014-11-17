@@ -76,14 +76,21 @@
     text-align: center;
 }
 
-#playNowMenuButton {
+#buttonsRow .btn-group .single-action-btn {
+    padding: 5px;
+    margin-left: -1px;
+}
+
+#buttonsRow .btn-group .multi-video-btn {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
     padding: 5px 7px;
 }
 
-#queueVideoButton {
-    margin-left: -1px;
+.video-menu {
+    overflow: hidden;
+    max-width: 290px;
+    text-align: left;
 }
 
 .row {
@@ -92,6 +99,13 @@
 
 .dropdown-menu .disabled>a:hover {
     background: none;
+}
+
+#moreBtn {
+    padding: 5px 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
 }
 
 #scrollerTime {

@@ -186,25 +186,28 @@ function addToFavourites() {
     chrome.tabs.getSelected(null, function (tab) {
         var url = tab.url;
         var title = tab.title.replace(' - YouTube', '').trim();
-
-        if (validUrl(url)) {
-            var favArrayObj = getAllFavourites();
-
-            var favArray;
-            if (favArrayObj != null) {
-                favArray = JSON.parse(favArrayObj);
-            } else {
-                favArray = [];
-            }
-
-            var fav = [];
-            fav[0] = title;
-            fav[1] = url;
-            favArray.push(fav);
-            localStorage.setItem(favArrayKey, JSON.stringify(favArray));
-            initFavouritesTable();
-        }
+        addThisToFavourites(title, url);
     });
+}
+
+function addThisToFavourites(title, url) {
+    if (validUrl(url)) {
+        var favArrayObj = getAllFavourites();
+
+        var favArray;
+        if (favArrayObj != null) {
+            favArray = JSON.parse(favArrayObj);
+        } else {
+            favArray = [];
+        }
+
+        var fav = [];
+        fav[0] = title;
+        fav[1] = url;
+        favArray.push(fav);
+        localStorage.setItem(favArrayKey, JSON.stringify(favArray));
+        initFavouritesTable();
+    }
 }
 
 function removeFromFavourites(index) {
@@ -392,19 +395,22 @@ function initVideoButton() {
                     $('#queueVideoButton').click(function() { queueThisUrl(videoUrl, $(this)) });
                     enableVideoButtons();
                 } else {
-                    $('#playCurrentVideoButton').hide();
-                    $('#multiVideoButtonGroup').show();
-                    $('#videoButtons').empty();
+                    $('.single-action-btn').hide();
+                    $('.multi-video-btn-group').show();
+                    $('.video-menu').empty();
                     var urlList = [];
                     for (var i = 0; i < videoList.length; i++) {
                         var video = videoList[i];
                         urlList.push(video.url);
                         $('#videoButtons').append('<li><a id="' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
                         $('#' + video.id).click(function() { playThisUrl($(this).attr('url'), $(this)) });
+                        $('#videoQueueButtons').append('<li><a id="queue-' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
+                        $('#queue-' + video.id).click(function() { queueThisUrl($(this).attr('url'), $(this)) });
+                        $('#videoFavButtons').append('<li><a id="fav-' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
+                        $('#fav-' + video.id).click(function() { addThisToFavourites($(this).html(), $(this).attr('url')) });
                     }
 
-                    $('#videoButtons').append('<li class="divider"></li>');
-                    $('#videoButtons').append('<li><a id="queueAllBtn">Queue All</a></li>');
+                    $('#videoButtons').append('<li class="divider"></li>').append('<li><a id="queueAllBtn">Queue All</a></li>');
                     $('#queueAllBtn').click(function() { queueList(urlList, $(this)); });
                 }
             }
