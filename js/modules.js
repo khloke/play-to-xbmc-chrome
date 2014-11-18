@@ -11,10 +11,10 @@ function urlMatchesOneOfPatterns(url, patterns) {
 
 var DirectVideoLinkModule = {
     canHandleUrl: function(url) {
-        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'ogg'];
+        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'webm'];
         for (var i = 0; i < supportedVideoExtensions.length; i++) {
             var extension = supportedVideoExtensions[i];
-            var regex = '.*\.' + extension;
+            var regex = '^.*\.' + extension + "$";
             if (url.match(regex)) {
                 return true;
             }
@@ -38,7 +38,7 @@ var DirectAudioLinkModule = {
         var supportedVideoExtensions = ['mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'];
         for (var i = 0; i < supportedVideoExtensions.length; i++) {
             var extension = supportedVideoExtensions[i];
-            var regex = '.*\.' + extension;
+            var regex = '^.*\.' + extension + "$";
             if (url.match(regex)) {
                 return true;
             }

@@ -59,7 +59,7 @@ chrome.extension.onMessage.addListener(
                 break;
 
             case 'createContextMenu':
-                createContextMenu(request.link, function() {
+                createContextMenu(request, function() {
                     sendResponse({response: "OK"});
                 });
                 break;
@@ -159,7 +159,8 @@ function isContextMenuCreated(url) {
     return false;
 }
 
-function createContextMenu(link, callback) {
+function createContextMenu(request, callback) {
+    var link = request.link;
     for (var i = 0; i < allModules.length; i++) {
         var module = allModules[i];
         if (module.canHandleUrl(link) && !isContextMenuCreated(link)) {
@@ -206,6 +207,42 @@ function createContextMenu(link, callback) {
         }
     }
 }
+
+function createHtml5VideoContextMenus() {
+    chrome.contextMenus.create({
+        title: "Play now",
+        contexts: ["video", "audio"],
+        onclick: function (info) {
+            doAction(actions.Stop, function () {
+                clearPlaylist(function () {
+                    queueItem(info.srcUrl, function () {
+                    });
+                })
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Queue",
+        contexts: ["video", "audio"],
+        onclick: function (info) {
+            queueItem(info.srcUrl, function () {
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play this Next",
+        contexts: ["video", "audio"],
+        onclick: function (info) {
+            getPlaylistPosition(function (position) {
+                insertItem(info.srcUrl, position + 1, function () {
+                });
+            });
+        }
+    });
+}
+
 function createMagnetAndP2PAndImageContextMenus() {
     chrome.contextMenus.create({
         title: "Show Image",
@@ -260,8 +297,4 @@ function createMagnetAndP2PAndImageContextMenus() {
 
 chrome.contextMenus.removeAll();
 createMagnetAndP2PAndImageContextMenus();
-
-
-
-
-
+createHtml5VideoContextMenus();
