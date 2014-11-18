@@ -70,6 +70,27 @@ var TorrentsLinkModule = {
     }
 };
 
+var AnimeLabModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*animelab.com/player.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
 var ArdMediaThekModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -461,5 +482,6 @@ var allModules = [
     RuutuModule,
     KatsomoModule,
     AcestreamModule,
-    SopcastModule
+    SopcastModule,
+    AnimeLabModule
 ];

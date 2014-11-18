@@ -211,11 +211,13 @@ function createContextMenu(request, callback) {
 function createHtml5VideoContextMenus() {
     chrome.contextMenus.create({
         title: "Play now",
-        contexts: ["video", "audio"],
+        contexts: ["video"],
         onclick: function (info) {
             doAction(actions.Stop, function () {
                 clearPlaylist(function () {
-                    queueItem(info.srcUrl, function () {
+                    addItemsToPlaylist([
+                        {"contentType": 'video', "pluginPath": info.srcUrl}
+                    ], function (result) {
                     });
                 })
             });
@@ -224,19 +226,58 @@ function createHtml5VideoContextMenus() {
 
     chrome.contextMenus.create({
         title: "Queue",
-        contexts: ["video", "audio"],
+        contexts: ["video"],
         onclick: function (info) {
-            queueItem(info.srcUrl, function () {
+            addItemsToPlaylist([
+                {"contentType": 'video', "pluginPath": info.srcUrl}
+            ], function (result) {
             });
         }
     });
 
     chrome.contextMenus.create({
         title: "Play this Next",
-        contexts: ["video", "audio"],
+        contexts: ["video"],
         onclick: function (info) {
             getPlaylistPosition(function (position) {
-                insertItem(info.srcUrl, position + 1, function () {
+                insertItemToPlaylist('video', info.srcUrl, position + 1, function (result) {
+                });
+            });
+        }
+    });
+    
+    chrome.contextMenus.create({
+        title: "Play now",
+        contexts: ["audio"],
+        onclick: function (info) {
+            doAction(actions.Stop, function () {
+                clearPlaylist(function () {
+                    addItemsToPlaylist([
+                        {"contentType": 'audio', "pluginPath": info.srcUrl}
+                    ], function (result) {
+                    });
+                })
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Queue",
+        contexts: ["audio"],
+        onclick: function (info) {
+            addItemsToPlaylist([
+                {"contentType": 'audio', "pluginPath": info.srcUrl}
+            ], function (result) {
+            });
+        }
+    });
+
+    chrome.contextMenus.create({
+        title: "Play this Next",
+        contexts: ["audio"],
+        onclick: function (info) {
+            getPlaylistPosition(function (position) {
+                insertItemToPlaylist('audio', info.srcUrl, position + 1, function (result) {
                 });
             });
         }
