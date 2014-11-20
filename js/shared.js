@@ -5,7 +5,8 @@ var storageKeys = {
     "profiles": "profiles",
     "enableMultiHost": "enableMultiHost",
     "selectedHost": "selectedHost",
-    "enableDebugLogs": "enableDebugLogs"
+    "enableDebugLogs": "enableDebugLogs",
+    "magnetAddOn": "magnetAddOn"
 };
 
 var actions = {

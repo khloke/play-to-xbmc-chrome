@@ -53,6 +53,7 @@ function saveOptions() {
         portControlGroup.find('.controls').find('.help-inline').remove();
 
         localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
+        localStorage.setItem(storageKeys.magnetAddOn, $('#magnetAddOn').val());
         localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')=='checked');
         localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').attr('checked')=='checked');
 
@@ -95,6 +96,8 @@ function restoreOptions() {
 
     var showRepeat = localStorage[storageKeys.showRepeat];
     $('#showRepeat').val(showRepeat);
+    var magnetAddOn = localStorage[storageKeys.magnetAddOn];
+    $('#magnetAddOn').val(magnetAddOn);
 }
 
 function restoreUrl() {
@@ -106,6 +109,7 @@ function restoreUrl() {
         var username = localStorage["username"];
         var password = localStorage["password"];
         var showRepeat = localStorage[storageKeys.showRepeat];
+        var magnetAddOn = localStorage[storageKeys.magnetAddOn];
 
         if (!url || !port) {
             return;
@@ -125,6 +129,7 @@ function restoreUrl() {
     }
 
     $('#showRepeat').val(showRepeat);
+    $('#magnetAddOn').val(magnetAddOn);
 }
 
 function checkVersion() {

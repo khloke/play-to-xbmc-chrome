@@ -66,7 +66,11 @@ var TorrentsLinkModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        callback('plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(url));
+        if (localStorage['magnetAddOn'] == 'pulsar') {
+            callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
+        } else {
+            callback('plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(url));
+        }
     }
 };
 
