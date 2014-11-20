@@ -360,10 +360,9 @@ var YoutubeModule = {
                 .css('height', '25px')
                 .css('width', '25px')
                 .css('border', 'none')
-                .css('background-size', '21px 21px')
+                .css('background-size', '17px 17px')
                 .css('background-repeat', 'no-repeat')
-                .css('background-position-x', '1px')
-                .css('background-position-t', '1px')
+                .css('background-position', '3px 3px')
                 .css('float', 'left');
             $('#playnow-' + videoId).click(function () {
                 chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
