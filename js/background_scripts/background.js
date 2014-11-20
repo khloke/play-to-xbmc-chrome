@@ -54,6 +54,12 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
 
+            case 'playThisNext':
+                playThisNext(request.url, function () {
+                    sendResponse({response: "OK"});
+                });
+                break;
+
             case 'isDebugLogsEnabled':
                 sendResponse({response: isDebugLogsEnabled()});
                 break;
@@ -107,6 +113,14 @@ function playNextCurrentUrl(callback) {
             insertItem(tabUrl, position + 1, function () {
                 callback();
             });
+        });
+    });
+}
+
+function playThisNext(url, callback) {
+    getPlaylistPosition(function (position) {
+        insertItem(url, position + 1, function () {
+            callback();
         });
     });
 }

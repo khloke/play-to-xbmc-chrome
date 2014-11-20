@@ -346,41 +346,38 @@ var YoutubeModule = {
             callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
         }
     },
-    getEmbedSelector: function() {
-        return 'iframe[src*="youtube.com/embed"]';
-    },
-    getVideoListFromEmbedObjs: function(objList, callback) {
-        var regex = new RegExp(".*youtube.com/embed/([^&/?]+).*");
-        var videoIdList = [];
-        for (var i = 0; i < objList.length; i++) {
-            var obj = $(objList[i])[0];
-
-            if (obj && obj.src && obj.src.match(regex)) {
-                videoIdList.push(obj.src.match(regex)[1]);
-            }
+    createCustomContextMenus: function() {
+        //Create context menus for embedded youtube videos
+        var url = $('a.html5-title-logo').attr('href');
+        if (url) {
+            var videoId = url.match('v=([^&]+)')[1];
+            var $youtubeContextMenu = $('ul.html5-context-menu');
+            $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnow-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play Now</a></li>');
+            $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="queue-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Queue</a></li>');
+            $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnext-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play this Next</a></li>');
+            $('.playtoxbmc-icon')
+                .css('background-image', 'url(\'' + chrome.extension.getURL('/images/icon.png') + '\')')
+                .css('height', '25px')
+                .css('width', '25px')
+                .css('border', 'none')
+                .css('background-size', '21px 21px')
+                .css('background-repeat', 'no-repeat')
+                .css('background-position-x', '1px')
+                .css('background-position-t', '1px')
+                .css('float', 'left');
+            $('#playnow-' + videoId).click(function () {
+                chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
+                $('ul.html5-context-menu').hide();
+            });
+            $('#queue-' + videoId).click(function () {
+                chrome.extension.sendMessage({action: 'queueThis', url: url}, function (response) {});
+                $('ul.html5-context-menu').hide();
+            });
+            $('#playnext-' + videoId).click(function () {
+                chrome.extension.sendMessage({action: 'playThisNext', url: url}, function (response) {});
+                $('ul.html5-context-menu').hide();
+            });
         }
-
-        var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + combineVideoIdList(videoIdList) + "&key=AIzaSyA3INgfTLddMbrJm8f68xpvfPZDAzDqk10";
-        $.getJSON(url, function (data) {
-            for (var i = 0; i < data.items.length; i++) {
-                var item = data.items[i];
-                var title = item.snippet.title;
-                var videoID = item.id;
-                var videoURL = 'https://www.youtube.com/watch?v=';
-                var url = videoURL + videoID;
-
-                videoList.push({
-                    id: videoID,
-                    title: title,
-                    url: url
-                });
-            }
-
-            console.log('Found these videos embedded: ' + videoList);
-            if (callback) {
-                callback(videoList);
-            }
-        });
     }
 };
 

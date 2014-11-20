@@ -23,7 +23,8 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/jquery-1.7.2.min.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"]
+        "js": ["js/jquery-1.7.2.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
+        "all_frames": true
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]
@@ -45,5 +46,8 @@
     }, {
         "matches": ["*://*.animelab.com/player/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/animelab-content-scripts.js"]
-    }]
+    }],
+    "web_accessible_resources": [
+        "images/*"
+    ]
 }

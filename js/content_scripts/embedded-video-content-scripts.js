@@ -40,7 +40,6 @@ function getEmbeddedVideos(callback) {
             });
         }
 
-        console.log('Found these videos embedded: ' + videoList);
         if (callback) {
             callback(videoList);
         }

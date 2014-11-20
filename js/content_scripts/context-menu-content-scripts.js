@@ -57,3 +57,12 @@ function createContextMenu(linkUrl) {
 }
 
 addContextMenuTo('a');
+
+$(document).ready(function() {
+    for (var i = 0; i < allModules.length; i++) {
+        var module = allModules[i];
+        if (module.createCustomContextMenus) {
+            module.createCustomContextMenus();
+        }
+    }
+});
