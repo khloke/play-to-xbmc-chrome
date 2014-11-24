@@ -272,7 +272,7 @@ var SoundcloudModule = {
     getPluginPath: function(url, callback) {
         getSoundcloudTrackId(url, function(videoId) {
             if (videoId != null) {
-                callback('plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15');
+                callback('plugin://plugin.audio.soundcloud/play/?id=' + videoId);
             }
         });
     }
@@ -353,7 +353,7 @@ var YoutubeModule = {
     createCustomContextMenus: function() {
         //Create context menus for embedded youtube videos
         var url = $('a.html5-title-logo').attr('href');
-        if (url) {
+        if (url && url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
             var $youtubeContextMenu = $('ul.html5-context-menu');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnow-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play Now</a></li>');
