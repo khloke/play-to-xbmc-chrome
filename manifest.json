@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.7.1.1",
+    "version": "1.7.1.2",
     "name": "Play to XBMC/Kodi",
     "description": "Play, queue and remote control your favourite online media on XBMC/Kodi.",
     "options_page": "options.html",
