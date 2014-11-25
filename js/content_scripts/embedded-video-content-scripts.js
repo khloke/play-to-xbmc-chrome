@@ -23,6 +23,10 @@ function getEmbeddedVideos(callback) {
             videoIdList.push(obj.src.match(regex)[1]);
         }
     }
+    
+    if (videoIdList.length === 0) {
+        return;
+    }
 
     var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + combineVideoIdList(videoIdList) + "&key=AIzaSyA3INgfTLddMbrJm8f68xpvfPZDAzDqk10";
     $.getJSON(url, function (data) {
