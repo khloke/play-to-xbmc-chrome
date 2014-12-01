@@ -299,7 +299,7 @@ function getSoundcloudTrackId(url, callback) {
 var TwitchTvModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            "^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$"
+            "^(https|http)://(www\.)?twitch.tv/([^&/#\?]+).+$"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
@@ -307,7 +307,7 @@ var TwitchTvModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        var videoId = url.match('^(https|http)://(www\.)?twitch.tv/([^_&/#\?]+).*$')[3];
+        var videoId = url.match('^(https|http)://(www\.)?twitch.tv/([^&/#\?]+).*$')[3];
         callback('plugin://plugin.video.twitch/playLive/' + videoId + '/');
     }
 };
