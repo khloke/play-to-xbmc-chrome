@@ -285,7 +285,10 @@ function initWatchdog() {
                     });
                 } else {
                     if (isPlaying) {
-                        $('#currentTime').html(formatSeconds(sliderValue + 1));
+                        var $currentTime = $('#currentTime');
+                        var top = ($('#seekerRow').position().top + 30);
+                        $currentTime.css('top', top + 'px');
+                        $currentTime.html(formatSeconds(sliderValue + 1));
                         $seeker.slider("value", sliderValue + 1);
                     }
                 }
@@ -570,8 +573,13 @@ function initSeekerSlider() {
         if (playerId == 0 || playerId == 1) {
             getPlayerTimes(playerId, function (timeInSeconds, totalTimeInSeconds) {
                 if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
-                    $('#currentTime').html(formatSeconds(timeInSeconds));
-                    $('#totalTime').html(formatSeconds(totalTimeInSeconds));
+                    var $currentTime = $('#currentTime');
+                    var $totalTime = $('#totalTime');
+                    var top = ($('#seekerRow').position().top + 30);
+                    $currentTime.css('top', top + 'px');
+                    $totalTime.css('top', top + 'px');
+                    $currentTime.html(formatSeconds(timeInSeconds));
+                    $totalTime.html(formatSeconds(totalTimeInSeconds));
                     $seeker.slider({
                         max: totalTimeInSeconds,
                         value: timeInSeconds
@@ -608,8 +616,13 @@ function initPlayTimes() {
         if (playerId == 0 || playerId == 1) {
             getPlayerTimes(playerId, function (timeInSeconds, totalTimeInSeconds) {
                 if (timeInSeconds >= 0 && totalTimeInSeconds >= 0) {
-                    $('#currentTime').html(formatSeconds(timeInSeconds));
-                    $('#totalTime').html(formatSeconds(totalTimeInSeconds));
+                    var $currentTime = $('#currentTime');
+                    var $totalTime = $('#totalTime');
+                    var top = ($('#seekerRow').position().top + 30);
+                    $currentTime.css('top', top + 'px');
+                    $totalTime.css('top', top + 'px');
+                    $currentTime.html(formatSeconds(timeInSeconds));
+                    $totalTime.html(formatSeconds(totalTimeInSeconds));
                 }
             });
         } else {
