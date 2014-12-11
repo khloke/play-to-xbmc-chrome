@@ -459,6 +459,52 @@ var SopcastModule = {
     }
 };
 
+var UrgantShowModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^.*urgantshow.ru/page/\\d+/\\d+"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getUrgantShowVideoUrl'}, function (response) {
+                if (response) {
+                    var urgantShowLink = response.url;
+                    callback(urgantShowLink);
+                }
+            });
+        });
+    }
+};
+
+var KinoLiveModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^.*kino-live\\.org/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+
+    getMediaType: function() {
+        return 'video';
+    },
+
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getKinoLiveVideoUrl'}, function (response) {
+                if (response) {
+                    callback(response.url);
+                }
+            });
+        });
+    }
+};
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
@@ -481,5 +527,7 @@ var allModules = [
     KatsomoModule,
     AcestreamModule,
     SopcastModule,
-    AnimeLabModule
+    AnimeLabModule,
+    UrgantShowModule,
+    KinoLiveModule
 ];
