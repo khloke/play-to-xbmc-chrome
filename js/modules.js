@@ -307,8 +307,13 @@ var TwitchTvModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        var videoId = url.match('^(https|http)://(www\.)?twitch.tv/([^&/#\?]+).*$')[3];
-        callback('plugin://plugin.video.twitch/playLive/' + videoId + '/');
+        if (url.match('/b/')) {
+            var videoId = url.match('^(https|http)://(www\.)?twitch.tv/[^&/#\?]+/b/([^&/#\?]+).*$')[3];
+            callback('plugin://plugin.video.twitch/playVideo/a' + videoId + '/');
+        } else {
+            var videoId = url.match('^(https|http)://(www\.)?twitch.tv/([^&/#\?]+).*$')[3];
+            callback('plugin://plugin.video.twitch/playLive/' + videoId + '/');
+        }
     }
 };
 
