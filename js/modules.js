@@ -272,7 +272,7 @@ var SoundcloudModule = {
     getPluginPath: function(url, callback) {
         getSoundcloudTrackId(url, function(videoId) {
             if (videoId != null) {
-                callback('plugin://plugin.audio.soundcloud/play/?id=' + videoId);
+                callback('plugin://plugin.audio.soundcloud/play/?audio_id=' + videoId);
             }
         });
     }
