@@ -46,6 +46,9 @@
     }, {
         "matches": ["*://*.animelab.com/player/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/animelab-content-scripts.js"]
+    }, {
+        "matches": ["*://*.lynda.com/*"],
+        "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/lyndacom-content-scripts.js"]
     }],
     "web_accessible_resources": [
         "images/*"

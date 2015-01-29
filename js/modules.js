@@ -434,6 +434,27 @@ var KatsomoModule = {
     }
 };
 
+var LyndaModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*lynda.com/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
 var AcestreamModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -486,5 +507,6 @@ var allModules = [
     KatsomoModule,
     AcestreamModule,
     SopcastModule,
-    AnimeLabModule
+    AnimeLabModule,
+    LyndaModule
 ];
