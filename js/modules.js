@@ -142,6 +142,22 @@ var DailyMotionModule = {
     }
 };
 
+var DailyMotionLiveModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*dailymotion.com/live/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        var videoId = url.match('(https|http)://([^_&/#\?]+\.)?dailymotion.com/live/([^_&/#\?]+)')[3];
+        callback('plugin://plugin.video.dailymotion_com/?url=' + videoId + '&mode=playLiveVideo');
+    }
+};
+
 var eBaumsWorldModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -494,6 +510,7 @@ var allModules = [
     FreerideModule,
     CollegeHumorModule,
     DailyMotionModule,
+    DailyMotionLiveModule,
     eBaumsWorldModule,
     ArdMediaThekModule,
     HuluModule,
