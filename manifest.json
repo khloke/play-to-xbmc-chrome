@@ -49,6 +49,12 @@
     }, {
         "matches": ["*://*.lynda.com/*"],
         "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/lyndacom-content-scripts.js"]
+    }, {
+        "matches": ["*://*.urgantshow.ru/page/*"],
+        "js": ["js/content_scripts/urgantshow-content-scripts.js", "js/jquery-1.7.2.min.js"]
+    }, {
+        "matches": ["*://*.kino-live.org/*"],
+        "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-1.7.2.min.js"]
     }],
     "web_accessible_resources": [
         "images/*"
