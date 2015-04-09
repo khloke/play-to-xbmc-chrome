@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.7.3.0",
+    "version": "1.7.4.0",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
     "options_page": "options.html",
@@ -55,6 +55,9 @@
     }, {
         "matches": ["*://*.kino-live.org/*"],
         "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-1.7.2.min.js"]
+    }, {
+        "matches": ["*://*.vessel.com/videos/*"],
+        "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-1.7.2.min.js"]
     }],
     "web_accessible_resources": [
         "images/*"

@@ -547,6 +547,27 @@ var KinoLiveModule = {
     }
 };
 
+var VesselLabModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*vessel.com/videos/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
@@ -573,5 +594,6 @@ var allModules = [
     AnimeLabModule,
     LyndaModule,
     UrgantShowModule,
-    KinoLiveModule
+    KinoLiveModule,
+    VesselLabModule
 ];
