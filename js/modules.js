@@ -328,6 +328,12 @@ var TwitchTvModule = {
         if (url.match('/b/')) {
             var videoId = url.match('^(https|http)://(www\.)?twitch.tv/[^&/#\?]+/b/([^&/#\?]+).*$')[3];
             callback('plugin://plugin.video.twitch/playVideo/a' + videoId + '/');
+        } else if (url.match('/v/')) {
+            var videoId = url.match('^(https|http)://(www\.)?twitch.tv/[^&/#\?]+/v/([^&/#\?]+).*$')[3];
+            callback('plugin://plugin.video.twitch/playVideo/v' + videoId + '/');
+        } else if (url.match('/c/')) {
+            var videoId = url.match('^(https|http)://(www\.)?twitch.tv/[^&/#\?]+/c/([^&/#\?]+).*$')[3];
+            callback('plugin://plugin.video.twitch/playVideo/c' + videoId + '/');
         } else {
             var videoId = url.match('^(https|http)://(www\.)?twitch.tv/([^&/#\?]+).*$')[3];
             callback('plugin://plugin.video.twitch/playLive/' + videoId + '/');
