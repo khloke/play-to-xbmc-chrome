@@ -353,7 +353,7 @@ var VimeoModule = {
     },
     getPluginPath: function(url, callback) {
         var videoId = url.match('^(https|http)://(www\.)?vimeo.com[^/]*/(\\d+).*$')[3];
-        callback('plugin://plugin.video.vimeo/?action=play_video&videoid=' + videoId);
+        callback('plugin://plugin.video.vimeo/play/?video_id=' + videoId);
     }
 };
 
