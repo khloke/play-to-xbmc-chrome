@@ -312,7 +312,28 @@ function getSoundcloudTrackId(url, callback) {
             }
         }
     });
-}
+};
+
+var StreamCloudModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*streamcloud.eu/([a-zA-Z0-9]+)/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function (tab) {
+            chrome.tabs.sendMessage(tab.id, {action: 'getStreamCloudVideo'}, function (response) {
+                if (response) {
+                    callback(response.url);
+                }
+            });
+        });
+    }
+};
 
 var TwitchTvModule = {
     canHandleUrl: function(url) {
@@ -592,6 +613,7 @@ var allModules = [
     LiveleakModule,
     MixcloudModule,
     SoundcloudModule,
+    StreamCloudModule,
     MyCloudPlayersModule,
     TwitchTvModule,
     YleAreenaModule,

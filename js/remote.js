@@ -179,7 +179,7 @@ function removeThisFromPlaylist(caller) {
 var favArrayKey = "fav-array";
 
 function getAllFavourites() {
-    return localStorage[favArrayKey];
+    return localStorage[favArrayKey] || '[]';
 }
 
 function addToFavourites() {
