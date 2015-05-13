@@ -265,11 +265,14 @@ function clearNonPlayingPlaylist(callback) {
 }
 
 function playerSeek(value) {
+    var hours = Math.floor(value / 3600);
+    var minutes = Math.floor((value % 3600) / 60);
+    var seconds = Math.floor((value % 3600) % 60);
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
-            var playerseek = '{"jsonrpc": "2.0", "method": "Player.Seek", "params":{"playerid":' + playerid + ', "value":"' + value + '"}, "id" : 1}';
+            var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
             ajaxPost(playerseek, function () {
-                onChangeUpdate()
+                null;
             });
         }
     });
@@ -522,3 +525,15 @@ function toSeconds(hours, minutes, seconds) {
 
     return totalSeconds
 }
+
+function resume(currentTime, callback){
+	getSpeed(function(speed) {
+        if (speed > 0) {
+			setTimeout(function(){playerSeek(currentTime);},1000)
+		}
+		else{
+			resume(currentTime, callback);
+		}
+	}); 
+}
+
