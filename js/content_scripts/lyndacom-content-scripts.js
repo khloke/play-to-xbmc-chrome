@@ -5,7 +5,13 @@ chrome.extension.onMessage.addListener(
         if (request.action == "getVideoSrc") {
             var videoSrc = $('div.play-video').attr('data-vid');
             if (!videoSrc) {
-                videoSrc = decodeURIComponent($('div.slide-container param[name="flashvars"]').attr('value')).match("file=([^&]+)")[1];
+                var flashVars = decodeURIComponent($('div.slide-container param[name="flashvars"]').attr('value')).match("file=([^&]+)");
+                if (flashVars && flashVars.length > 1) {
+                    videoSrc = flashVars[1];
+                }
+            }
+            if (!videoSrc) {
+                videoSrc = $('.videoStage video').attr('h264');
             }
             sendResponse({videoSrc: videoSrc});
         }
