@@ -597,6 +597,23 @@ var VesselLabModule = {
     }
 };
 
+var SVTPLAYModule = {
+  canHandleUrl: function(url) {
+      var validPatterns = [
+          ".*svtplay.se/(video|klipp)/.*/.*"
+      ];
+      return urlMatchesOneOfPatterns(url, validPatterns);
+  },
+  getMediaType: function() {
+      return 'video';
+  },
+  getPluginPath: function(url, callback) {
+      var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]{7}\/.*)')[3];
+			videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
+      callback('plugin://plugin.video.svtplay/?url=' + encodeURIComponent(videoId) + "&mode=video");
+  }
+};
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
@@ -614,6 +631,7 @@ var allModules = [
     MixcloudModule,
     SoundcloudModule,
     StreamCloudModule,
+    SVTPLAYModule,
     MyCloudPlayersModule,
     TwitchTvModule,
     YleAreenaModule,
