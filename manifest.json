@@ -14,7 +14,7 @@
     },
     "background": {
         "scripts": [
-            "js/jquery-1.7.2.min.js",
+            "js/jquery-2.1.4.min.js",
             "js/modules.js",
             "js/shared.js",
             "js/background_scripts/background.js",
@@ -23,44 +23,44 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/jquery-1.7.2.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
+        "js": ["js/jquery-2.1.4.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
         "all_frames": true
     },{
         "matches": ["http://www.liveleak.com/view*"],
-        "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-1.7.2.min.js"]
+        "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://www.youtube.com/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
     }, {
         "matches": ["*://soundcloud.com/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
     }, {
         "matches": ["*://streamcloud.eu/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]
     }, {
         "matches": ["*://mycloudplayers.com/*"],
         "js": ["js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
     }, {
         "matches": ["*://*.khanacademy.org/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
     }, {
         "matches": ["*://*.hulu.com/watch/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
     }, {
         "matches": ["*://*.animelab.com/player/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/animelab-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/animelab-content-scripts.js"]
     }, {
         "matches": ["*://*.lynda.com/*"],
-        "js": ["js/jquery-1.7.2.min.js", "js/content_scripts/lyndacom-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/lyndacom-content-scripts.js"]
     }, {
         "matches": ["*://*.urgantshow.ru/page/*"],
-        "js": ["js/content_scripts/urgantshow-content-scripts.js", "js/jquery-1.7.2.min.js"]
+        "js": ["js/content_scripts/urgantshow-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://*.kino-live.org/*"],
-        "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-1.7.2.min.js"]
+        "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://*.vessel.com/videos/*"],
-        "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-1.7.2.min.js"]
+        "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }],
     "web_accessible_resources": [
         "images/*"
