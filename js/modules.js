@@ -87,12 +87,10 @@ var AnimeLabModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
         });
     }
 };
@@ -204,21 +202,19 @@ var HuluModule = {
     },
     getPluginPath: function(url, callback) {
         var videoId = url.match('(https|http)://(www\.)?hulu.com/watch/([^_&/#\?]+)')[3];
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getContentId'}, function (response) {
-                if (response) {
-                    var contentId = JSON.parse(response.contentId);
-                    chrome.tabs.sendMessage(tab.id, {action: 'getEid'}, function (response2) {
-                        if (response2) {
-                            var eId = JSON.parse(response2.eid);
-                            callback(
-                                'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(contentId) + '\\"&videoid=\\"' +
-                                    encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"'
-                            );
-                        }
-                    })
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getContentId'}, function (response) {
+            if (response) {
+                var contentId = JSON.parse(response.contentId);
+                chrome.tabs.sendMessage(currentTabId, {action: 'getEid'}, function (response2) {
+                    if (response2) {
+                        var eId = JSON.parse(response2.eid);
+                        callback(
+                            'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(contentId) + '\\"&videoid=\\"' +
+                                encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"'
+                        );
+                    }
+                })
+            }
         });
     }
 };
@@ -234,13 +230,11 @@ var LiveleakModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getLiveLeakVideoUrl'}, function (response) {
-                if (response) {
-                    var liveLeakUrl = response.url;
-                    callback(liveLeakUrl);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getLiveLeakVideoUrl'}, function (response) {
+            if (response) {
+                var liveLeakUrl = response.url;
+                callback(liveLeakUrl);
+            }
         });
     }
 };
@@ -325,12 +319,10 @@ var StreamCloudModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getStreamCloudVideo'}, function (response) {
-                if (response) {
-                    callback(response.url);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getStreamCloudVideo'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
         });
     }
 };
@@ -490,12 +482,10 @@ var LyndaModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
         });
     }
 };
@@ -542,13 +532,11 @@ var UrgantShowModule = {
     },
 
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getUrgantShowVideoUrl'}, function (response) {
-                if (response) {
-                    var urgantShowLink = response.url;
-                    callback(urgantShowLink);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getUrgantShowVideoUrl'}, function (response) {
+            if (response) {
+                var urgantShowLink = response.url;
+                callback(urgantShowLink);
+            }
         });
     }
 };
@@ -566,12 +554,10 @@ var KinoLiveModule = {
     },
 
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getKinoLiveVideoUrl'}, function (response) {
-                if (response) {
-                    callback(response.url);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getKinoLiveVideoUrl'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
         });
     }
 };
@@ -587,12 +573,12 @@ var VesselLabModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            } else {
+                if (debugLogsEnabled) console.log("Did not receive response for message")
+            }
         });
     }
 };

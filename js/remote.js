@@ -76,40 +76,50 @@ function doAction(item, callback) {
 
 function playCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'playNow'}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'playThis', tabId: tab.id, url: tab.url}, function (response) {
+            onChangeUpdate();
+            turnOffLoading(caller);
+        });
     });
 }
 
 function playThisUrl(url, caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'playThis', tabId: tab.id, url: url}, function (response) {
+            onChangeUpdate();
+            turnOffLoading(caller);
+        });
     });
 }
 
 function playNextCurrentUrl(caller) {
-    chrome.extension.sendMessage({action: 'playNextCurrent'}, function (response) {
-        onChangeUpdate();
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'playThisNext', tabId: tab.id, url: tab.url}, function (response) {
+            onChangeUpdate();
+        });
     });
 }
 
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'queue'}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'queueThis', tabId: tab.id, url: tab.url}, function (response) {
+            onChangeUpdate();
+            turnOffLoading(caller);
+        });
     });
 
 }
 
 function queueThisUrl(url, caller) {
     turnOnLoading(caller);
-    chrome.extension.sendMessage({action: 'queueThis', url: url}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'queueThis', url: url, tabId: tab.id}, function (response) {
+            onChangeUpdate();
+            turnOffLoading(caller);
+        });
     });
 
 }
@@ -132,9 +142,16 @@ function queuePlaylist(caller) {
 }
 
 function queueList(videoList, caller) {
-    chrome.extension.sendMessage({action: 'queueList', urlList:videoList, url:'https://www.youtube.com/'}, function (response) {
-        onChangeUpdate();
-        turnOffLoading(caller);
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({
+            action: 'queueList',
+            tabId: tab.id,
+            urlList: videoList,
+            url: 'https://www.youtube.com/'
+        }, function (response) {
+            onChangeUpdate();
+            turnOffLoading(caller);
+        });
     });
 }
 
@@ -144,7 +161,7 @@ function queueYoutubeList(caller) {
             if (response && response.urlList) {
                 chrome.tabs.getSelected(null, function (tab) {
                     var tabUrl = tab.url;
-                    chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
+                    chrome.extension.sendMessage({action: 'queueList', tabId: tab.id, urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
                     });
@@ -160,7 +177,7 @@ function queueSoundcloudSet(caller) {
             if (response && response.trackIds) {
                 chrome.tabs.getSelected(null, function (tab) {
                     var tabUrl = tab.url;
-                    chrome.extension.sendMessage({action: 'queueList',urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
+                    chrome.extension.sendMessage({action: 'queueList', tabId: tab.id,urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
                     });
@@ -171,8 +188,10 @@ function queueSoundcloudSet(caller) {
 }
 
 function removeThisFromPlaylist(caller) {
-    chrome.extension.sendMessage({action: 'removeThis'}, function (response) {
-        onChangeUpdate();
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.extension.sendMessage({action: 'removeThis', tabId: tab.id}, function (response) {
+            onChangeUpdate();
+        });
     });
 }
 

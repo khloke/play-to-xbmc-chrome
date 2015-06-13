@@ -14,18 +14,21 @@ function getSiteName(url) {
 }
 
 function getPluginPath(url, callback) {
+    if (debugLogsEnabled) console.log("Number of modules available: " + allModules.length);
+    var foundModule = false;
     for (var i = 0; i < allModules.length; i++) {
         var module = allModules[i];
         if (module.canHandleUrl(url)) {
+            foundModule = true;
+            if (debugLogsEnabled) console.log("Found module to handle url: " + url);
             module.getPluginPath(url, function(path) {
+                if (debugLogsEnabled) console.log("Path to play media: " + url);
                 callback(module.getMediaType(), path);
             });
         }
     }
 
-    if (debugLogsEnabled) {
-        console.log("No module found to handle url: '" + url + "'");
-    }
+    if (debugLogsEnabled && !foundModule) console.log("No module found to handle url: " + url + "");
 }
 
 function queueItem(url, callback) {
@@ -155,7 +158,7 @@ function validVideoPage(url, callback) {
         callback();
     } else {
         chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
+            chrome.tabs.sendMessage(currentTabId, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
                 }

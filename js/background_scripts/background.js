@@ -1,5 +1,8 @@
+var currentTabId;
+
 chrome.extension.onMessage.addListener(
     function (request, sender, sendResponse) {
+        if (request.tabId) currentTabId = request.tabId;
         switch (request.action) {
             case 'isAvailable':
                 getXbmcJsonVersion(function (version) {
@@ -11,20 +14,9 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
 
-            case 'playNow':
-                playCurrentUrl(function () {
-                    sendResponse({response: "OK"});
-                });
-                break;
-
             case 'playThis':
+                currentTabId = request.tabId;
                 playThisUrl(request.url, function() {
-                    sendResponse({response: "OK"});
-                });
-                break;
-
-            case 'queue':
-                queueCurrentUrl(function () {
                     sendResponse({response: "OK"});
                 });
                 break;
@@ -44,12 +36,6 @@ chrome.extension.onMessage.addListener(
 
             case 'removeThis':
                 removeThisFromPlaylist(function () {
-                    sendResponse({response: "OK"});
-                });
-                break;
-
-            case 'playNextCurrent':
-                playNextCurrentUrl(function () {
                     sendResponse({response: "OK"});
                 });
                 break;
@@ -88,14 +74,6 @@ function doAction(item, callback) {
     });
 }
 
-function playCurrentUrl(callback) {
-    doAction(actions.Stop, function () {
-        clearPlaylist(function() {
-            queueCurrentUrl(callback);
-        })
-    });
-}
-
 function playThisUrl(url, callback) {
     doAction(actions.Stop, function () {
         clearPlaylist(function() {
@@ -106,29 +84,9 @@ function playThisUrl(url, callback) {
     });
 }
 
-function playNextCurrentUrl(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
-        var tabUrl = tab.url;
-        getPlaylistPosition(function (position) {
-            insertItem(tabUrl, position + 1, function () {
-                callback();
-            });
-        });
-    });
-}
-
 function playThisNext(url, callback) {
     getPlaylistPosition(function (position) {
         insertItem(url, position + 1, function () {
-            callback();
-        });
-    });
-}
-
-function queueCurrentUrl(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
-        var tabUrl = tab.url;
-        queueItem(tabUrl, function () {
             callback();
         });
     });
