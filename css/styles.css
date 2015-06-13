@@ -38,7 +38,7 @@
     width: 195px;
 }
 
-#seekerRow a.ui-slider-handle {
+#seekerRow span.ui-slider-handle {
     border: 1px solid #1586cc;
     background: #179ccc 50% 50% repeat-x;
     font-weight: bold;
@@ -47,7 +47,7 @@
     border-radius: 10px;
 }
 
-#seekerRow a.ui-slider-handle:hover {
+#seekerRow span.ui-slider-handle:hover {
     background-color: #0f7dcc;
 }
 
