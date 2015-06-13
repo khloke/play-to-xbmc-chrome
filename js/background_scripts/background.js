@@ -55,6 +55,12 @@ chrome.extension.onMessage.addListener(
                     sendResponse({response: "OK"});
                 });
                 break;
+			case 'resume':
+				playThisUrl(request.url, function(){
+				resume(request.currentTime, function () {
+                    sendResponse({response: "OK"});
+                })});
+                break;
         }
 
         return true;

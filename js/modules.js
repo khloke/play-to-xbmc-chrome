@@ -395,10 +395,13 @@ var YoutubeModule = {
     createCustomContextMenus: function() {
         //Create context menus for embedded youtube videos
         var url = $('a.html5-title-logo').attr('href');
+		var player = $('video')[0];
         if (url && url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
+			
             var $youtubeContextMenu = $('ul.html5-context-menu');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnow-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play Now</a></li>');
+			$youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="resume-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Resume</a></li>');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="queue-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Queue</a></li>');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnext-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play this Next</a></li>');
             $('.playtoxbmc-icon')
@@ -410,6 +413,11 @@ var YoutubeModule = {
                 .css('float', 'left');
             $('#playnow-' + videoId).click(function () {
                 chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
+                $('ul.html5-context-menu').hide();
+            });
+			$('#resume-' + videoId).click(function () {
+				player.pause();
+                chrome.extension.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
             $('#queue-' + videoId).click(function () {
