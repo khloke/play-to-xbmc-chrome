@@ -3,12 +3,7 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = false;
-chrome.extension.sendMessage({action: 'isDebugLogsEnabled'}, function (response) {
-    if (response) {
-        debugLogsEnabled = response.response;
-    }
-});
+var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs];
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
@@ -26,6 +21,10 @@ function getPluginPath(url, callback) {
                 callback(module.getMediaType(), path);
             });
         }
+    }
+
+    if (debugLogsEnabled) {
+        console.log("No module found to handle url: '" + url + "'");
     }
 }
 
