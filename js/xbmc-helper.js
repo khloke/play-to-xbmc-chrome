@@ -178,7 +178,7 @@ function clearPlaylist(callback) {
     });
 }
 
-function addItemsToPlaylist(items, callback) {
+function addItemsToPlaylist(items, callback, resumeTime) {
     if (!items || items.length <= 0) {
         callback(null);
         return;
@@ -202,7 +202,14 @@ function addItemsToPlaylist(items, callback) {
                 addToPlaylist += "]";
 
                 ajaxPost(addToPlaylist, function (response) {
-                    var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : 0}}, "id": 1}';
+                    var resume = '';
+                    if (resumeTime) {
+                        var hours = Math.floor(resumeTime / 3600);
+                        var minutes = Math.floor((resumeTime % 3600) / 60);
+                        var seconds = Math.floor((resumeTime % 3600) % 60);
+                        resume = ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}';
+                    }
+                    var playVideo = '{"jsonrpc": "2.0", "method": "Player.Open", "params":{"item":{"playlistid":' + playlistId + ', "position" : 0}' + resume + '}, "id": 1}';
 
                     //if nothing is playing, play what we inserted
                     if (playerId == null) {
@@ -274,7 +281,7 @@ function playerSeek(value) {
         if (playerid != null) {
             var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
             ajaxPost(playerseek, function () {
-                null;
+                onChangeUpdate();
             });
         }
     });
