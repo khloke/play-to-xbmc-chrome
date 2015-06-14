@@ -306,7 +306,7 @@ function getSoundcloudTrackId(url, callback) {
             }
         }
     });
-};
+}
 
 var StreamCloudModule = {
     canHandleUrl: function(url) {
@@ -412,6 +412,7 @@ var YoutubeModule = {
                 .css('background-size', '17px 17px')
                 .css('float', 'left');
             $('#playnow-' + videoId).click(function () {
+                player.pause();
                 chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
