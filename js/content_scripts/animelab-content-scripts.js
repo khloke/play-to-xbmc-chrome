@@ -2,11 +2,12 @@
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
+        var $video = $('video');
         if (request.action == "getVideoSrc") {
-            var $video = $('video');
             var videoSrc = $video.attr('src');
-            $video[0].pause();
             sendResponse({videoSrc: videoSrc});
+        } else if (request.action == "onPlayback") {
+            $video[0].pause();
         }
     }
 );

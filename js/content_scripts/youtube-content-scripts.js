@@ -5,6 +5,8 @@ chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.action == "getPlaylistUrls") {
             sendResponse({urlList: JSON.stringify(urlList)});
+        } else if (request.action == "onPlayback") {
+            $("video")[0].pause();
         }
     }
 );
