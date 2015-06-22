@@ -6,7 +6,7 @@ $(document).ready(function(){
     $('#newProfileBtn').click(function(){createNewProfile()});
     $('#deleteProfileBtn').click(function(){deleteThisProfile()});
     $('#enableMultiHost').change(function(){
-        localStorage.setItem(storageKeys.enableMultiHost, $(this).attr('checked') == 'checked');
+        localStorage.setItem(storageKeys.enableMultiHost, $(this).prop('checked'));
         populateProfiles();
     });
     $('#paypalDonate').click(function() {
@@ -54,8 +54,8 @@ function saveOptions() {
 
         localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
         localStorage.setItem(storageKeys.magnetAddOn, $('#magnetAddOn').val());
-        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').attr('checked')=='checked');
-        localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').attr('checked')=='checked');
+        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').prop('checked'));
+        localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').prop('checked'));
 
         // Update status to let user know options were saved
         showAlertMessage(status, "Options Saved");
