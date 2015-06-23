@@ -582,11 +582,13 @@ var VesselLabModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
+        if (debugLogsEnabled) console.log("Sending message to tab '" + currentTabId + "' for video source.");
         chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (debugLogsEnabled) {console.log("Response from content script:"); console.log(response); }
             if (response) {
                 callback(response.videoSrc);
             } else {
-                if (debugLogsEnabled) console.log("Did not receive response for message")
+                if (debugLogsEnabled) console.log("Did not receive response for message");
             }
         });
     }

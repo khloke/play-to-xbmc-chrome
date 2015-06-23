@@ -9,6 +9,9 @@ $(document).ready(function(){
         localStorage.setItem(storageKeys.enableMultiHost, $(this).prop('checked'));
         populateProfiles();
     });
+    $('#enableDebugLogs').change(function() {
+        chrome.extension.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
+    });
     $('#paypalDonate').click(function() {
         goToPaypal();
     });

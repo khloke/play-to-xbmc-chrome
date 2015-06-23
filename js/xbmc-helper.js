@@ -3,7 +3,7 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs];
+var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true';
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
@@ -22,7 +22,7 @@ function getPluginPath(url, callback) {
             foundModule = true;
             if (debugLogsEnabled) console.log("Found module to handle url: " + url);
             module.getPluginPath(url, function(path) {
-                if (debugLogsEnabled) console.log("Path to play media: " + url);
+                if (debugLogsEnabled) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
             });
         }
