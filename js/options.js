@@ -83,15 +83,15 @@ function restoreOptions() {
     }
 
     if (isMultiHostEnabled()) {
-        $('#enableMultiHost').attr("checked", true);
+        $('#enableMultiHost').prop("checked", true);
     } else {
-        $('#enableMultiHost').removeAttr("checked");
+        $('#enableMultiHost').prop("checked", false);
     }
 
     if (isDebugLogsEnabled()) {
-        $('#enableDebugLogs').attr("checked", true);
+        $('#enableDebugLogs').prop("checked", true);
     } else {
-        $('#enableDebugLogs').removeAttr("checked");
+        $('#enableDebugLogs').prop("checked", false);
     }
 
     var showRepeat = localStorage[storageKeys.showRepeat];
@@ -123,9 +123,9 @@ function restoreUrl() {
     }
 
     if (isMultiHostEnabled()) {
-        $('#enableMultiHost').attr("checked", true);
+        $('#enableMultiHost').prop("checked", true);
     } else {
-        $('#enableMultiHost').removeAttr("checked");
+        $('#enableMultiHost').prop("checked", false);
     }
 
     $('#showRepeat').val(showRepeat);
