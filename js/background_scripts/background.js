@@ -15,8 +15,7 @@ chrome.extension.onMessage.addListener(
                 break;
 
             case 'playThis':
-                currentTabId = request.tabId;
-                chrome.tabs.sendMessage(currentTabId, {action: 'onPlayback'});
+                if (currentTabId) chrome.tabs.sendMessage(currentTabId, {action: 'onPlayback'});
                 playThisUrl(request.url, function() {
                     sendResponse({response: "OK"});
                 });
