@@ -1,9 +1,9 @@
-
 initYouTubeList();
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.action == "getPlaylistUrls") {
+            initYouTubeList();
             sendResponse({urlList: JSON.stringify(urlList)});
         } else if (request.action == "onPlayback") {
             $("video")[0].pause();
@@ -18,45 +18,40 @@ chrome.extension.onMessage.addListener(
 function initYouTubeList(){
     var tabUrl = window.location.href;
     var youTubeListId = getURLParameter(tabUrl, 'list');
-    if (youTubeListId){
+    if (youTubeListId && youTubeListId != playlistId){
+        playlistId = youTubeListId;
         extractVideosFromYouTubePlaylist(youTubeListId);
     }
 }
 
-function extractVideosFromYouTubePlaylist(playListID, index) {
-    var currentIndex;
-    if (!index) {
-        urlList = [];
-        currentIndex = 1;
-    } else {
-        currentIndex = index;
-    }
-    var playListURL = '//gdata.youtube.com/feeds/api/playlists/' + playListID + '?v=2&alt=json&start-index=' + currentIndex;
+function extractVideosFromYouTubePlaylist(playListID, token) {
     var videoURL = 'https://www.youtube.com/watch?v=';
+    var playListURL = '//www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=' + playListID + '&key=AIzaSyA3INgfTLddMbrJm8f68xpvfPZDAzDqk10';
+    if (token) {
+        playListURL = playListURL + '&pageToken=' + token;
+    }
+
     $.getJSON(playListURL, function (data) {
-        //GLOBAL
+        var nextPageToken;
+        if (data.nextPageToken) {
+            nextPageToken = data.nextPageToken;
+        }
 
-        var totalVideoCount = data.feed.openSearch$totalResults.$t;
-        var itemsPerPage = data.feed.openSearch$itemsPerPage.$t;
-        var startIndex = data.feed.openSearch$startIndex.$t;
-
-        $.each(data.feed.entry, function (i, item) {
-            var feedURL = item.link[1].href;
-            var fragments = feedURL.split("/");
-            var videoID = fragments[fragments.length - 2];
+        $.each(data.items, function (i, item) {
+            var videoID = item.contentDetails.videoId;
             var url = videoURL + videoID;
 
             urlList.push(url);
         });
 
-        if (totalVideoCount > itemsPerPage && startIndex < (totalVideoCount - totalVideoCount%itemsPerPage + 1)) {
+        if (nextPageToken) {
             extractVideosFromYouTubePlaylist(playListID, startIndex + itemsPerPage);
         }
     });
 }
 
+var playlistId;
 var urlList = [];
-
 
 function getURLParameter(tabUrl, sParam) {
     var sPageURL = tabUrl.substring(tabUrl.indexOf('?') + 1 );
