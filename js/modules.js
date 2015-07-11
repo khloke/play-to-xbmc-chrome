@@ -255,6 +255,28 @@ var MixcloudModule = {
     }
 };
 
+var Mp4UploadModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^(https|http)://(www\.)?mp4upload.com/([a-zA-Z0-9]+)$"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        var id = url.split("/")[3];
+        // get embedded data
+        $.ajax({ url: 'http://www.mp4upload.com/embed-' + id + ".html", success: function(data) {
+                var found = data.match("'file': '(.+?)'");
+                if (found) {
+                    callback(found[1]);
+                }
+        }});
+    }
+};
+
 var MyCloudPlayersModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -640,5 +662,6 @@ var allModules = [
     LyndaModule,
     UrgantShowModule,
     KinoLiveModule,
-    VesselLabModule
+    VesselLabModule,
+    Mp4UploadModule
 ];
