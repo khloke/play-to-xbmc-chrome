@@ -70,6 +70,8 @@ var TorrentsLinkModule = {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
         } else if (localStorage['magnetAddOn'] == 'kmediatorrent') {
             callback('plugin://plugin.video.kmediatorrent/play/' + encodeURIComponent(url));
+        } else if (localStorage['magnetAddOn'] == 'torrenter') {
+            callback('plugin://plugin.video.torrenter/?action=playSTRM&url=' + encodeURIComponent(url));
         } else {
             callback('plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(url));
         }
