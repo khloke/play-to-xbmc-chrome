@@ -1,5 +1,6 @@
 
 initYouTubeList();
+injectIcon();
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -15,6 +16,7 @@ chrome.extension.onMessage.addListener(
  * if this is youtube page which is part of a playlist , show all videos and the option to queue them all
  *
  */
+
 function initYouTubeList(){
     var tabUrl = window.location.href;
     var youTubeListId = getURLParameter(tabUrl, 'list');
@@ -58,6 +60,7 @@ function extractVideosFromYouTubePlaylist(playListID, index) {
 var urlList = [];
 
 
+
 function getURLParameter(tabUrl, sParam) {
     var sPageURL = tabUrl.substring(tabUrl.indexOf('?') + 1 );
     var sURLVariables = sPageURL.split('&');
@@ -68,4 +71,38 @@ function getURLParameter(tabUrl, sParam) {
         }
     }
     return null;
+}
+
+/** Adds a little kodi tv icon on each thumnail corner
+ * This allows quick play of the video from youtube video
+ * search results. Don't have to right click and look in context menu
+*/
+
+function injectIcon(){
+
+    // attach the icon to all thumbnails first
+    $('.yt-lockup-thumbnail').prepend('<a class="playquick-link" target="_blank"> \
+        <img class="yt-play-icon" src="' + chrome.extension.getURL("images/icon.png") + '"/></a>');
+
+    // apply the appropriate css
+    $('img.yt-play-icon').css({"position": "absolute", "left": "168px", "top": "5px", "z-index": "999"});
+
+
+    // now give them all unique id's
+    $.each($('.playquick-link'), function(){
+        var videoId = $(this).parent().find('.yt-uix-sessionlink').attr("href").match('v=([^&]+)')[1];
+
+        $(this).attr("id", "playquick-" + videoId);
+
+        $('#playquick-' + videoId).click(function () {
+            playYouTubeVideo(videoId);
+        });
+
+    });
+}
+
+
+function playYouTubeVideo(videoId) {
+    var url =  "https://www.youtube.com/watch?v=" + videoId;
+    chrome.extension.sendMessage({action: 'quickPlayThis', url: url}, function (response) {});
 }

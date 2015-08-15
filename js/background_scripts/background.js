@@ -22,6 +22,12 @@ chrome.extension.onMessage.addListener(
                 });
                 break;
 
+            case 'quickPlayThis':
+                playThisUrl(request.url, function() {
+                    sendResponse({response: "OK"});
+                });
+                break;
+
             case 'queueThis':
                 queueThisUrl(request.url, function () {
                     sendResponse({response: "OK"});
@@ -228,7 +234,7 @@ function createHtml5VideoContextMenus() {
             });
         }
     });
-    
+
     chrome.contextMenus.create({
         title: "Play now",
         contexts: ["audio"],
