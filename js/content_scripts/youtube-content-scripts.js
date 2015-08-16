@@ -81,7 +81,7 @@ function getURLParameter(tabUrl, sParam) {
 function injectIcon(){
 
     // attach the icon to all thumbnails first
-    $('.yt-lockup-thumbnail').prepend('<a class="playquick-link" target="_blank"> \
+    $('.branded-page-v2-primary-col .yt-lockup-thumbnail').prepend('<a class="playquick-link" target="_blank"> \
         <img class="yt-play-icon" src="' + chrome.extension.getURL("images/icon.png") + '"/></a>');
 
     // apply the appropriate css
@@ -89,7 +89,7 @@ function injectIcon(){
 
 
     // now give them all unique id's
-    $.each($('.playquick-link'), function(){
+    $.each($('.branded-page-v2-primary-col .playquick-link'), function(){
         var videoId = $(this).parent().find('.yt-uix-sessionlink').attr("href").match('v=([^&]+)')[1];
 
         $(this).attr("id", "playquick-" + videoId);
