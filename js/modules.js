@@ -108,7 +108,25 @@ var ArdMediaThekModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        callback('plugin://plugin.video.ardmediathek_de/?mode=playVideo&url=' + encodeURIComponent(url));
+        callback('plugin://plugin.video.ardmediathek_de/?mode=playVideoUrl&url=' + encodeURIComponent(url));
+    }
+};
+
+var ZdfMediathekModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+		    ".*zdf.de/.*video/.*"
+        ];
+		
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+		var videoId = url.match('(https|http)://(www\.)?zdf.de/ZDFmediathek/#/beitrag/video/([^_&/#\?]+)/.*')[3];
+		
+        callback('plugin://plugin.video.zdf_de_lite/?mode=playVideo&url=' + encodeURIComponent(videoId));
     }
 };
 
@@ -665,5 +683,6 @@ var allModules = [
     UrgantShowModule,
     KinoLiveModule,
     VesselLabModule,
-    Mp4UploadModule
+    Mp4UploadModule,
+    ZdfMediathekModule
 ];
