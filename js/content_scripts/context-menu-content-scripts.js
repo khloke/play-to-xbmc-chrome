@@ -14,7 +14,7 @@ function addContextMenuTo(selector) {
             for (var i = 0; i < event.path.length; i++) {
                 var element = event.path[i];
                 if (element[matches] && element[matches]('a')) {
-                    createContextMenu(element.href);
+                    createContextMenu(element.getAttribute("href"));
                     isHovering = true;
                     break;
                 }
