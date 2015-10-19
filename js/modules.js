@@ -493,8 +493,7 @@ var YleAreenaModule = {
 var RuutuModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            "^(https|http)://www.ruutu.fi/ohjelmat/*",
-            "^(https|http)://www.ruutu.fi/video/f/*"
+            "^(https|http)://www.ruutu.fi/video/*"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
