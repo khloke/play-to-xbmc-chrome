@@ -478,7 +478,10 @@ var YoutubeModule = {
 var YleAreenaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            "^(https|http)://areena.yle.fi/tv/*"
+            "^(https|http)://areena.yle.fi/1-*",
+            "^(https|http)://areena.yle.fi/tv/suorat/*",
+            "^(https|http)://areena-v3.yle.fi/tv*",
+            "^(https|http)://areena-v3.yle.fi/tv/suora/*"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
