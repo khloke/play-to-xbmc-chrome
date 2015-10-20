@@ -295,8 +295,10 @@ function initWatchdog() {
                 if (watchDogCounter % 5 == 0) {
                     getPlayerTimes(playerId, function(timeInSeconds, totalTimeInSeconds){
                         $('#totalTime').html(formatSeconds(totalTimeInSeconds));
-                        $seeker.slider("value", timeInSeconds);
-                        $seeker.slider("max", totalTimeInSeconds);
+                        $seeker.slider({
+                            max: totalTimeInSeconds,
+                            value: timeInSeconds
+                        });
                     });
 
                     getSpeed(function(speed) {
@@ -599,6 +601,9 @@ function initSeekerSlider() {
                     $totalTime.css('top', top + 'px');
                     $currentTime.html(formatSeconds(timeInSeconds));
                     $totalTime.html(formatSeconds(totalTimeInSeconds));
+                    if (isDebugLogsEnabled()) {
+                        console.log('Total time in seconds: ' + totalTimeInSeconds);
+                    }
                     $seeker.slider({
                         max: totalTimeInSeconds,
                         value: timeInSeconds
