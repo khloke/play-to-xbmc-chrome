@@ -158,7 +158,7 @@ function validVideoPage(url, callback) {
         callback();
     } else {
         chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(currentTabId, {action: 'isValid'}, function (response) {
+            chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
                 }
