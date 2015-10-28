@@ -178,6 +178,21 @@ var DailyMotionLiveModule = {
     }
 };
 
+var ExuaModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*ex.ua/get/\\d+$"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback(url);
+    }
+};
+
 var eBaumsWorldModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -665,6 +680,7 @@ var allModules = [
     CollegeHumorModule,
     DailyMotionModule,
     DailyMotionLiveModule,
+    ExuaModule,
     eBaumsWorldModule,
     ArdMediaThekModule,
     HuluModule,
