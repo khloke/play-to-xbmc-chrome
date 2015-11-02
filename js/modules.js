@@ -209,6 +209,26 @@ var eBaumsWorldModule = {
     }
 };
 
+var FacebookModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*facebook.com/.*/videos/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getFacebookVideoUrl'}, function (response) {
+            if (response) {
+                var facebookUrl = response.url
+                callback(facebookUrl);
+            }
+        });
+    }
+};
+
 var FreerideModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -681,6 +701,7 @@ var allModules = [
     DailyMotionModule,
     DailyMotionLiveModule,
     ExuaModule,
+    FacebookModule,
     eBaumsWorldModule,
     ArdMediaThekModule,
     HuluModule,
