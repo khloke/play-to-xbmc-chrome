@@ -41,7 +41,7 @@ function createContextMenu(linkUrl) {
         }
     } else if (linkUrl && linkUrl.match('^/.*$')) {
         var tabUrl = window.location.href;
-        var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
+        var patternMatch = tabUrl.match('^(https|http)://([^/]+)/.*$');
         if (patternMatch) {
             chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
         } else {
