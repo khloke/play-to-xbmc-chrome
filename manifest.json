@@ -61,6 +61,9 @@
     }, {
         "matches": ["*://*.vessel.com/*"],
         "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
+    }, {
+        "matches": ["*://*.cda.pl/*"],
+        "js": ["js/content_scripts/cda-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }],
     "web_accessible_resources": [
         "images/*"

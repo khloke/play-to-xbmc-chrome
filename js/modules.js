@@ -117,7 +117,7 @@ var ZdfMediathekModule = {
         var validPatterns = [
 		    ".*zdf.de/.*video/.*"
         ];
-		
+
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
     getMediaType: function() {
@@ -125,7 +125,7 @@ var ZdfMediathekModule = {
     },
     getPluginPath: function(url, callback) {
 		var videoId = url.match('(https|http)://(www\.)?zdf.de/ZDFmediathek/#/beitrag/video/([^_&/#\?]+)/.*')[3];
-		
+
         callback('plugin://plugin.video.zdf_de_lite/?mode=playVideo&url=' + encodeURIComponent(videoId));
     }
 };
@@ -440,7 +440,7 @@ var YoutubeModule = {
 		var player = $('video')[0];
         if (url && url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
-			
+
             var $youtubeContextMenu = $('ul.html5-context-menu');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnow-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play Now</a></li>');
 			$youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="resume-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Resume</a></li>');
@@ -655,6 +655,26 @@ var SVTPLAYModule = {
   }
 };
 
+var CdaModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*cda.pl/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
+
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
@@ -686,5 +706,6 @@ var allModules = [
     KinoLiveModule,
     VesselLabModule,
     Mp4UploadModule,
-    ZdfMediathekModule
+    ZdfMediathekModule,
+    CdaModule
 ];
