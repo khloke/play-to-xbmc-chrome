@@ -181,7 +181,8 @@ var DailyMotionLiveModule = {
 var ExuaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
-            ".*ex.ua/get/\\d+$"
+            ".*ex.ua/get/\\d+$",
+            ".*ex.ua/playlist/.*\.m3u$"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
     },
