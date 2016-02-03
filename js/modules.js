@@ -54,6 +54,21 @@ var DirectAudioLinkModule = {
     }
 };
 
+var DumpertModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            '.*dumpert.nl/mediabase/*'
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback('plugin://plugin.video.dumpert/?action=play&video_page_url=' + encodeURIComponent(url));
+    }
+};
+
 var TorrentsLinkModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -678,6 +693,7 @@ var CdaModule = {
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
+    DumpertModule,
     TorrentsLinkModule,
     YoutubeModule,
     VimeoModule,
