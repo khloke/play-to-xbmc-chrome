@@ -14,7 +14,7 @@ var DirectVideoLinkModule = {
         var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'webm', 'm4v'];
         for (var i = 0; i < supportedVideoExtensions.length; i++) {
             var extension = supportedVideoExtensions[i];
-            var regex = '^.*\.(' + extension + '|' + extension + '\?.+)$';
+            var regex = '^.*\\.(' + extension + '|' + extension + '\\?.*)$';
             if (url.match(regex)) {
                 return true;
             }
@@ -38,7 +38,7 @@ var DirectAudioLinkModule = {
         var supportedVideoExtensions = ['mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'];
         for (var i = 0; i < supportedVideoExtensions.length; i++) {
             var extension = supportedVideoExtensions[i];
-            var regex = '^.*\.' + extension + "$";
+            var regex = '^.*\\.' + extension + "$";
             if (url.match(regex)) {
                 return true;
             }
