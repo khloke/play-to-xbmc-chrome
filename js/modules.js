@@ -83,6 +83,8 @@ var TorrentsLinkModule = {
     getPluginPath: function(url, callback) {
         if (localStorage['magnetAddOn'] == 'pulsar') {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
+        } else if (localStorage['magnetAddOn'] == 'quasar') {
+            callback('plugin://plugin.video.quasar/play?uri=' + encodeURIComponent(url));
         } else if (localStorage['magnetAddOn'] == 'kmediatorrent') {
             callback('plugin://plugin.video.kmediatorrent/play/' + encodeURIComponent(url));
         } else if (localStorage['magnetAddOn'] == 'torrenter') {
