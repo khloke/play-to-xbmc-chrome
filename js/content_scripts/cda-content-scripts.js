@@ -24,7 +24,7 @@ chrome.extension.onMessage.addListener(
         if (request.action == "getVideoSrc") {
             var urls = findUrls($('#player').text());
             for (var i = 0; i < urls.length; i++) {
-                if (urls[i].indexOf('.flv?') >= 0 || urls[i].indexOf('.mp4?') >= 0) {
+                if (urls[i].indexOf('.flv') >= 0 || urls[i].indexOf('.mp4') >= 0) {
                     var videoSrc = decodeURIComponent(urls[i]);
                     sendResponse({videoSrc: videoSrc});
                     return;
