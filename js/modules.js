@@ -683,10 +683,12 @@ var CdaModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (response) {
-                callback(response.videoSrc);
-            }
+        chrome.tabs.getSelected(null, function(tab){
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
         });
     }
 };
