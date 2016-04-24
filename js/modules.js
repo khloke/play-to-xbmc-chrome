@@ -694,6 +694,28 @@ var CdaModule = {
 };
 
 
+var XnxxModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*xnxx.com/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function(tab){
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
+
 var allModules = [
     DirectVideoLinkModule,
     DirectAudioLinkModule,
@@ -727,5 +749,6 @@ var allModules = [
     VesselLabModule,
     Mp4UploadModule,
     ZdfMediathekModule,
-    CdaModule
+    CdaModule,
+    XnxxModule
 ];
