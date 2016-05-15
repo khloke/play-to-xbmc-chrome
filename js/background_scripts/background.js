@@ -1,6 +1,6 @@
 var currentTabId;
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.tabId) currentTabId = request.tabId;
         switch (request.action) {
@@ -321,3 +321,4 @@ function createMagnetAndP2PAndImageContextMenus() {
 chrome.contextMenus.removeAll();
 createMagnetAndP2PAndImageContextMenus();
 createHtml5VideoContextMenus();
+

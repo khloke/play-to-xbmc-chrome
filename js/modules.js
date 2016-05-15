@@ -472,20 +472,20 @@ var YoutubeModule = {
                 .css('float', 'left');
             $('#playnow-' + videoId).click(function () {
                 player.pause();
-                chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'playThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
 			$('#resume-' + videoId).click(function () {
 				player.pause();
-                chrome.extension.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
+                chrome.runtime.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
             $('#queue-' + videoId).click(function () {
-                chrome.extension.sendMessage({action: 'queueThis', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'queueThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
             $('#playnext-' + videoId).click(function () {
-                chrome.extension.sendMessage({action: 'playThisNext', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'playThisNext', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
         }

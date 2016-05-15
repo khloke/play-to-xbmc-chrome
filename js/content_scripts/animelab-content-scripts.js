@@ -1,6 +1,6 @@
 
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         var $video = $('video');
         if (request.action == "getVideoSrc") {

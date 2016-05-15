@@ -35,7 +35,7 @@ function createContextMenu(linkUrl) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
         if (patternMatch) {
-            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
+            chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
@@ -43,12 +43,12 @@ function createContextMenu(linkUrl) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://([^/]+)/.*$');
         if (patternMatch) {
-            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
+            chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
     } else if (linkUrl && (linkUrl.match('^(https|http|acestream|sop)://.+$') || linkUrl.match('^(http|https)://.*\.(torrent|torrent\?.+)$'))) {
-        chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
+        chrome.runtime.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
     } else if (!linkUrl || linkUrl.trim() == ''
         || (linkUrl && (linkUrl.indexOf('#') == 0
         || linkUrl.indexOf('mailto') == 0
