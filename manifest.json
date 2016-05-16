@@ -15,6 +15,8 @@
         "default_popup": "remote.html"
     },
     "icons": {
+        "16": "images/icon-16.png",
+        "24": "images/icon.png",
         "128": "images/tv.png"
     },
     "background": {
