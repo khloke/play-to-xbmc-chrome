@@ -506,7 +506,7 @@ var YleAreenaModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        callback('plugin://plugin.video.yleareena/?view=video&link=' + encodeURIComponent(url));
+        callback('plugin://plugin.video.areena/?view=video&link=' + encodeURIComponent(url));
     }
 };
 
