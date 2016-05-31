@@ -109,6 +109,10 @@ function ajaxPost(data, callback, timeout) {
         timeout: defaultTimeout,
         error: function (jqXHR, textStatus, erroThrown) {
             callback(0);
+        },
+        beforeSend: function(xhr, settings){
+            xhr.setRequestHeader("Authorization", "Basic");
+            xhr.mozBackgroundRequest = true;
         }
     });
 }
