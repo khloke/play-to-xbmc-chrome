@@ -77,7 +77,7 @@ function doAction(item, callback) {
 function playCurrentUrl(caller) {
     turnOnLoading(caller);
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.runtime.sendMessage({action: 'playThis', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
@@ -97,7 +97,7 @@ function playThisUrl(url, caller) {
 
 function playNextCurrentUrl(caller) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.runtime.sendMessage({action: 'playThisNext', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
         });
@@ -107,7 +107,7 @@ function playNextCurrentUrl(caller) {
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.runtime.sendMessage({action: 'queueThis', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
@@ -130,7 +130,7 @@ function queueThisUrl(url, caller) {
 function queuePlaylist(caller) {
     turnOnLoading(caller);
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         var tabUrl = tab.url;
         var name = getSiteName(tabUrl);
         switch (name) {
@@ -147,7 +147,7 @@ function queuePlaylist(caller) {
 
 function queueList(videoList, caller) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.runtime.sendMessage({
             action: 'queueList',
             tabId: tab.id,
@@ -162,11 +162,11 @@ function queueList(videoList, caller) {
 
 function queueYoutubeList(caller) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.urlList) {
                 chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-                    var tab = tab[0];
+                    tab = tab[0];
                     var tabUrl = tab.url;
                     chrome.runtime.sendMessage({action: 'queueList', tabId: tab.id, urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
                         onChangeUpdate();
@@ -180,11 +180,11 @@ function queueYoutubeList(caller) {
 
 function queueSoundcloudSet(caller) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.trackIds) {
                 chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-                    var tab = tab[0];
+                    tab = tab[0];
                     var tabUrl = tab.url;
                     chrome.runtime.sendMessage({action: 'queueList', tabId: tab.id,urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
                         onChangeUpdate();
@@ -198,7 +198,7 @@ function queueSoundcloudSet(caller) {
 
 function removeThisFromPlaylist(caller) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.runtime.sendMessage({action: 'removeThis', tabId: tab.id}, function (response) {
             onChangeUpdate();
         });
@@ -213,7 +213,7 @@ function getAllFavourites() {
 
 function addToFavourites() {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         var url = tab.url;
         var title = tab.title.replace(' - YouTube', '').trim();
         addThisToFavourites(title, url);
@@ -410,7 +410,7 @@ function enablePlaylistButtons() {
 
 function initVideoButton() {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         if (typeof tab == 'undefined') {
             return;
         }
@@ -459,7 +459,7 @@ function initVideoButton() {
 
 function getEmbeddedVideos(callback) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-        var tab = tab[0];
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getEmbeddedVideos'}, function (response) {
             if (response && response.length > 0) {
                 callback(response);
