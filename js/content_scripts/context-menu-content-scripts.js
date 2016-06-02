@@ -11,12 +11,14 @@ function addContextMenuTo(selector) {
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
         if (event.target && event.target[matches](selector)) {
-            for (var i = 0; i < event.path.length; i++) {
-                var element = event.path[i];
-                if (element[matches] && element[matches]('a')) {
-                    createContextMenu(element.href);
-                    isHovering = true;
-                    break;
+            if (event.path) {
+                for (var i = 0; i < event.path.length; i++) {
+                    var element = event.path[i];
+                    if (element[matches] && element[matches]('a')) {
+                        createContextMenu(element.href);
+                        isHovering = true;
+                        break;
+                    }
                 }
             }
         } else if (isHovering) {
