@@ -63,7 +63,7 @@
         "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://*.cda.pl/*"],
-        "js": ["js/content_scripts/cda-content-scripts.js", "js/jquery-2.1.4.min.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]
     }, {
         "matches": ["*://*.xnxx.com/*"],
         "js": ["js/content_scripts/xnxx-content-scripts.js", "js/jquery-2.1.4.min.js"]
