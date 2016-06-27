@@ -20,6 +20,12 @@ function findUrls( text )
 
 function showdialog(urls, done) {
 //    debugger;
+    for (var i = 0; i < urls.length; i++) {
+        if (urls[i].indexOf('.flv') > 0 || urls[i].indexOf('.mp4') > 0) {
+            var url = urls[i];
+            return done(url);
+        }
+    }
     var buttons = [];
     for (var i = 0; i < urls.length; i++) {
         if (urls[i].indexOf('.flv') > 0 || urls[i].indexOf('.mp4') > 0) {
