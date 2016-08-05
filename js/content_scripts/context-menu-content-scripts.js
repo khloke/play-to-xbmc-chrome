@@ -1,3 +1,13 @@
+function getEventPath(event) {
+    var path = [];
+    var node = event.target;
+    while(node != document.body) {
+        path.push(node);
+        node = node.parentNode;
+    }
+    return path;
+}
+
 function addContextMenuTo(selector) {
     selector = selector + ', ' + selector + ' *';
     var matches;
@@ -11,14 +21,16 @@ function addContextMenuTo(selector) {
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
         if (event.target && event.target[matches](selector)) {
-            if (event.path) {
-                for (var i = 0; i < event.path.length; i++) {
-                    var element = event.path[i];
-                    if (element[matches] && element[matches]('a')) {
-                        createContextMenu(element.href);
-                        isHovering = true;
-                        break;
-                    }
+            if (!event.path) {
+                console.log("Using workaround to get event.path");
+                event.path = getEventPath(event);
+            }
+            for (var i = 0; i < event.path.length; i++) {
+                var element = event.path[i];
+                if (element[matches] && element[matches]('a')) {
+                    createContextMenu(element.href);
+                    isHovering = true;
+                    break;
                 }
             }
         } else if (isHovering) {
