@@ -1,11 +1,11 @@
 {
     "manifest_version": 2,
-    "version": "1.7.8.2",
+    "version": "1.8.0rc1",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
     "applications": {
         "gecko": {
-            "id": "playToKodi@playToKodi"
+            "id": "{ba707b6e-571d-47c9-a31d-7b94807d6ee2}"
         }
     },
     "options_page": "options.html",
