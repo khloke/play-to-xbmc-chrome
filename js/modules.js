@@ -215,7 +215,7 @@ var HuluModule = {
                         var eId = JSON.parse(response2.eid);
                         callback(
                             'plugin://plugin.video.hulu/?mode=\\"TV_play\\"&url=\\"' + encodeURIComponent(contentId) + '\\"&videoid=\\"' +
-                                encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"'
+                            encodeURIComponent(videoId) + '\\"&eid=\\"' + encodeURIComponent(eId) + '\\"'
                         );
                     }
                 })
@@ -330,10 +330,10 @@ var Mp4UploadModule = {
         var id = url.split("/")[3];
         // get embedded data
         $.ajax({ url: 'http://www.mp4upload.com/embed-' + id + ".html", success: function(data) {
-                var found = data.match("'file': '(.+?)'");
-                if (found) {
-                    callback(found[1]);
-                }
+            var found = data.match("'file': '(.+?)'");
+            if (found) {
+                callback(found[1]);
+            }
         }});
     }
 };
@@ -441,20 +441,20 @@ var StreamCloudModule = {
 };
 
 var SVTPLAYModule = {
-  canHandleUrl: function(url) {
-      var validPatterns = [
-          ".*svtplay.se/(video|klipp)/.*/.*"
-      ];
-      return urlMatchesOneOfPatterns(url, validPatterns);
-  },
-  getMediaType: function() {
-      return 'video';
-  },
-  getPluginPath: function(url, getAddOnVersion, callback) {
-      var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]{7}\/.*)')[3];
-            videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
-      callback('plugin://plugin.video.svtplay/?url=' + encodeURIComponent(videoId) + "&mode=video");
-  }
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*svtplay.se/(video|klipp)/.*/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]{7}\/.*)')[3];
+        videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
+        callback('plugin://plugin.video.svtplay/?url=' + encodeURIComponent(videoId) + "&mode=video");
+    }
 };
 
 var TorrentsLinkModule = {
@@ -628,13 +628,13 @@ var YoutubeModule = {
     createCustomContextMenus: function() {
         //Create context menus for embedded youtube videos
         var url = $('a.html5-title-logo').attr('href');
-    var player = $('video')[0];
+        var player = $('video')[0];
         if (url && url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
 
             var $youtubeContextMenu = $('ul.html5-context-menu');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnow-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play Now</a></li>');
-      $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="resume-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Resume</a></li>');
+            $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="resume-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Resume</a></li>');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="queue-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Queue</a></li>');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnext-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play this Next</a></li>');
             $('.playtoxbmc-icon')
@@ -649,8 +649,8 @@ var YoutubeModule = {
                 chrome.runtime.sendMessage({action: 'playThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
-			$('#resume-' + videoId).click(function () {
-				player.pause();
+            $('#resume-' + videoId).click(function () {
+                player.pause();
                 chrome.runtime.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
