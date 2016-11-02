@@ -19,13 +19,13 @@
             <legend style="padding-left: 25px;">Options</legend>
             <div class="tabbable">
                 <ul class="nav nav-tabs" style="padding: 0 25px;">
-                    <li class="active"><a href="#xbmcHost" data-toggle="tab">XBMC Host(s)</a></li>
+                    <li class="active"><a href="#kodiHost" data-toggle="tab">Kodi Host(s)</a></li>
                     <li><a href="#general" data-toggle="tab">Others</a></li>
                     <li><a href="#changelist" data-toggle="tab">Changelist</a></li>
                     <li><a href="#donate" data-toggle="tab">Donate</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="xbmcHost">
+                    <div class="tab-pane active" id="kodiHost">
                         <div id="profileControlGroup" class="control-group profile-group" style="display: none;">
                             <label class="control-label" for="profiles">Profile</label>
                             <div class="controls">
@@ -84,13 +84,14 @@
                                 <select id="magnetAddOn">
                                     <option value="xbmctorrent">XBMCTorrent</option>
                                     <option value="pulsar">Pulsar</option>
+                                    <option value="quasar">Quasar</option>
                                     <option value="kmediatorrent">KMediaTorrent</option>
                                     <option value="torrenter">Torrenter</option>
                                 </select>
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="enableMultiHost">Enable Multi XBMC Hosts</label>
+                            <label class="control-label" for="enableMultiHost">Enable Multi Kodi Hosts</label>
                             <div class="controls">
                                 <input id="enableMultiHost" type="checkbox"/>
                             </div>
@@ -106,9 +107,34 @@
                         <div class="alert" style="margin: 0 25px 15px 25px;">If you have problems please contact me directly at <a href="mailto:khloke@gmail.com">khloke@gmail.com</a>. Leaving your problems in the <strong>Reviews won't help</strong> you or me solve the problem if I can't replicate it.</div>
                         <div style="margin: 0 25px">
                             <p>
-                                <strong>Update 1.7.7.1</strong>
+                                <strong>Update 1.7.8.2</strong>
+                                <ul>
+                                    <li>Updated to work with Twitch add-on v1.4. Backwards compatible.</li>
+                                </ul>
+                            </p>
+                            <p>
+                                <strong>Update 1.7.8.1</strong>
                                 <ul>
                                     <li>Note: The new YouTube UI has broken support for context menus on the video, and it has proven to be a very huge pain in the ass to fix. I'm working on it.</li>
+                                    <li>Added Quasar client support (Thanks to phuonglm)</li>
+                                    <li>Added support for Cda.pl (Thanks to maciej-rosiek)</li>
+                                    <li>Removed references to XBMC in the settings. (Thanks to joshuahenson)</li>
+                                    <li>Added support for .m4v video files.</li>
+                                    <li>Fixed an issue with query strings on video links.</li>
+                                </ul>
+                            </p>
+                            <p>
+                                <strong>Update 1.7.7.2</strong>
+                                <ul>
+                                    <li>Note: The new YouTube UI has broken support for context menus on the video, and it has proven to be a very huge pain in the ass to fix. I'm working on it.</li>
+                                    <li>Fixed context menus on user page and subscription page (Possibly every other page where it didn't work.</li>
+                                    <li>Fixed support for Yle Areena & ruutu.fi (Thanks to amergin for this fix)</li>
+                                    <li>Fixed an issue where the seeker would occasionally move at an incorrect speed, or have an incorrect time to the video.</li>
+                                </ul>
+                            </p>
+                            <p>
+                                <strong>Update 1.7.7.1</strong>
+                                <ul>
                                     <li>Thanks to everyone who donated!! You guys are the best!!</li>
                                     <li>Fixed support for ARD Mediathek & ZDF Mediathek (Thanks to DerGoTo for this fix)</li>
                                     <li>Fixed SVG Anchors (Thanks to Le Wang for this fix)</li>
@@ -377,7 +403,7 @@
                     </div>
                     <div class="tab-pane" id="donate" style="text-align: center">
                         <div>If you like what I did and would like to buy me a coffee, <br/>you can send me some bitcoins to the address below!</div>
-                        <div><img src="images/bitcoin_qr.png" height="200"></div>
+                        <div><img src="images/bitcoin_qr.png" height="200" width="200"></div>
                         <div>1GcpoegwrJv7VBw51JCbbmiY6oun7kcn9c</div>
                         <div>
                             Or you could do it via PayPal:
