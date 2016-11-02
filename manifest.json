@@ -35,7 +35,10 @@
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
+    },{
+        "matches": ["*://*.facebook.com/*"],
+        "js": ["js/content_scripts/facebook-content-scripts.js", "js/jquery-2.1.4.min.js"]
+    },{
         "matches": ["*://www.youtube.com/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
     }, {
@@ -70,7 +73,10 @@
         "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://*.cda.pl/*"],
-        "js": ["js/content_scripts/cda-content-scripts.js", "js/jquery-2.1.4.min.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]
+    }, {
+        "matches": ["*://*.xnxx.com/*"],
+        "js": ["js/content_scripts/xnxx-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }],
     "web_accessible_resources": [
         "images/*"

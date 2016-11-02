@@ -11,8 +11,11 @@ function hasUrlSetup() {
             var profiles = JSON.parse(allProfiles);
 
             if (selectedHost != null && selectedHost > 0) {
-                if (profiles[selectedHost] != null) {
-                    return profiles[selectedHost].url != null && profiles[selectedHost].url != '' && profiles[selectedHost].port != null && profiles[selectedHost].port != '';
+                for (var i = 0; i < profiles.length; i++) {
+                    var profile = profiles[i];
+                    if (profile.id == selectedHost) {
+                        return profile.url != null && profile.url != '' && profile.port != null && profile.port != '';
+                    }
                 }
             } else {
                 return profiles[0].url != null && profiles[0].url != '' && profiles[0].port != null && profiles[0].port != '';
