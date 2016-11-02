@@ -464,6 +464,23 @@ var StreamCloudModule = {
     }
 };
 
+var SVTOppetArkivModule = {
+  canHandleUrl: function( url ){
+    var validPatterns = [
+      ".*oppetarkiv.se/(video|klipp)/.*/.*"
+    ];
+    return urlMatchesOneOfPatterns(url, validPatterns);
+  },
+  getMediaType: function(){
+    return 'video';
+  },
+  getPluginPath: function(url, getAddOnVersion, callback) {
+      var videoId = url.match('(https|http):\/\/(www\.)?oppetarkiv\.se(\/(video|klipp)\/[0-9]+\/.*)')[3];
+      videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
+      callback('plugin://plugin.video.oppetarkiv/?url=' + encodeURIComponent(videoId) + "&mode=video");
+  }
+};
+
 var SVTPLAYModule = {
   canHandleUrl: function(url) {
       var validPatterns = [
@@ -475,8 +492,8 @@ var SVTPLAYModule = {
       return 'video';
   },
   getPluginPath: function(url, getAddOnVersion, callback) {
-      var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]{7}\/.*)')[3];
-            videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
+      var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]+\/.*)')[3];
+      videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
       callback('plugin://plugin.video.svtplay/?url=' + encodeURIComponent(videoId) + "&mode=video");
   }
 };
@@ -733,6 +750,7 @@ var allModules = [
     SopcastModule,
     SoundcloudModule,
     StreamCloudModule,
+    SVTOppetArkivModule,
     SVTPLAYModule,
     TorrentsLinkModule,
     TwitchTvModule,
