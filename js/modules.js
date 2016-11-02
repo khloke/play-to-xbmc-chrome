@@ -172,7 +172,7 @@ var FacebookModule = {
     getPluginPath: function(url, callback) {
         chrome.tabs.sendMessage(currentTabId, {action: 'getFacebookVideoUrl'}, function (response) {
             if (response) {
-                var facebookUrl = response.url
+                var facebookUrl = response.url;
                 callback(facebookUrl);
             }
         });
@@ -684,175 +684,6 @@ var ZdfMediathekModule = {
     }
 };
 
-var KatsomoModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^(https|http)://www.katsomo.fi/\\?progId=(\\d+)$",
-            "^(https|http)://www.mtv3katsomo.fi/\\?progId=(\\d+)$"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.katsomo/?view=video&link=' + encodeURIComponent(url.replace('mtv3katsomo', 'katsomo')));
-    }
-};
-
-var LyndaModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*lynda.com/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (response) {
-                callback(response.videoSrc);
-            }
-        });
-    }
-};
-
-var AcestreamModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^acestream://"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=1&name=acestream+title');
-    }
-};
-
-var SopcastModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^sop://"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=2&name=title+sopcast');
-    }
-};
-
-var UrgantShowModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^.*urgantshow.ru/page/\\d+/\\d+"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getUrgantShowVideoUrl'}, function (response) {
-            if (response) {
-                var urgantShowLink = response.url;
-                callback(urgantShowLink);
-            }
-        });
-    }
-};
-
-var KinoLiveModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^.*kino-live\\.org/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-
-    getMediaType: function() {
-        return 'video';
-    },
-
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getKinoLiveVideoUrl'}, function (response) {
-            if (response) {
-                callback(response.url);
-            }
-        });
-    }
-};
-
-var VesselLabModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*vessel.com/videos/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        if (debugLogsEnabled) console.log("Sending message to tab '" + currentTabId + "' for video source.");
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (debugLogsEnabled) {console.log("Response from content script:"); console.log(response); }
-            if (response) {
-                callback(response.videoSrc);
-            } else {
-                if (debugLogsEnabled) console.log("Did not receive response for message");
-            }
-        });
-    }
-};
-
-var SVTPLAYModule = {
-  canHandleUrl: function(url) {
-      var validPatterns = [
-          ".*svtplay.se/(video|klipp)/.*/.*"
-      ];
-      return urlMatchesOneOfPatterns(url, validPatterns);
-  },
-  getMediaType: function() {
-      return 'video';
-  },
-  getPluginPath: function(url, getAddOnVersion, callback) {
-      var videoId = url.match('(https|http):\/\/(www\.)?svtplay\.se(\/(video|klipp)\/[0-9]{7}\/.*)')[3];
-			videoId = videoId.replace(/(\?.*)/,""); // ignore everything after ? (start=auto, tab=, position=)
-      callback('plugin://plugin.video.svtplay/?url=' + encodeURIComponent(videoId) + "&mode=video");
-  }
-};
-
-var CdaModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*cda.pl/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.getSelected(null, function(tab){
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
-        });
-    }
-};
-
-
 var XnxxModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -881,6 +712,7 @@ var allModules = [
     ArdMediaThekModule,
     CdaModule,
     CollegeHumorModule,
+    DailyMotionModule,
     DailyMotionLiveModule,
     eBaumsWorldModule,
     ExuaModule,
