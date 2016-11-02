@@ -458,12 +458,12 @@ var YoutubeModule = {
     getPluginPath: function(url, getAddOnVersion, callback) {
         if (url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
-            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
         }
 
         if (url.match('.*youtu.be/(.+)')) {
             var videoId = url.match('.*youtu.be/(.+)')[1];
-            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
         }
     },
     createCustomContextMenus: function() {
