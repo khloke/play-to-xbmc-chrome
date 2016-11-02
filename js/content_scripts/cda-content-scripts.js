@@ -51,7 +51,7 @@ function showdialog(urls, done) {
     document.body.appendChild(layerNode);
 
     jQuery("#x-kodi-cda-dialog").dialog({
-        autoOpen: true, 
+        autoOpen: true,
         draggable: true,
         resizable: true,
         height: 'auto',
@@ -68,7 +68,7 @@ function showdialog(urls, done) {
     });
 }
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log("Received message: " + request.action);
         if (request.action == "getEmbeddedVideos" || request.action == "getVideoSrc") {

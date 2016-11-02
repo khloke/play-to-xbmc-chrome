@@ -79,8 +79,9 @@ function doAction(item, callback) {
 
 function playCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'playThis', tabId: tab.id, url: tab.url}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        chrome.runtime.sendMessage({action: 'playThis', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
         });
@@ -89,8 +90,8 @@ function playCurrentUrl(caller) {
 
 function playThisUrl(url, caller) {
     turnOnLoading(caller);
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'playThis', tabId: tab.id, url: url}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        chrome.runtime.sendMessage({action: 'playThis', tabId: tab.id, url: url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
         });
@@ -98,8 +99,9 @@ function playThisUrl(url, caller) {
 }
 
 function playNextCurrentUrl(caller) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'playThisNext', tabId: tab.id, url: tab.url}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        chrome.runtime.sendMessage({action: 'playThisNext', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
         });
     });
@@ -107,8 +109,9 @@ function playNextCurrentUrl(caller) {
 
 function queueCurrentUrl(caller) {
     turnOnLoading(caller);
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'queueThis', tabId: tab.id, url: tab.url}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        chrome.runtime.sendMessage({action: 'queueThis', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
         });
@@ -118,8 +121,8 @@ function queueCurrentUrl(caller) {
 
 function queueThisUrl(url, caller) {
     turnOnLoading(caller);
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'queueThis', url: url, tabId: tab.id}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        chrome.runtime.sendMessage({action: 'queueThis', url: url, tabId: tab.id}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
         });
@@ -129,7 +132,8 @@ function queueThisUrl(url, caller) {
 
 function queuePlaylist(caller) {
     turnOnLoading(caller);
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
         var tabUrl = tab.url;
         var name = getSiteName(tabUrl);
         switch (name) {
@@ -145,8 +149,9 @@ function queuePlaylist(caller) {
 }
 
 function queueList(videoList, caller) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        chrome.runtime.sendMessage({
             action: 'queueList',
             tabId: tab.id,
             urlList: videoList,
@@ -159,12 +164,14 @@ function queueList(videoList, caller) {
 }
 
 function queueYoutubeList(caller) {
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.urlList) {
-                chrome.tabs.getSelected(null, function (tab) {
+                chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+                    tab = tab[0];
                     var tabUrl = tab.url;
-                    chrome.extension.sendMessage({action: 'queueList', tabId: tab.id, urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
+                    chrome.runtime.sendMessage({action: 'queueList', tabId: tab.id, urlList:JSON.parse(response.urlList), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
                     });
@@ -175,12 +182,14 @@ function queueYoutubeList(caller) {
 }
 
 function queueSoundcloudSet(caller) {
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getPlaylistUrls'}, function (response) {
             if (response && response.trackIds) {
-                chrome.tabs.getSelected(null, function (tab) {
+                chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+                    tab = tab[0];
                     var tabUrl = tab.url;
-                    chrome.extension.sendMessage({action: 'queueList', tabId: tab.id,urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
+                    chrome.runtime.sendMessage({action: 'queueList', tabId: tab.id,urlList:JSON.parse(response.trackIds), url:tabUrl}, function (response) {
                         onChangeUpdate();
                         turnOffLoading(caller);
                     });
@@ -191,8 +200,9 @@ function queueSoundcloudSet(caller) {
 }
 
 function removeThisFromPlaylist(caller) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.extension.sendMessage({action: 'removeThis', tabId: tab.id}, function (response) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        chrome.runtime.sendMessage({action: 'removeThis', tabId: tab.id}, function (response) {
             onChangeUpdate();
         });
     });
@@ -205,7 +215,8 @@ function getAllFavourites() {
 }
 
 function addToFavourites() {
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
         var url = tab.url;
         var title = tab.title.replace(' - YouTube', '').trim();
         addThisToFavourites(title, url);
@@ -337,7 +348,7 @@ function initConnectivity(callback) {
     getXbmcJsonVersion(function (version) {
         var warningTextContainer = $('#warningTextContainer');
         if (version == null) {
-            warningTextContainer.html('<span class="label label-important">Unable to connect to Kodi <i id="tooltipIcon" class="icon-question-sign icon-white" data-toggle="tootip" data-placement="top" data-original-title="Please make sure that your settings are correct and Kodi is running."></i></span>');
+            warningTextContainer.html('<span class="label label-important">Unable to connect to Kodi <i id="tooltipIcon" class="icon-question-sign icon-white" data-toggle="tooltip" data-placement="top" data-original-title="Please make sure that your settings are correct and Kodi is running."></i></span>');
             $('#tooltipIcon').tooltip();
             warningTextContainer.show();
         } else {
@@ -401,7 +412,11 @@ function enablePlaylistButtons() {
 }
 
 function initVideoButton() {
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
+        if (typeof tab == 'undefined') {
+            return;
+        }
         var url = tab.url;
 
         validVideoPage(url, function() {
@@ -446,7 +461,8 @@ function initVideoButton() {
 }
 
 function getEmbeddedVideos(callback) {
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getEmbeddedVideos'}, function (response) {
             if (response && response.length > 0) {
                 callback(response);

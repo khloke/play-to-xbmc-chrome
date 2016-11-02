@@ -3,7 +3,7 @@ var contentId;
 var eid;
 init();
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.action == "getContentId") {
             if (contentId) {

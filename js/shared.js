@@ -24,40 +24,52 @@ var validPlaylistPatterns = [
     "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
 ];
 
+function getCurrentProfile() {
+    var profile;
+    var selectedHost = localStorage[storageKeys.selectedHost];
+    var allProfiles = JSON.parse(getAllProfiles());
+
+    for (var i = 0; i < allProfiles.length; i++) {
+        var profile = allProfiles[i];
+        if (profile.id == selectedHost) {
+            profile = profile;
+            break;
+        }
+    }
+
+    return profile;
+}
+
 function getURL() {
     var url;
     var port;
-    var username;
-    var password;
 
     if (isMultiHostEnabled()) {
-        var selectedHost = localStorage[storageKeys.selectedHost];
-        var allProfiles = JSON.parse(getAllProfiles());
-
-        for (var i = 0; i < allProfiles.length; i++) {
-            var profile = allProfiles[i];
-            if (profile.id == selectedHost) {
-                url = profile.url;
-                port = profile.port;
-                username = profile.username;
-                password = profile.password;
-                break;
-            }
-        }
-
+        var profile = getCurrentProfile();
+        url = profile.url;
+        port = profile.port;
     } else {
         url = localStorage["url"];
         port = localStorage["port"];
+    }
+
+    return 'http://'+url + ':' + port;
+}
+
+function getCredentials() {
+    var username;
+    var password;
+    
+    if (isMultiHostEnabled()) {
+        var profile = getCurrentProfile();
+        username = profile.username;
+        password = profile.password;
+    } else {
         username = localStorage["username"];
         password = localStorage["password"];
     }
 
-    var loginPortion = '';
-    if (username && password) {
-        loginPortion = username + ':' + password + '@';
-    }
-
-    return 'http://'+ loginPortion + url + ':' + port;
+    return [username ? username : "anonymous", password];
 }
 
 function isMultiHostEnabled() {

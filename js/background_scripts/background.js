@@ -1,6 +1,6 @@
 var currentTabId;
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.tabId) currentTabId = request.tabId;
         switch (request.action) {
@@ -70,6 +70,20 @@ chrome.extension.onMessage.addListener(
         return true;
     }
 );
+
+/*
+ * Called when the context menu item has been created, or when creation failed due to an error.
+ * We'll just log success/failure here.
+ */
+function onContextMenuCreated(n) {
+    if (debugLogsEnabled) {
+        if (chrome.runtime.lastError) {
+            console.log("Error creating context menu item:" + chrome.runtime.lastError);
+        } else {
+            console.log("Context menu item created successfully");
+        }
+    }
+}
 
 function doAction(item, callback) {
     getActivePlayerId(function (playerid) {
@@ -160,7 +174,7 @@ function createContextMenu(request, callback) {
                         })
                     });
                 }
-            });
+            }, onContextMenuCreated);
 
             chrome.contextMenus.create({
                 title: "Queue",
@@ -171,7 +185,7 @@ function createContextMenu(request, callback) {
                         callback();
                     });
                 }
-            });
+            }, onContextMenuCreated);
 
             chrome.contextMenus.create({
                 title: "Play this Next",
@@ -184,7 +198,7 @@ function createContextMenu(request, callback) {
                         });
                     });
                 }
-            });
+            }, onContextMenuCreated);
 
         }
     }
@@ -204,7 +218,7 @@ function createHtml5VideoContextMenus() {
                 })
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Queue",
@@ -215,7 +229,7 @@ function createHtml5VideoContextMenus() {
             ], function (result) {
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Play this Next",
@@ -226,7 +240,7 @@ function createHtml5VideoContextMenus() {
                 });
             });
         }
-    });
+    }, onContextMenuCreated);
     
     chrome.contextMenus.create({
         title: "Play now",
@@ -241,7 +255,7 @@ function createHtml5VideoContextMenus() {
                 })
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Queue",
@@ -252,7 +266,7 @@ function createHtml5VideoContextMenus() {
             ], function (result) {
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Play this Next",
@@ -263,7 +277,7 @@ function createHtml5VideoContextMenus() {
                 });
             });
         }
-    });
+    }, onContextMenuCreated);
 }
 
 function createMagnetAndP2PAndImageContextMenus() {
@@ -279,7 +293,7 @@ function createMagnetAndP2PAndImageContextMenus() {
                 });
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Play now",
@@ -293,7 +307,7 @@ function createMagnetAndP2PAndImageContextMenus() {
                 })
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Queue",
@@ -303,7 +317,7 @@ function createMagnetAndP2PAndImageContextMenus() {
             queueItem(info.linkUrl, function () {
             });
         }
-    });
+    }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Play this Next",
@@ -315,9 +329,10 @@ function createMagnetAndP2PAndImageContextMenus() {
                 });
             });
         }
-    });
+    }, onContextMenuCreated);
 }
 
 chrome.contextMenus.removeAll();
 createMagnetAndP2PAndImageContextMenus();
 createHtml5VideoContextMenus();
+
