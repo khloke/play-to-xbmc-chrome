@@ -318,6 +318,7 @@ function deleteThisProfile() {
         var profile = allProfiles[i];
         if (profile.id == selectedId) {
             indexToRemove = i;
+            break;
         }
     }
 
