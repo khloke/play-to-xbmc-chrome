@@ -663,7 +663,16 @@ var YoutubeModule = {
                 $('ul.html5-context-menu').hide();
             });
         }
-    }
+    },
+    testConfig: [
+        {
+            testUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+            testAction: 'playThisUrl'
+        },{
+            testUrl: 'https://www.youtube.com/playlist?list=FLK8sQmJBp8GCxrOtXWBpyEA',
+            testAction: 'queuePlaylist'
+        }
+    ]
 };
 
 var ZdfMediathekModule = {

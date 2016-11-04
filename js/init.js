@@ -31,6 +31,7 @@ $(document).ready( function() {
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
 //    $('#testBtn').click(function() { initVideoButton() });
+    $('#runTests').click(function() {runTests()});
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");

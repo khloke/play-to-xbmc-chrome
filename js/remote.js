@@ -77,13 +77,14 @@ function doAction(item, callback) {
     });
 }
 
-function playCurrentUrl(caller) {
+function playCurrentUrl(caller, callback) {
     turnOnLoading(caller);
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
         tab = tab[0];
         chrome.runtime.sendMessage({action: 'playThis', tabId: tab.id, url: tab.url}, function (response) {
             onChangeUpdate();
             turnOffLoading(caller);
+            callback();
         });
     });
 }
@@ -420,7 +421,7 @@ function initVideoButton() {
         var url = tab.url;
 
         validVideoPage(url, function() {
-            $('#playCurrentVideoButton').click(function() { playCurrentUrl($(this)) });
+            $('#playCurrentVideoButton').click(function() { playCurrentUrl($(this), function() {}) });
             $('#queueVideoButton').click(function() { queueCurrentUrl($(this)) });
             enableVideoButtons();
         });
