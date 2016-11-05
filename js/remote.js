@@ -778,13 +778,17 @@ function toggleRepeat() {
 }
 
 function turnOnLoading(jObj) {
-    jObj.attr('disabled', true);
-    jObj.css('background', 'url("/images/loading.gif") no-repeat center #e6e6e6')
+    if (jObj) {
+        jObj.attr('disabled', true);
+        jObj.css('background', 'url("/images/loading.gif") no-repeat center #e6e6e6')
+    }
 }
 
 function turnOffLoading(jObj) {
-    jObj.css('background', '');
-    jObj.removeAttr('disabled');
+    if (jObj) {
+        jObj.css('background', '');
+        jObj.removeAttr('disabled');
+    }
 }
 
 function previous() {

@@ -667,7 +667,7 @@ var YoutubeModule = {
     testConfig: [
         {
             testUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
-            testAction: 'playThisUrl'
+            testAction: 'playCurrentUrl'
         },{
             testUrl: 'https://www.youtube.com/playlist?list=FLK8sQmJBp8GCxrOtXWBpyEA',
             testAction: 'queuePlaylist'
