@@ -759,5 +759,4 @@ var allModules = [
     YleAreenaModule,
     YoutubeModule,
     ZdfMediathekModule
-
 ];
