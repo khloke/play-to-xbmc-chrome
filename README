@@ -1,5 +1,5 @@
 A Google Chrome/Firefox Extension for sending online content to be played on XBMC/Kodi.
-Supported websites include 
+Supported websites include
 
  * Acestream
  * AnimeLab
@@ -21,6 +21,7 @@ Supported websites include
  * MixCloud
  * MyCloudPlayers
  * Ruutu.fi
+ * Seasonvar
  * Sopcast
  * SoundCloud
  * StreamCloud
