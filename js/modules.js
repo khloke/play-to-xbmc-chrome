@@ -745,6 +745,7 @@ var allModules = [
     Mp4UploadModule,
     MyCloudPlayersModule,
     RuutuModule,
+    SeasonvarModule,
     SopcastModule,
     SoundcloudModule,
     StreamCloudModule,
@@ -757,6 +758,6 @@ var allModules = [
     XnxxModule,
     YleAreenaModule,
     YoutubeModule,
-    ZdfMediathekModule,
-    SeasonvarModule
+    ZdfMediathekModule
+
 ];
