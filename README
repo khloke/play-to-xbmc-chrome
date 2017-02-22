@@ -1,4 +1,5 @@
 A Google Chrome/Firefox Extension for sending online content to be played on XBMC/Kodi.
+
 Supported websites include
 
  * Acestream
@@ -25,7 +26,7 @@ Supported websites include
  * Sopcast
  * SoundCloud
  * StreamCloud
- * SVTPlay (Swedish TV Station)
+ * SVTPlay & Öppet Arkiv (Swedish TV Station)
  * Torrent
  * Twitch.tv
  * Urgant Show (Russian Talk Show)
