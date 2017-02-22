@@ -632,15 +632,25 @@ var YoutubeModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        if (url.match('v=([^&]+)')) {
-            var videoId = url.match('v=([^&]+)')[1];
-            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
-        }
+        getAddOnVersion('plugin.video.youtube', function(version) {
+            var pluginUrl = 'plugin://plugin.video.youtube/?action=play_video&videoid=';
+            var versionNumbers = version.split('.');
+            if (parseInt(versionNumbers[0]) > 5
+                || (parseInt(versionNumbers[0]) >= 5 && parseInt(versionNumbers[1]) > 3)
+                || (parseInt(versionNumbers[0]) >= 5 && parseInt(versionNumbers[1]) >= 3 && parseInt(versionNumbers[2]) >= 6)) {
+                pluginUrl = 'plugin://plugin.video.youtube/play/?video_id=';
+            }
 
-        if (url.match('.*youtu.be/(.+)')) {
-            var videoId = url.match('.*youtu.be/(.+)')[1];
-            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
-        }
+            if (url.match('v=([^&]+)')) {
+                var videoId = url.match('v=([^&]+)')[1];
+                callback(pluginUrl + videoId);
+            }
+
+            if (url.match('.*youtu.be/(.+)')) {
+                var videoId = url.match('.*youtu.be/(.+)')[1];
+                callback(pluginUrl + videoId);
+            }
+        })
     },
     createCustomContextMenus: function() {
         //Create context menus for embedded youtube videos
