@@ -649,8 +649,8 @@ var YoutubeModule = {
                 chrome.runtime.sendMessage({action: 'playThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
-			$('#resume-' + videoId).click(function () {
-				player.pause();
+            $('#resume-' + videoId).click(function () {
+                player.pause();
                 chrome.runtime.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
@@ -705,6 +705,24 @@ var XnxxModule = {
     }
 };
 
+var SeasonvarModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^https?://(www\\.)?seasonvar\\.ru/serial-\\d+-"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
 
 var allModules = [
     AcestreamModule,
@@ -727,6 +745,7 @@ var allModules = [
     Mp4UploadModule,
     MyCloudPlayersModule,
     RuutuModule,
+    SeasonvarModule,
     SopcastModule,
     SoundcloudModule,
     StreamCloudModule,
