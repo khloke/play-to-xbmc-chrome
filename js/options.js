@@ -10,7 +10,7 @@ $(document).ready(function(){
         populateProfiles();
     });
     $('#enableDebugLogs').change(function() {
-        chrome.extension.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
+        chrome.runtime.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
     });
     $('#paypalDonate').click(function() {
         goToPaypal();
@@ -318,6 +318,7 @@ function deleteThisProfile() {
         var profile = allProfiles[i];
         if (profile.id == selectedId) {
             indexToRemove = i;
+            break;
         }
     }
 

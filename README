@@ -1,4 +1,5 @@
-A Google Chrome Extension for sending online content to be played on XBMC/Kodi.
+A Google Chrome/Firefox Extension for sending online content to be played on XBMC/Kodi.
+
 Supported websites include
 
  * Acestream
@@ -8,6 +9,8 @@ Supported websites include
  * CollegeHumor
  * DailyMotion
  * eBaumsWorld
+ * Ex.ua
+ * Facebook
  * Freeride.se
  * Hulu
  * Katsomo.fi
@@ -19,6 +22,7 @@ Supported websites include
  * MixCloud
  * MyCloudPlayers
  * Ruutu.fi
+ * Seasonvar
  * Sopcast
  * SoundCloud
  * StreamCloud

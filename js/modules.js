@@ -127,66 +127,6 @@ var DailyMotionLiveModule = {
     }
 };
 
-var DirectAudioLinkModule = {
-    canHandleUrl: function(url) {
-        var supportedVideoExtensions = ['mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'];
-        for (var i = 0; i < supportedVideoExtensions.length; i++) {
-            var extension = supportedVideoExtensions[i];
-            var regex = '^.*\\.' + extension + "$";
-            if (url.match(regex)) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-    getMediaType: function() {
-        return 'audio';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback(url);
-    }
-};
-
-var DirectVideoLinkModule = {
-    canHandleUrl: function(url) {
-        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'webm', 'm4v'];
-        for (var i = 0; i < supportedVideoExtensions.length; i++) {
-            var extension = supportedVideoExtensions[i];
-            var regex = '^.*\\.(' + extension + '|' + extension + '\\?.*)$';
-            if (url.match(regex)) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback(url);
-    },
-    getEmbedSelector: function() {
-        return 'video';
-    }
-};
-
-var DumpertModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            '.*dumpert.nl/mediabase/*'
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.dumpert/?action=play&video_page_url=' + encodeURIComponent(url));
-    }
-};
-
 var eBaumsWorldModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -200,6 +140,42 @@ var eBaumsWorldModule = {
     getPluginPath: function(url, getAddOnVersion, callback) {
         var videoId = url.match('(https|http)://(www\.)?ebaumsworld.com/video/watch/([^_&/#\?]+)')[3];
         callback('plugin://plugin.video.ebaumsworld_com/?url=' + videoId + '&mode=playVideo');
+    }
+};
+
+var ExuaModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*ex.ua/get/\\d+$",
+            ".*ex.ua/playlist/.*\.m3u$"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        callback(url);
+    }
+};
+
+var FacebookModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*facebook.com/.*/videos/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getFacebookVideoUrl'}, function (response) {
+            if (response) {
+                var facebookUrl = response.url;
+                callback(facebookUrl);
+            }
+        });
     }
 };
 
@@ -658,12 +634,12 @@ var YoutubeModule = {
     getPluginPath: function(url, getAddOnVersion, callback) {
         if (url.match('v=([^&]+)')) {
             var videoId = url.match('v=([^&]+)')[1];
-            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
         }
 
         if (url.match('.*youtu.be/(.+)')) {
             var videoId = url.match('.*youtu.be/(.+)')[1];
-            callback('plugin://plugin.video.youtube/?action=play_video&videoid=' + videoId);
+            callback('plugin://plugin.video.youtube/play/?video_id=' + videoId);
         }
     },
     createCustomContextMenus: function() {
@@ -687,20 +663,20 @@ var YoutubeModule = {
                 .css('float', 'left');
             $('#playnow-' + videoId).click(function () {
                 player.pause();
-                chrome.extension.sendMessage({action: 'playThis', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'playThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
-      $('#resume-' + videoId).click(function () {
-        player.pause();
-                chrome.extension.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
+            $('#resume-' + videoId).click(function () {
+                player.pause();
+                chrome.runtime.sendMessage({action: 'resume', url: url, currentTime: Math.round(player.currentTime)}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
             $('#queue-' + videoId).click(function () {
-                chrome.extension.sendMessage({action: 'queueThis', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'queueThis', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
             $('#playnext-' + videoId).click(function () {
-                chrome.extension.sendMessage({action: 'playThisNext', url: url}, function (response) {});
+                chrome.runtime.sendMessage({action: 'playThisNext', url: url}, function (response) {});
                 $('ul.html5-context-menu').hide();
             });
         }
@@ -725,18 +701,57 @@ var ZdfMediathekModule = {
     }
 };
 
+var XnxxModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*xnxx.com/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, callback) {
+        chrome.tabs.getSelected(null, function(tab){
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
+var SeasonvarModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^https?://(www\\.)?seasonvar\\.ru/serial-\\d+-"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
+
 var allModules = [
     AcestreamModule,
     AnimeLabModule,
     ArdMediaThekModule,
-    CdaModule
+    CdaModule,
     CollegeHumorModule,
-    DailyMotionLiveModule,
     DailyMotionModule,
-    DirectAudioLinkModule,
-    DirectVideoLinkModule,
-    DumpertModule,
+    DailyMotionLiveModule,
     eBaumsWorldModule,
+    ExuaModule,
+    FacebookModule,
     FreerideModule,
     HuluModule,
     KatsomoModule,
@@ -747,6 +762,7 @@ var allModules = [
     Mp4UploadModule,
     MyCloudPlayersModule,
     RuutuModule,
+    SeasonvarModule,
     SopcastModule,
     SoundcloudModule,
     StreamCloudModule,
@@ -757,7 +773,8 @@ var allModules = [
     UrgantShowModule,
     VesselLabModule,
     VimeoModule,
+    XnxxModule,
     YleAreenaModule,
     YoutubeModule,
-    ZdfMediathekModule,
+    ZdfMediathekModule
 ];

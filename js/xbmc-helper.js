@@ -94,6 +94,7 @@ function insertItem(url, position, callback) {
 function ajaxPost(data, callback, timeout) {
     var url = getURL();
     var fullPath = url + "/jsonrpc";
+    var credentials = getCredentials();
     var defaultTimeout = 5000;
     if (timeout) {
         defaultTimeout = timeout;
@@ -115,8 +116,13 @@ function ajaxPost(data, callback, timeout) {
         data: data,
         dataType: 'json',
         timeout: defaultTimeout,
+        username: credentials[0],
+        password: credentials[1],
         error: function (jqXHR, textStatus, erroThrown) {
             callback(0);
+        },
+        beforeSend: function(xhr, settings){
+            xhr.mozBackgroundRequest = true;
         }
     });
 }
@@ -165,7 +171,8 @@ function validVideoPage(url, callback) {
     if (validUrl(url)) {
         callback();
     } else {
-        chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+            tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
