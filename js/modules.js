@@ -127,6 +127,66 @@ var DailyMotionLiveModule = {
     }
 };
 
+var DirectAudioLinkModule = {
+    canHandleUrl: function(url) {
+        var supportedVideoExtensions = ['mp3', 'ogg', 'midi', 'wav', 'aiff', 'aac', 'flac', 'ape', 'wma', 'm4a', 'mka'];
+        for (var i = 0; i < supportedVideoExtensions.length; i++) {
+            var extension = supportedVideoExtensions[i];
+            var regex = '^.*\\.' + extension + "$";
+            if (url.match(regex)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+    getMediaType: function() {
+        return 'audio';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        callback(url);
+    }
+};
+
+var DirectVideoLinkModule = {
+    canHandleUrl: function(url) {
+        var supportedVideoExtensions = ['avi', 'wmv', 'asf', 'flv', 'mkv', 'mp4', 'webm', 'm4v'];
+        for (var i = 0; i < supportedVideoExtensions.length; i++) {
+            var extension = supportedVideoExtensions[i];
+            var regex = '^.*\\.(' + extension + '|' + extension + '\\?.*)$';
+            if (url.match(regex)) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        callback(url);
+    },
+    getEmbedSelector: function() {
+        return 'video';
+    }
+};
+
+var DumpertModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            '.*dumpert.nl/mediabase/*'
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        callback('plugin://plugin.video.dumpert/?action=play&video_page_url=' + encodeURIComponent(url));
+    }
+};
+
 var eBaumsWorldModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -759,6 +819,9 @@ var allModules = [
     CollegeHumorModule,
     DailyMotionModule,
     DailyMotionLiveModule,
+    DirectAudioLinkModule,
+    DirectVideoLinkModule,
+    DumpertModule,
     eBaumsWorldModule,
     ExuaModule,
     FacebookModule,
