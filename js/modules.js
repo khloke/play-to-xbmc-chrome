@@ -546,14 +546,17 @@ var TorrentsLinkModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        if (localStorage['magnetAddOn'] == 'pulsar') {
+        var magnetAddOn = localStorage['magnetAddOn'];
+        if (magnetAddOn == 'pulsar') {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
-        } else if (localStorage['magnetAddOn'] == 'quasar') {
+        } else if (magnetAddOn == 'quasar') {
             callback('plugin://plugin.video.quasar/play?uri=' + encodeURIComponent(url));
-        } else if (localStorage['magnetAddOn'] == 'kmediatorrent') {
+        } else if (magnetAddOn == 'kmediatorrent') {
             callback('plugin://plugin.video.kmediatorrent/play/' + encodeURIComponent(url));
-        } else if (localStorage['magnetAddOn'] == 'torrenter') {
+        } else if (magnetAddOn == 'torrenter') {
             callback('plugin://plugin.video.torrenter/?action=playSTRM&url=' + encodeURIComponent(url));
+        } else if (magnetAddOn == 'yatp') {
+            callback('plugin://plugin.video.yatp/?action=play&torrent=' + encodeURIComponent(url));
         } else {
             callback('plugin://plugin.video.xbmctorrent/play/' + encodeURIComponent(url));
         }
