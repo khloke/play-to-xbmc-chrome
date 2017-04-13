@@ -576,31 +576,47 @@ var TwitchTvModule = {
     getPluginPath: function(url, getAddOnVersion, callback) {
         getAddOnVersion('plugin.video.twitch', function(version) {
             console.log(version);
-            var videoId;
-            var liveVideo = false;
-            var pluginPath;
-            var regexMatch;
+            let videoId;
+            let liveVideo = false;
+            let pluginPath;
+            let regexMatch;
+            let versionNumber = Number.parseFloat(version);
 
-            if (regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/[^&/#\?]+/(b|v|c)/([^&/#\?]+).*$')) {
-                videoId = regexMatch[1] + regexMatch[2];
+            if (regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/videos/([^&/#\?]+).*$')) {
+                videoId = regexMatch[1];
             } else if (regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/([^&/#\?]+).*$')) {
                 liveVideo = true;
                 videoId = regexMatch[1];
             }
+            
+            if (versionNumber >= 2.0) {
+                if (liveVideo) {
+                    chrome.tabs.sendMessage(currentTabId, {action: 'getChannelId'}, function (response) {
+                        if (response) {
+                            let channelId = response.channelId;
+                            callback('plugin://plugin.video.twitch/?mode=play&channel_id=' + channelId + '&name=' + videoId);
+                        }
+                    });
+                } else {
+                    callback('plugin://plugin.video.twitch/?mode=play&video_id=' + videoId);
+                }
 
-            if (liveVideo) {
-                pluginPath = 'plugin://plugin.video.twitch/playLive/' + videoId + '/';
             } else {
-                pluginPath = 'plugin://plugin.video.twitch/playVideo/' + videoId + '/';
+                if (liveVideo) {
+                    pluginPath = 'plugin://plugin.video.twitch/playLive/' + videoId + '/';
+                } else {
+                    pluginPath = 'plugin://plugin.video.twitch/playVideo/v' + videoId + '/';
+                }
+
+                if (versionNumber >= 1.4) {
+                    //https://github.com/StateOfTheArt89/Twitch.tv-on-XBMC/blob/2baf7cffc582492f4a773ef34aa7cbec0a2cac72/resources/lib/routes.py
+                    callback(pluginPath + '-2/');
+                } else {
+                    //https://github.com/StateOfTheArt89/Twitch.tv-on-XBMC/blob/c5644e6d9ceac10b6d6ebf73c9538aee27a9e6f7/default.py#L157
+                    callback(pluginPath);
+                }
             }
 
-            if (Number.parseFloat(version) >= 1.4) {
-                //https://github.com/StateOfTheArt89/Twitch.tv-on-XBMC/blob/2baf7cffc582492f4a773ef34aa7cbec0a2cac72/resources/lib/routes.py
-                callback(pluginPath + '-2/');
-            } else {
-                //https://github.com/StateOfTheArt89/Twitch.tv-on-XBMC/blob/c5644e6d9ceac10b6d6ebf73c9538aee27a9e6f7/default.py#L157
-                callback(pluginPath);
-            }
         });
     }
 };
