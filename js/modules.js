@@ -414,6 +414,25 @@ var MyCloudPlayersModule = {
     }
 };
 
+var PornhubModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^https?://(www\\.)?pornhub\\.com/view_video"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
+
 var RuutuModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -588,7 +607,7 @@ var TwitchTvModule = {
                 liveVideo = true;
                 videoId = regexMatch[1];
             }
-            
+
             if (versionNumber >= 2.0) {
                 if (liveVideo) {
                     chrome.tabs.sendMessage(currentTabId, {action: 'getChannelId'}, function (response) {
@@ -853,6 +872,7 @@ var allModules = [
     MixcloudModule,
     Mp4UploadModule,
     MyCloudPlayersModule,
+    PornhubModule,
     RuutuModule,
     SeasonvarModule,
     SopcastModule,

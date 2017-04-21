@@ -83,6 +83,9 @@
     }, {
         "matches": ["*://*.twitch.tv/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/twitch-content-scripts.js"]
+    }, {
+        "matches": ["*://*.pornhub.com/*"],
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/pornhub-content-scripts.js"]
     }],
     "web_accessible_resources": [
         "images/*"
