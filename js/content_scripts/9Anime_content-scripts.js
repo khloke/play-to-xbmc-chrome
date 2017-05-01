@@ -1,14 +1,13 @@
 function checkVideo(){
     var playBTN = document.evaluate("//*[@id='player']/div[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     if(playBTN)
-    {
         playBTN.click();
-    }
     return;
 }
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+        checkVideo()
         var $video = $('#jw > div.jw-media.jw-reset > video');
         if (request.action == "getVideoSrc") {
             var videoSrc = $video.attr('src');
