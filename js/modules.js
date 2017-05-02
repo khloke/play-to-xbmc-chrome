@@ -321,27 +321,6 @@ var KinoLiveModule = {
     }
 };
 
-var NineAnimeModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*9anime.to/watch/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-
-    getMediaType: function() {
-        return 'video';
-    },
-
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (response) {
-                callback(response.videoSrc);
-            }
-        });
-    }
-};
-
 var LiveleakModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -432,6 +411,27 @@ var MyCloudPlayersModule = {
     getPluginPath: function(url, getAddOnVersion, callback) {
         var videoId = url.match('play=([^&]+)')[1];
         callback('plugin://plugin.audio.soundcloud/?url=plugin%3A%2F%2Fmusic%2FSoundCloud%2Ftracks%2F' + videoId + '&permalink=' + videoId + '&oauth_token=&mode=15');
+    }
+};
+
+var NineAnimeModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*9anime.to/watch/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+
+    getMediaType: function() {
+        return 'video';
+    },
+
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
     }
 };
 
@@ -869,12 +869,12 @@ var allModules = [
     HuluModule,
     KatsomoModule,
     KinoLiveModule,
-    NineAnimeModule,
     LiveleakModule,
     LyndaModule,
     MixcloudModule,
     Mp4UploadModule,
     MyCloudPlayersModule,
+    NineAnimeModule,
     RuutuModule,
     SeasonvarModule,
     SopcastModule,
