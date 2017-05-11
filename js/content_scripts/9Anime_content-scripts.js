@@ -5,12 +5,19 @@ function checkVideo(){
     return;
 }
 
+function getLink(){
+        var link = $('.item.mbtn.download.movie.pull-right').attr('href');
+        videoSrc = link;
+        videoSrc = videoSrc.replace(/\s+/g, '');
+        return;
+}
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         checkVideo()
+        getLink()
         var $video = $('#jw > div.jw-media.jw-reset > video');
         if (request.action == "getVideoSrc") {
-            var videoSrc = $video.attr('src');
             console.log("Sending VideoSrc: " + videoSrc);
             sendResponse({videoSrc: videoSrc});
         } else if (request.action == "onPlayback") {
