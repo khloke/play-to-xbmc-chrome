@@ -20,7 +20,7 @@ var AcestreamModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=1&name=acestream+title');
+        callback('plugin://program.plexus/?url=' + encodeURIComponent(url) + '&mode=1&name=acestream+title');
     }
 };
 
@@ -440,7 +440,7 @@ var SopcastModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        callback('plugin://plugin.video.p2p-streams/?url=' + encodeURIComponent(url) + '&mode=2&name=title+sopcast');
+        callback('plugin://program.plexus/?url=' + encodeURIComponent(url) + '&mode=2&name=title+sopcast');
     }
 };
 
@@ -588,7 +588,7 @@ var TwitchTvModule = {
                 liveVideo = true;
                 videoId = regexMatch[1];
             }
-            
+
             if (versionNumber >= 2.0) {
                 if (liveVideo) {
                     chrome.tabs.sendMessage(currentTabId, {action: 'getChannelId'}, function (response) {
