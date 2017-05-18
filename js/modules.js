@@ -414,6 +414,27 @@ var MyCloudPlayersModule = {
     }
 };
 
+var NineAnimeModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*9anime.to/watch/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+
+    getMediaType: function() {
+        return 'video';
+    },
+
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
+
 var RuutuModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -853,6 +874,7 @@ var allModules = [
     MixcloudModule,
     Mp4UploadModule,
     MyCloudPlayersModule,
+    NineAnimeModule,
     RuutuModule,
     SeasonvarModule,
     SopcastModule,
