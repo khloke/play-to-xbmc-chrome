@@ -7,8 +7,8 @@ function checkVideo(){
 
 function getLink(){
         var link = $('.item.mbtn.download.movie.pull-right').attr('href');
-        videoSrc = link;
-        videoSrc = videoSrc.replace(/\s+/g, '');
+        var typeIndex = link.indexOf("&type");
+        videoSrc = link.slice(0,typeIndex);
         return;
 }
 
