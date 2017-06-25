@@ -1,3 +1,13 @@
+function getEventPath(event) {
+    var path = [];
+    var node = event.target;
+    while(node != document.body) {
+        path.push(node);
+        node = node.parentNode;
+    }
+    return path;
+}
+
 function addContextMenuTo(selector) {
     selector = selector + ', ' + selector + ' *';
     var matches;
@@ -11,6 +21,10 @@ function addContextMenuTo(selector) {
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
         if (event.target && event.target[matches](selector)) {
+            if (!event.path) {
+                console.log("Using workaround to get event.path");
+                event.path = getEventPath(event);
+            }
             for (var i = 0; i < event.path.length; i++) {
                 var element = event.path[i];
                 if (element[matches] && element[matches]('a')) {
@@ -35,7 +49,7 @@ function createContextMenu(linkUrl) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://(.+)/.*$');
         if (patternMatch) {
-            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
+            chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
@@ -43,12 +57,12 @@ function createContextMenu(linkUrl) {
         var tabUrl = window.location.href;
         var patternMatch = tabUrl.match('^(https|http)://([^/]+)/.*$');
         if (patternMatch) {
-            chrome.extension.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
+            chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
         } else {
             console.log("Could not determine what to do with link: " + linkUrl);
         }
     } else if (linkUrl && (linkUrl.match('^(https|http|acestream|sop)://.+$') || linkUrl.match('^(http|https)://.*\.(torrent|torrent\?.+)$'))) {
-        chrome.extension.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
+        chrome.runtime.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
     } else if (!linkUrl || linkUrl.trim() == ''
         || (linkUrl && (linkUrl.indexOf('#') == 0
         || linkUrl.indexOf('mailto') == 0

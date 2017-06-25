@@ -1,5 +1,5 @@
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if ("getKinoLiveVideoUrl" == request.action) {
             var videoLink = $('html').html().match('file=(https?\\:.+?\\.flv)')[1];

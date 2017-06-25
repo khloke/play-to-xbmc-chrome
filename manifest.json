@@ -1,8 +1,13 @@
 {
     "manifest_version": 2,
-    "version": "1.7.7.2",
+    "version": "1.8.1",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
+    "applications": {
+        "gecko": {
+            "id": "{ba707b6e-571d-47c9-a31d-7b94807d6ee2}"
+        }
+    },
     "options_page": "options.html",
     "permissions": [ "tabs", "http://*/*", "contextMenus" ],
     "browser_action": {
@@ -10,6 +15,8 @@
         "default_popup": "remote.html"
     },
     "icons": {
+        "16": "images/icon-16.png",
+        "24": "images/icon.png",
         "128": "images/tv.png"
     },
     "background": {
@@ -28,7 +35,10 @@
     },{
         "matches": ["http://www.liveleak.com/view*"],
         "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
+    },{
+        "matches": ["*://*.facebook.com/*"],
+        "js": ["js/content_scripts/facebook-content-scripts.js", "js/jquery-2.1.4.min.js"]
+    },{
         "matches": ["*://www.youtube.com/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
     }, {
@@ -63,7 +73,16 @@
         "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
     }, {
         "matches": ["*://*.cda.pl/*"],
-        "js": ["js/content_scripts/cda-content-scripts.js", "js/jquery-2.1.4.min.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]
+    }, {
+        "matches": ["*://*.xnxx.com/*"],
+        "js": ["js/content_scripts/xnxx-content-scripts.js", "js/jquery-2.1.4.min.js"]
+    }, {
+        "matches": ["*://*.seasonvar.ru/*"],
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/seasonvar-content-scripts.js"]
+    }, {
+        "matches": ["*://*.twitch.tv/*"],
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/twitch-content-scripts.js"]
     }],
     "web_accessible_resources": [
         "images/*"

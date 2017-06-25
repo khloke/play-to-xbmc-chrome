@@ -21,7 +21,8 @@ function getPluginPath(url, callback) {
         if (module.canHandleUrl(url)) {
             foundModule = true;
             if (debugLogsEnabled) console.log("Found module to handle url: " + url);
-            module.getPluginPath(url, function(path) {
+            
+            module.getPluginPath(url, getAddOnVersion, function(path) {
                 if (debugLogsEnabled) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
             });
@@ -29,6 +30,13 @@ function getPluginPath(url, callback) {
     }
 
     if (debugLogsEnabled && !foundModule) console.log("No module found to handle url: " + url + "");
+}
+
+function getAddOnVersion(addonId, callback) {
+    var json = '{"jsonrpc": "2.0", "method": "Addons.GetAddonDetails", "params": {"addonid": "' + addonId + '", "properties": ["version"]}, "id": 1}';
+    ajaxPost(json, function(response) {
+        callback(response.result.addon.version);
+    });
 }
 
 function queueItem(url, callback) {
@@ -86,6 +94,7 @@ function insertItem(url, position, callback) {
 function ajaxPost(data, callback, timeout) {
     var url = getURL();
     var fullPath = url + "/jsonrpc";
+    var credentials = getCredentials();
     var defaultTimeout = 5000;
     if (timeout) {
         defaultTimeout = timeout;
@@ -107,8 +116,13 @@ function ajaxPost(data, callback, timeout) {
         data: data,
         dataType: 'json',
         timeout: defaultTimeout,
+        username: credentials[0],
+        password: credentials[1],
         error: function (jqXHR, textStatus, erroThrown) {
             callback(0);
+        },
+        beforeSend: function(xhr, settings){
+            xhr.mozBackgroundRequest = true;
         }
     });
 }
@@ -157,7 +171,8 @@ function validVideoPage(url, callback) {
     if (validUrl(url)) {
         callback();
     } else {
-        chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+            tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
