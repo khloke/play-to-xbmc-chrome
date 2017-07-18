@@ -832,8 +832,7 @@ var SeasonvarModule = {
 
 var VivoModule = {
     canHandleUrl: function(url) {
-        var validPatterns = [ //           ".*streamcloud.eu/([a-zA-Z0-9]+)/.*"
-            //"*vivo.sx/.*[A-Za-z0-9]*"
+        var validPatterns = [
             ".*vivo.sx/([a-zA-Z0-9]+)"
         ];
         return urlMatchesOneOfPatterns(url, validPatterns);
