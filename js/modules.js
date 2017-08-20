@@ -801,7 +801,8 @@ var XnxxModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function(tab){
+        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+            var tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
                 if (response) {
                     callback(response.videoSrc);

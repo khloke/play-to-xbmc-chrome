@@ -1,5 +1,5 @@
 
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if ("getFacebookVideoUrl" == request.action) {
             try {
