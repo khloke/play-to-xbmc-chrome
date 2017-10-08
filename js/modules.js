@@ -214,7 +214,7 @@ var ExuaModule = {
     getMediaType: function() {
         return 'video';
     },
-    getPluginPath: function(url, callback) {
+    getPluginPath: function(url, getAddOnVersion, callback) {
         callback(url);
     }
 };
@@ -229,7 +229,7 @@ var FacebookModule = {
     getMediaType: function() {
         return 'video';
     },
-    getPluginPath: function(url, callback) {
+    getPluginPath: function(url, getAddOnVersion, callback) {
         chrome.tabs.sendMessage(currentTabId, {action: 'getFacebookVideoUrl'}, function (response) {
             if (response) {
                 var facebookUrl = response.url;
@@ -819,7 +819,7 @@ var XnxxModule = {
     getMediaType: function() {
         return 'video';
     },
-    getPluginPath: function(url, callback) {
+    getPluginPath: function(url, getAddOnVersion, callback) {
         chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
             var tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
