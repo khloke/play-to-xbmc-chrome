@@ -1,4 +1,4 @@
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log("Received message: " + request.action);
         if (request.action == "getEmbeddedVideos" || request.action == "getVideoSrc") {
