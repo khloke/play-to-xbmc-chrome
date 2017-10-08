@@ -850,6 +850,25 @@ var SeasonvarModule = {
     }
 };
 
+var SolarmoviezModule= {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*solarmoviez.to/*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getSolarmoviezVideo'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
+        });
+    }
+};
+
 var VivoModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -895,6 +914,7 @@ var allModules = [
     PornhubModule,
     RuutuModule,
     SeasonvarModule,
+    SolarmoviezModule,
     SopcastModule,
     SoundcloudModule,
     StreamCloudModule,
