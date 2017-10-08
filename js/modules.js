@@ -763,7 +763,7 @@ var YoutubeModule = {
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="queue-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Queue</a></li>');
             $youtubeContextMenu.append('<li><span class="playtoxbmc-icon"></span><a id="playnext-' + videoId + '" class="yt-uix-button-menu-item html5-context-menu-link" target="_blank">Play this Next</a></li>');
             $('.playtoxbmc-icon')
-                .css('background', 'url(\'' + chrome.extension.getURL('/images/icon.png') + '\') no-repeat 3px 3px')
+                .css('background', 'url(\'' + chrome.runtime.getURL('/images/icon.png') + '\') no-repeat 3px 3px')
                 .css('height', '25px')
                 .css('width', '25px')
                 .css('border', 'none')
