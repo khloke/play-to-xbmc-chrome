@@ -448,6 +448,44 @@ var RuutuModule = {
     }
 };
 
+var SeasonvarModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            "^https?://(www\\.)?seasonvar\\.ru/serial-\\d+-"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+            if (response) {
+                callback(response.videoSrc);
+            }
+        });
+    }
+};
+
+var SolarmoviezModule= {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*solarmoviez.to/*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getSolarmoviezVideo'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
+        });
+    }
+};
+
 var SopcastModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -700,6 +738,47 @@ var VimeoModule = {
     }
 };
 
+var VivoModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*vivo.sx/([a-zA-Z0-9]+)"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVivoVideo'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
+        });
+    }
+};
+
+var XnxxModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*xnxx.com/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+            var tab = tab[0];
+            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        });
+    }
+};
+
 var YleAreenaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -806,85 +885,6 @@ var ZdfMediathekModule = {
         var videoId = url.match('(https|http)://(www\.)?zdf.de/ZDFmediathek/#/beitrag/video/([^_&/#\?]+)/.*')[3];
 
         callback('plugin://plugin.video.zdf_de_lite/?mode=playVideo&url=' + encodeURIComponent(videoId));
-    }
-};
-
-var XnxxModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*xnxx.com/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-            var tab = tab[0];
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
-        });
-    }
-};
-
-var SeasonvarModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^https?://(www\\.)?seasonvar\\.ru/serial-\\d+-"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (response) {
-                callback(response.videoSrc);
-            }
-        });
-    }
-};
-
-var SolarmoviezModule= {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*solarmoviez.to/*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getSolarmoviezVideo'}, function (response) {
-            if (response) {
-                callback(response.url);
-            }
-        });
-    }
-};
-
-var VivoModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*vivo.sx/([a-zA-Z0-9]+)"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVivoVideo'}, function (response) {
-            if (response) {
-                callback(response.url);
-            }
-        });
     }
 };
 
