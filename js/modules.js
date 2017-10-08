@@ -850,6 +850,25 @@ var SeasonvarModule = {
     }
 };
 
+var VivoModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*vivo.sx/([a-zA-Z0-9]+)"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        chrome.tabs.sendMessage(currentTabId, {action: 'getVivoVideo'}, function (response) {
+            if (response) {
+                callback(response.url);
+            }
+        });
+    }
+};
+
 var allModules = [
     AcestreamModule,
     AnimeLabModule,
@@ -886,6 +905,7 @@ var allModules = [
     UrgantShowModule,
     VesselLabModule,
     VimeoModule,
+    VivoModule,
     XnxxModule,
     YleAreenaModule,
     YoutubeModule,
