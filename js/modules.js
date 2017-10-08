@@ -582,9 +582,9 @@ var TwitchTvModule = {
             let regexMatch;
             let versionNumber = Number.parseFloat(version);
 
-            if (regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/videos/([^&/#\?]+).*$')) {
+            if ((regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/videos/([^&/#\?]+).*$'))) {
                 videoId = regexMatch[1];
-            } else if (regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/([^&/#\?]+).*$')) {
+            } else if ((regexMatch = url.match('^(?:https|http)://(?:www\.)?twitch.tv/([^&/#\?]+).*$'))) {
                 liveVideo = true;
                 videoId = regexMatch[1];
             }
@@ -801,7 +801,8 @@ var XnxxModule = {
         return 'video';
     },
     getPluginPath: function(url, callback) {
-        chrome.tabs.getSelected(null, function(tab){
+        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+            var tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
                 if (response) {
                     callback(response.videoSrc);
