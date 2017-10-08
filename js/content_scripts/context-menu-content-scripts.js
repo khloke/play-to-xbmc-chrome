@@ -20,7 +20,7 @@ function addContextMenuTo(selector) {
 
     var isHovering = false;
     document.addEventListener('mouseover', function(event) {
-        if (event.target && event.target[matches](selector)) {
+        if (event.target && $.isFunction(event.target[matches]) && event.target[matches](selector)) {
             if (!event.path) {
                 console.log("Using workaround to get event.path");
                 event.path = getEventPath(event);
