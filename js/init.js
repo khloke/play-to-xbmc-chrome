@@ -1,3 +1,7 @@
+console.log("init.js");
+
+var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
+
 $(document).ready( function() {
     initFocusFix();
     initWatchdog();
@@ -30,7 +34,7 @@ $(document).ready( function() {
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
-//    $('#testBtn').click(function() { initVideoButton() });
+    //    $('#testBtn').click(function() { initVideoButton() });
 
     if (!hasUrlSetup()) {
         $('#setupTooltip').css("display", "block");

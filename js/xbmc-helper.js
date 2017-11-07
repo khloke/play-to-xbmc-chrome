@@ -1,9 +1,9 @@
+console.log("xbmc-helper.js");
 /**
  *  Handy curl command:
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true';
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
@@ -14,22 +14,22 @@ function getSiteName(url) {
 }
 
 function getPluginPath(url, callback) {
-    if (debugLogsEnabled) console.log("Number of modules available: " + allModules.length);
+    if (isDebugEnabled()) console.log("Number of modules available: " + allModules.length);
     var foundModule = false;
     for (var i = 0; i < allModules.length; i++) {
         var module = allModules[i];
         if (module.canHandleUrl(url)) {
             foundModule = true;
-            if (debugLogsEnabled) console.log("Found module to handle url: " + url);
+            if (isDebugEnabled()) console.log("Found module to handle url: " + url);
             
             module.getPluginPath(url, getAddOnVersion, function(path) {
-                if (debugLogsEnabled) console.log("Path to play media: " + path);
+                if (isDebugEnabled()) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
             });
         }
     }
 
-    if (debugLogsEnabled && !foundModule) console.log("No module found to handle url: " + url + "");
+    if (isDebugEnabled() && !foundModule) console.log("No module found to handle url: " + url + "");
 }
 
 function getAddOnVersion(addonId, callback) {
@@ -99,7 +99,7 @@ function ajaxPost(data, callback, timeout) {
     if (timeout) {
         defaultTimeout = timeout;
     }
-    if (debugLogsEnabled) {
+    if (isDebugEnabled()) {
         console.log("POST " + data);
     }
 
@@ -107,7 +107,7 @@ function ajaxPost(data, callback, timeout) {
         type: 'POST',
         url: fullPath,
         success: function (response) {
-            if (debugLogsEnabled) {
+            if (isDebugEnabled()) {
                 console.log(response);
             }
             callback(response);
@@ -305,7 +305,7 @@ function playerSeek(value) {
 function playerGoPrevious(callback) {
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
-            var version = localStorage["jsonVersion"];
+            let version = storageSettings.jsonVersion;
             var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
@@ -326,7 +326,7 @@ function playerGoPrevious(callback) {
 function playerGoNext(callback) {
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
-            var version = localStorage["jsonVersion"];
+            let version = storageSettings.jsonVersion;
             var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
@@ -409,7 +409,7 @@ function setRepeatMode(mode, callback) {
             var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
             var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + playerid + ', "state":"' + mode + '"}, "id" : 1}';
 
-            var version = localStorage["jsonVersion"];
+            let version = storageSettings.jsonVersion;
 
             if (version >= 6) {
                 ajaxPost(playerSetRepeatV6, function (response) {

@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.9.0",
+    "version": "1.9.1",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
     "applications": {
@@ -9,7 +9,7 @@
         }
     },
     "options_page": "options.html",
-    "permissions": [ "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
+    "permissions": [ "storage", "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
     "browser_action": {
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"

@@ -1,3 +1,5 @@
+console.log("options.js");
+
 $(document).ready(function(){
     checkVersion();
     populateProfiles();
@@ -6,7 +8,7 @@ $(document).ready(function(){
     $('#newProfileBtn').click(function(){createNewProfile()});
     $('#deleteProfileBtn').click(function(){deleteThisProfile()});
     $('#enableMultiHost').change(function(){
-        localStorage.setItem(storageKeys.enableMultiHost, $(this).prop('checked'));
+        getSettings().enableMultiHost = $(this).prop('checked');
         populateProfiles();
     });
     $('#enableDebugLogs').change(function() {
@@ -25,7 +27,7 @@ function showAlertMessage(status, message) {
     }, 3000);
 }
 
-// Saves options to localStorage.
+// Saves options to storage.
 function saveOptions() {
     var status = $("#status");
     var profiles = $('#profiles');
@@ -37,15 +39,23 @@ function saveOptions() {
     var port = document.getElementById("port").value;
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-
+        
     if (url && port && url != '' && port != '') {
         if (isMultiHostEnabled()) {
             saveProfile();
         } else {
-            localStorage.setItem("url", url);
-            localStorage.setItem("port", port);
-            localStorage.setItem("username", username);
-            localStorage.setItem("password", password);
+            var opts = {
+                url: url,
+                port: port,
+                username: username,
+                password: password
+            };
+            browser.storage.sync.set(opts).then(
+                (results) => {
+                    if (isDebugEnabled()) {
+                        console.log("Options saved: Profile saved");
+                    }
+                }, onError);
         }
 
         // Update status to let user know options were saved
@@ -55,20 +65,26 @@ function saveOptions() {
         urlControlGroup.find('.controls').find('.help-inline').remove();
         portControlGroup.find('.controls').find('.help-inline').remove();
 
-        localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
-        localStorage.setItem(storageKeys.magnetAddOn, $('#magnetAddOn').val());
-        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').prop('checked'));
-        localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').prop('checked'));
+        var opts = {
+            showRepeat: $('#showRepeat').val(),
+            magnetAddOn: $('#magnetAddOn').val(),
+            enableMultiHost: $('#enableMultiHost').prop('checked'),
+            enableDebugLogs: $('#enableDebugLogs').prop('checked')
+        };
+        var saved = browser.storage.sync.set(opts);
+        saved.then((results) => {
+            if (isDebugEnabled()) {
+                console.log("Options saved");
+            }
+            // Update status to let user know options were saved
+            showAlertMessage(status, "Options Saved");
 
-        // Update status to let user know options were saved
-        showAlertMessage(status, "Options Saved");
-
-        //Show the previously selected profile
-        populateProfiles(function() {
-            profiles.val(selectedProfile);
-            changeProfile();
-        });
-
+            //Show the previously selected profile
+            populateProfiles(function() {
+                profiles.val(selectedProfile);
+                changeProfile();
+            });
+        }, onError);
     } else {
         urlControlGroup.addClass('error');
         portControlGroup.addClass('error');
@@ -77,8 +93,15 @@ function saveOptions() {
     }
 }
 
-// Restores select box state to saved value from localStorage.
+// Restores select box state to saved value from storage.
 function restoreOptions() {
+    console.log("restoreOptions()");
+    if (isDebugEnabled()) {
+        console.log("restoreOptions(): enableMultiHost " + getSettings().enableMultiHost);
+        console.log("restoreOptions(): enableDebugLogs: " + getSettings().enableDebugLogs);
+        console.log("restoreOptions(): showRepeat: " + getSettings().showRepeat);
+        console.log("restoreOptions(): magnetAddon: " + getSettings().magnetAddOn);
+    }
     if (isMultiHostEnabled()) {
         changeProfile();
     } else {
@@ -97,22 +120,23 @@ function restoreOptions() {
         $('#enableDebugLogs').prop("checked", false);
     }
 
-    var showRepeat = localStorage[storageKeys.showRepeat];
+    var showRepeat = getSettings().showRepeat;
     $('#showRepeat').val(showRepeat);
-    var magnetAddOn = localStorage[storageKeys.magnetAddOn];
+    var magnetAddOn = getSettings().magnetAddOn;
     $('#magnetAddOn').val(magnetAddOn);
 }
 
 function restoreUrl() {
+    console.log("restoreUrl()");
     if (isMultiHostEnabled()) {
         changeProfile();
     } else {
-        var url = localStorage["url"];
-        var port = localStorage["port"];
-        var username = localStorage["username"];
-        var password = localStorage["password"];
-        var showRepeat = localStorage[storageKeys.showRepeat];
-        var magnetAddOn = localStorage[storageKeys.magnetAddOn];
+        var url = getSettings().url;
+        var port = getSettings().port;
+        var username = getSettings().username;
+        var password = getSettings().password;
+        var showRepeat = getSettings().showRepeat;
+        var magnetAddOn = getSettings().magnetAddOn;
 
         if (!url || !port) {
             return;
@@ -125,48 +149,58 @@ function restoreUrl() {
         }
     }
 
-    if (isMultiHostEnabled()) {
-        $('#enableMultiHost').prop("checked", true);
-    } else {
-        $('#enableMultiHost').prop("checked", false);
-    }
-
     $('#showRepeat').val(showRepeat);
     $('#magnetAddOn').val(magnetAddOn);
 }
 
 function checkVersion() {
-    var storageVersion = localStorage["storage-version"];
-
-    if (storageVersion == null) {
-        localStorage.setItem("storage-version", 0);
-        storageVersion = 0;
+    var storageVersion = getSettings().storageVersion;
+    if (!storageVersion) {
+        storageVersion = parseInt(localStorage["storage-version"], 10);
     }
 
-    if (storageVersion < currentVersion) {
+    storageVersion = storageVersion > 1000 ? storageVersion/10 : storageVersion;
+
+    if (isDebugEnabled()) {
+        console.log("Storage version: " + storageVersion);
+    }
+
+    if (storageVersion == null) {
+        browser.storage.sync.set({storageVersion: 0});
+        storageVersion = 0;
+    } else if (storageVersion < currentVersion) {
         doUpgrade(storageVersion, currentVersion);
-        localStorage.setItem("storage-version", currentVersion);
     }
 }
 
 function doUpgrade(from, to) {
-    if (from < 1310) {
-        var storageUrl = localStorage["url"];
-        var storagePort = localStorage["port"];
-        var storageUsername = localStorage["username"];
-        var storagePassword = localStorage["password"];
+    var opts;
+    
+    if (isDebugEnabled()) {
+        console.log("Upgrading from version '" + from + "' to '" + to + "'");
+    }
+    
+    console.log("Old settings from localStorage: " + JSON.stringify(localStorage));
 
-        var profiles = [];
-        var profile;
+    if (from < 131) {
+        opts = {
+            url: localStorage["url"],
+            port: localStorage["port"],
+            username: localStorage["username"],
+            password: localStorage["password"]
+        }
+        opts.profiles = [];
 
-        if (storageUrl != null && storagePort != null && storageUrl != '' && storagePort != '') {
+        let profile;
+
+        if (opts.url != null && opts.port != null && opts.url != '' && opts.port != '') {
             profile = {
                 "id": 0,
                 "name": 'Default',
-                "url": storageUrl,
-                "port": storagePort,
-                "username": storageUsername,
-                "password": storagePassword
+                "url": opts.url,
+                "port": opts.port,
+                "username": opts.username,
+                "password": opts.password
             };
         } else {
             profile = {
@@ -179,23 +213,90 @@ function doUpgrade(from, to) {
             };
         }
 
-        profiles.push(profile);
+        opts.profiles.push(profile);
 
-        localStorage.setItem(storageKeys.profiles, JSON.stringify(profiles));
-        localStorage.setItem(storageKeys.selectedHost, 0);
+        opts.selectedHost = 0;
+        localStorage.clear();
+    } else if (from < 191) {
+        opts = {
+            url: localStorage.url,
+            port: localStorage.port,
+            username: localStorage.username,
+            password: localStorage.password,
+            showRepeat: localStorage.showRepeat,
+            enableMultiHost: localStorage.enableMultiHost == 'true',
+            selectedHost: parseInt(localStorage.selectedHost, 10),
+            enableDebugLogs: localStorage.enableDebugLogs == 'true',
+            magnetAddOn: localStorage.magnetAddOn,
+            profiles: []
+        }
+
+        if (isDebugEnabled()) {
+            console.log("Upgrade: showRepeat:" + localStorage.showRepeat);
+            console.log("Upgrade: enableMultiHost: " + localStorage.enableMultiHost);
+            console.log("Upgrade: magnetAddOn: " + localStorage.magnetAddOn);
+        }
+
+        opts.profiles = [];
+
+        let oldProfilesObj = localStorage.profiles;
+        let oldProfiles;
+
+        if (oldProfilesObj != null) {
+            oldProfiles = JSON.parse(oldProfilesObj);
+                
+            if (isDebugEnabled()) {
+                console.log("Upgrade: oldProfilesObj: " + oldProfilesObj);
+                console.log("Upgrade: oldProfiles: " + JSON.stringify(oldProfiles));
+            }
+
+            for (let i = 0; i < oldProfiles.length; i++) {
+                let profileOld = oldProfiles[i];
+                if (isDebugEnabled()) {
+                    console.log("Upgrade: profileOld: " + profileOld);
+                }
+                profile = {
+                    "id": profileOld.id,
+                    "name": profileOld.name,
+                    "url": profileOld.url,
+                    "port": profileOld.port,
+                    "username": profileOld.username,
+                    "password": profileOld.password
+                };
+                opts.profiles.push(profile);
+            }
+        }
+
+        localStorage.clear();
     }
+    opts.storageVersion = currentVersion;
+
+    console.log("Upgrade: Settings to save, opts: " + JSON.stringify(opts));
+
+    browser.storage.sync.set(opts).then(
+        (results) => {
+            if (isDebugEnabled()) {
+                console.log("Upgrade: Migrated options saved");
+            }
+            browser.storage.sync.get().then(
+                (storage) => {
+                    getSettings() = storage;
+                    if (isDebugEnabled()) {
+                        console.log("Upgrade: Migrated options: " + JSON.stringify(getSettings()));
+                    }
+                    populateProfiles();
+                    restoreOptions();
+                });
+        }, onError);
 }
 
 function saveProfile() {
-    var profileId = $('#profiles').val();
-    var allProfilesObj = getAllProfiles();
-    var allProfiles;
+    let profileId = $('#profiles').val();
+    let allProfiles = getAllProfiles();
 
-    if (allProfilesObj != null) {
-        allProfiles = JSON.parse(allProfilesObj);
-
+    if (allProfiles != null) {
         for (var i = 0; i < allProfiles.length; i++) {
-            var profile = allProfiles[i];
+            let profile = allProfiles[i];
             if (profile.id == profileId) {
                 profile.name = document.getElementById("name").value;
                 profile.url = document.getElementById("url").value;
@@ -207,23 +308,28 @@ function saveProfile() {
             }
         }
     } else {
-        allProfiles = [{
+        allProfiles = {
             id:0,
             name: document.getElementById("name").value,
-            "url": document.getElementById("url").value,
-            "port": document.getElementById("port").value,
-            "username": document.getElementById("username").value,
-            "password": document.getElementById("password").value
-        }];
+            url: document.getElementById("url").value,
+            port: document.getElementById("port").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
     }
 
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
+    browser.storage.sync.set({profiles: allProfiles}).then(
+        (results) => {
+            if (isDebugEnabled()) {
+                console.log("Profile saved");
+            }
+        }, onError);
 }
 
 function changeProfile() {
     if (isMultiHostEnabled()) {
         var profileId = $('#profiles').val();
-        var allProfiles = JSON.parse(getAllProfiles());
+        var allProfiles = getAllProfiles();
 
         for (var i = 0; i < allProfiles.length; i++) {
             var profile = allProfiles[i];
@@ -240,17 +346,17 @@ function changeProfile() {
 }
 
 function populateProfiles(callback) {
+    console.log("populateProfiles()");
+    console.log("populateProfiles(): getSettings(): " + JSON.stringify(getSettings()));
     var profiles = $('#profiles');
-    var allProfilesObj = getAllProfiles();
+    var allProfiles = getAllProfiles();
 
     profiles.change(function(){
         changeProfile();
     });
 
 
-    if (allProfilesObj != null) {
-        var allProfiles = JSON.parse(allProfilesObj);
-
+    if (allProfiles != null) {
         profiles.children().each(function() {$(this).remove()});
 
         for (var i=0; i<allProfiles.length; i++) {
@@ -283,7 +389,7 @@ function populateProfiles(callback) {
 }
 
 function createNewProfile() {
-    var allProfiles = JSON.parse(getAllProfiles());
+    var allProfiles = getAllProfiles();
     var largestId = 0;
 
     for (var i = 0; i < allProfiles.length; i++) {
@@ -302,14 +408,14 @@ function createNewProfile() {
         "password": ''
     });
 
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
+    browser.storage.sync.set({profiles: allProfiles});
     populateProfiles();
     $('#profiles').val(largestId+1);
     changeProfile();
 }
 
 function deleteThisProfile() {
-    var allProfiles = JSON.parse(getAllProfiles());
+    var allProfiles = getAllProfiles();
     var profiles = $('#profiles');
     var selectedId = profiles.val();
     var indexToRemove = -1;
@@ -324,9 +430,16 @@ function deleteThisProfile() {
 
     allProfiles.splice(indexToRemove, 1);
 
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
-    populateProfiles();
-    profiles.val(allProfiles[0].id);
+    browser.storage.sync.set({profiles: allProfiles}).then(
+        (results) => {
+            if (isDebugEnabled()) {
+                console.log("Profile deleted");
+            }
+            populateProfiles();
+            if (allProfiles[0]) {
+                profiles.val(allProfiles[0].id);
+            }
+        }, onError);
 }
 
 function goToPaypal() {

@@ -1,3 +1,5 @@
+console.log("context.js");
+
 function getEventPath(event) {
     var path = [];
     var node = event.target;

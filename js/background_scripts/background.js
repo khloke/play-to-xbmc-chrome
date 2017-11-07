@@ -1,3 +1,5 @@
+console.log("backgroud.js");
+
 var currentTabId;
 
 chrome.runtime.onMessage.addListener(
@@ -47,7 +49,7 @@ chrome.runtime.onMessage.addListener(
                 break;
 
             case 'isDebugLogsEnabled':
-                sendResponse({response: isDebugLogsEnabled()});
+                sendResponse({response: isDebugEnabled()});
                 break;
 
             case 'createContextMenu':
@@ -63,7 +65,7 @@ chrome.runtime.onMessage.addListener(
                 })});
                 break;
             case 'setLogging':
-                debugLogsEnabled = request.enable;
+                setDebug(request.enable);
                 break;
         }
 
@@ -76,7 +78,7 @@ chrome.runtime.onMessage.addListener(
  * We'll just log success/failure here.
  */
 function onContextMenuCreated(n) {
-    if (debugLogsEnabled) {
+    if (isDebugEnabled()) {
         if (chrome.runtime.lastError) {
             console.log("Error creating context menu item:" + chrome.runtime.lastError);
         } else {

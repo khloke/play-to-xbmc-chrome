@@ -1,43 +1,48 @@
+console.log("remote.js");
+
 /**
  * This file contains Google Chrome specific methods.
  */
 
 function hasUrlSetup() {
     if (isMultiHostEnabled()) {
-        var allProfiles = getAllProfiles();
+        let profiles = getAllProfiles();
 
-        if (allProfiles != null) {
-            var selectedHost = localStorage[storageKeys.selectedHost];
-            var profiles = JSON.parse(allProfiles);
+        if (profiles != null) {
+            let selectedHost = getSettings().selectedHost;
 
             if (selectedHost != null && selectedHost > 0) {
-                for (var i = 0; i < profiles.length; i++) {
-                    var profile = profiles[i];
+                for (let i = 0; i < profiles.length; i++) {
+                    let profile = profiles[i];
                     if (profile.id == selectedHost) {
                         return profile.url != null && profile.url != '' && profile.port != null && profile.port != '';
                     }
                 }
             } else {
-                return profiles[0].url != null && profiles[0].url != '' && profiles[0].port != null && profiles[0].port != '';
+                return profiles[0] != null
+                    && profiles[0].url != null
+                    && profiles[0].url != ''
+                    && profiles[0].port != null
+                    && profiles[0].port != '';
             }
         }
 
         return false;
     } else {
-        var url = localStorage["url"];
-        var port = localStorage["port"];
+        let url = getSettings().url;
+        let port = getSettings().port;
 
         return url != null && url != '' && port != null && port != '';
     }
 }
 
 function hasBeenUpdated() {
-    var installedVersion = localStorage["installed-version"];
+    var installedVersion = getSettings().installedVersion;
     return !installedVersion || installedVersion < currentVersion;
 }
 
 function updateVersion() {
-    localStorage.setItem("installed-version", currentVersion);
+    browser.storage.sync.set({"installedVersion": currentVersion});
 }
 
 function onChangeUpdate() {
@@ -208,10 +213,9 @@ function removeThisFromPlaylist(caller) {
     });
 }
 
-var favArrayKey = "fav-array";
 
 function getAllFavourites() {
-    return localStorage[favArrayKey] || '[]';
+    return getSettings().favArray || [];
 }
 
 function addToFavourites() {
@@ -225,36 +229,26 @@ function addToFavourites() {
 
 function addThisToFavourites(title, url) {
     if (validUrl(url)) {
-        var favArrayObj = getAllFavourites();
-
-        var favArray;
-        if (favArrayObj != null) {
-            favArray = JSON.parse(favArrayObj);
-        } else {
-            favArray = [];
-        }
+        var favArray = getAllFavourites();
 
         var fav = [];
         fav[0] = title;
         fav[1] = url;
         favArray.push(fav);
-        localStorage.setItem(favArrayKey, JSON.stringify(favArray));
+        browser.storage.sync.set({favArray: favArray});
         initFavouritesTable();
     }
 }
 
 function removeFromFavourites(index) {
-    var favArrayObj = getAllFavourites();
-    if (favArrayObj != null) {
-        var favArray = JSON.parse(favArrayObj);
-        favArray.splice(index, 1);
-        localStorage.setItem(favArrayKey, JSON.stringify(favArray));
-    }
+    var favArray = getAllFavourites();
+    favArray.splice(index, 1);
+    browser.storage.sync.set({favArray: favArray});
     initFavouritesTable();
 }
 
 function clearFavouritesTable() {
-    localStorage.removeItem(favArrayKey);
+    browser.storage.sync.set({favArray: []});
     initFavouritesTable();
 }
 
@@ -363,7 +357,7 @@ function initFavouritesTable() {
     favouritesTable.hide();
     favouritesTable.find('tbody').find("tr").remove();
     if (getAllFavourites() != null) {
-        favArray = JSON.parse(getAllFavourites());
+        favArray = getAllFavourites();
         if (favArray.length > 0) {
             for (var i = 0; i < favArray.length; i++) {
                 createFavouritesActionButtons(i);
@@ -385,14 +379,14 @@ function initFavouritesTable() {
                 fav[1] = link.attr('href');
                 newOrder.push(fav);
             });
-            localStorage.setItem(favArrayKey, JSON.stringify(newOrder));
+            browser.storage.sync.set({favArray: newOrder});
         }
     });
 }
 
 function initJsonVersion() {
     getXbmcJsonVersion(function (version) {
-        localStorage.setItem('jsonVersion', version);
+        browser.storage.sync.set({jsonVersion: version});
     });
 }
 
@@ -477,7 +471,7 @@ function initQueueCount() {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
                 if (playlistPosition != null) {
-                    if (isDebugLogsEnabled()) {
+                    if (isDebugEnabled()) {
                         console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
                     }
                     $("#queueVideoButton").html("+Queue(" + leftOvers + ")");
@@ -494,12 +488,12 @@ function initRepeatMode() {
     var hasRepeat = 1;
 
     if ($('#repeatButton').length <= 0) {
-        if (localStorage["showRepeat"] == 'always') {
+        if (getSettings().showRepeat == 'always') {
             $('#moreBtnGroup').before('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px; margin-left: -1px;">Repeat: Stopped</button>');
             $('#repeatButton').click(function () {
                 toggleRepeat()
             });
-        } else if (localStorage["showRepeat"] == 'dropdown') {
+        } else if (getSettings().showRepeat == 'dropdown') {
             $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
             $('#repeatButton').click(function () {
                 toggleRepeat()
@@ -620,7 +614,7 @@ function initSeekerSlider() {
                     $totalTime.css('top', top + 'px');
                     $currentTime.html(formatSeconds(timeInSeconds));
                     $totalTime.html(formatSeconds(totalTimeInSeconds));
-                    if (isDebugLogsEnabled()) {
+                    if (isDebugEnabled()) {
                         console.log('Total time in seconds: ' + totalTimeInSeconds);
                     }
                     $seeker.slider({
@@ -694,7 +688,7 @@ function initPlaylistNumbers() {
 
 function initProfiles() {
     if (isMultiHostEnabled()) {
-        var allProfiles = JSON.parse(getAllProfiles());
+        var allProfiles = getAllProfiles();
         var profiles = $('#profiles');
 
         profiles.children().each(function () {
@@ -705,10 +699,10 @@ function initProfiles() {
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
         }
 
-        profiles.val(localStorage[storageKeys.selectedHost]);
+        profiles.val(getSettings().selectedHost);
 
         profiles.change(function () {
-            localStorage.setItem(storageKeys.selectedHost, profiles.val());
+            browser.storage.sync.set({selectedHost: profiles.val()});
             document.location.reload(true)
         });
 
@@ -722,7 +716,7 @@ function initKeyBindings() {
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 
-        if (isDebugLogsEnabled()) {
+        if (isDebugEnabled()) {
             console.log(e.keyCode);
         }
 
@@ -819,4 +813,4 @@ function emptyPlaylist() {
 }
 
 var urlList = [];
-var favArray = JSON.parse(getAllFavourites());
+var favArray = getAllFavourites();
