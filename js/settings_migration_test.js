@@ -1,9 +1,3 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("settings_migration_test.js: " + JSON.stringify(opts));
-    });
-//console.log("settings_migration_test.js");
-
 /// MIGRATION TEST CODE //////////////////////////////////////////////////////////
 //
 // Remember to run browser.storage.sync.clear() before reloading the addon.

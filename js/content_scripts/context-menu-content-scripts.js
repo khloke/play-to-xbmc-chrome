@@ -1,5 +1,3 @@
-console.log("context.js");
-
 function getEventPath(event) {
     var path = [];
     var node = event.target;
@@ -24,7 +22,7 @@ function addContextMenuTo(selector) {
     document.addEventListener('mouseover', function(event) {
         if (event.target && $.isFunction(event.target[matches]) && event.target[matches](selector)) {
             if (!event.path) {
-                console.log("Using workaround to get event.path");
+                debugLog("Using workaround to get event.path");
                 event.path = getEventPath(event);
             }
             for (var i = 0; i < event.path.length; i++) {
@@ -53,7 +51,7 @@ function createContextMenu(linkUrl) {
         if (patternMatch) {
             chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + ':' + linkUrl}, function (response) {});
         } else {
-            console.log("Could not determine what to do with link: " + linkUrl);
+            debugLog("Could not determine what to do with link: " + linkUrl);
         }
     } else if (linkUrl && linkUrl.match('^/.*$')) {
         var tabUrl = window.location.href;
@@ -61,7 +59,7 @@ function createContextMenu(linkUrl) {
         if (patternMatch) {
             chrome.runtime.sendMessage({action: 'createContextMenu', link: patternMatch[1] + '://' + patternMatch[2] + linkUrl}, function (response) {});
         } else {
-            console.log("Could not determine what to do with link: " + linkUrl);
+            debugLog("Could not determine what to do with link: " + linkUrl);
         }
     } else if (linkUrl && (linkUrl.match('^(https|http|acestream|sop)://.+$') || linkUrl.match('^(http|https)://.*\.(torrent|torrent\?.+)$'))) {
         chrome.runtime.sendMessage({action: 'createContextMenu', link: linkUrl}, function (response) {});
@@ -72,7 +70,7 @@ function createContextMenu(linkUrl) {
         || linkUrl.indexOf('irc') == 0))) {
         //Do nothing to these links.
     } else {
-        console.log("Could not determine what to do with link: " + linkUrl);
+        debugLog("Could not determine what to do with link: " + linkUrl);
     }
 }
 

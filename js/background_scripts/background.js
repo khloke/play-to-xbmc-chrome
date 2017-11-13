@@ -1,8 +1,3 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("backgroud.js: " + JSON.stringify(opts));
-    });
-
 var currentTabId;
 
 chrome.runtime.onMessage.addListener(
@@ -51,8 +46,8 @@ chrome.runtime.onMessage.addListener(
                 });
                 break;
 
-            case 'isDebugLogsEnabled':
-                sendResponse({response: isDebugEnabled()});
+            case 'isDebug':
+                sendResponse({response: isDebug()});
                 break;
 
             case 'createContextMenu':
@@ -67,7 +62,7 @@ chrome.runtime.onMessage.addListener(
                     sendResponse({response: "OK"});
                 })});
                 break;
-            case 'setLogging':
+            case 'setDebug':
                 setDebug(request.enable);
                 break;
         }
@@ -339,7 +334,14 @@ function createMagnetAndP2PAndImageContextMenus() {
     }
 }
 
-chrome.contextMenus.removeAll();
-createMagnetAndP2PAndImageContextMenus();
-createHtml5VideoContextMenus();
+getSettings(["enableDebugLogs"]).then(
+    settings => {
+        if (null != settings.enableDebugLogs) {
+            setDebug(settings.enableDebugLogs);
+        }
+
+        chrome.contextMenus.removeAll();
+        createMagnetAndP2PAndImageContextMenus();
+        createHtml5VideoContextMenus();
+    });
 

@@ -1,9 +1,3 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("modules.js: " + JSON.stringify(opts));
-    });
-//console.log("modules.js");
-
 function urlMatchesOneOfPatterns(url, patterns) {
     for (var i = 0; i < patterns.length; i++) {
         var pattern = patterns[i];
@@ -638,7 +632,7 @@ var TwitchTvModule = {
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
         getAddOnVersion('plugin.video.twitch', function(version) {
-            console.log(version);
+            debugLog("plugin.video.twitch: version: " + version);
             let videoId;
             let liveVideo = false;
             let pluginPath;
@@ -716,13 +710,13 @@ var VesselLabModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        if (isDebug()) console.log("Sending message to tab '" + currentTabId + "' for video source.");
+        debugLog("Sending message to tab '" + currentTabId + "' for video source.");
         chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
             if (isDebug()) {console.log("Response from content script:"); console.log(response); }
             if (response) {
                 callback(response.videoSrc);
             } else {
-                if (isDebug()) console.log("Did not receive response for message");
+                debugLog("Did not receive response for message");
             }
         });
     }

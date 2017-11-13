@@ -1,13 +1,3 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("remote.js: " + JSON.stringify(opts));
-    });
-//console.log("remote.js");
-
-/**
- * This file contains Google Chrome specific methods.
- */
-
 //
 // Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
 //
@@ -246,8 +236,8 @@ function addToFavourites(settings) {
 // Settings needed: ["favArray"]
 //
 function addThisToFavourites(settings, title, url) {
+    debugLog("addThisToFavourites()");
     if (validUrl(url)) {
-        console.log("addThisToFavourites()...");
         var favArray = getAllFavourites(settings);
 
         var fav = [];
@@ -269,12 +259,12 @@ function addThisToFavourites(settings, title, url) {
 // Settings needed: ["favArray"]
 //
 function removeFromFavourites(settings, index) {
-    console.log("removeFromFavourites()");
+    debugLog("removeFromFavourites()");
     var favArray = getAllFavourites(settings);
     favArray.splice(index, 1);
-    browser.storage.sync.set({favArray: favArray}).getSettings(["favArray"]).then(
-        settings => {
-            initFavouritesTable(settings);
+    browser.storage.sync.set({favArray: favArray}).then(
+        function(result) {
+            return getSettings(["favArray"]).then(settings => { initFavouritesTable(settings); });
         });
 }
 
@@ -285,28 +275,25 @@ function removeFromFavourites(settings, index) {
 //
 function clearFavouritesTable(settings) {
     browser.storage.sync.set({favArray: []}).getSettings(["favArray"]).then(
-        settings => {
-            initFavouritesTable(settings);
-        });
+        settings => { initFavouritesTable(settings); }
+    );
 }
 
 //
 // Create action button for favourite of index 'i'
 //
 function createFavouritesActionButtons(settings, i) {
-    var name = favArray[i][0];
-    var url = favArray[i][1];
+    let fav = getAllFavourites(settings)[i];
+    let name = fav[0];
+    let url = fav[1];
     $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Play</a>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</a></div></td></tr>");
     $('#favQueueBtn' + i).click(function () {
-        queueItem(favArray[i][1], function () {
+        queueItem(fav[1], function () {
             onChangeUpdate();
         });
     });
     $('#favRemoveBtn' + i).click(function () {
-        getSettings().then(
-            settings => {
-                removeFromFavourites(settings, i);
-            });
+        getSettings().then(settings => { removeFromFavourites(settings, i); });
     });
 }
 
@@ -402,17 +389,15 @@ function initConnectivity(callback) {
 // Settings needed: ["favArray"]
 //
 function initFavouritesTable(settings) {
-    console.log("initFavouritesTable()");
+    debugLog("initFavouritesTable()");
     var favouritesTable = $('#favourites');
     favouritesTable.hide();
     favouritesTable.find('tbody').find("tr").remove();
-    console.log("initFavouritesTable() 1");
     if (getAllFavourites(settings) != null) {
-        console.log("initFavouritesTable() 2");
         favArray = getAllFavourites(settings);
         if (favArray.length > 0) {
             for (var i = 0; i < favArray.length; i++) {
-                createFavouritesActionButtons(i);
+                createFavouritesActionButtons(settings, i);
             }
             favouritesTable.show();
         }
@@ -496,10 +481,7 @@ function initVideoButton() {
                         $('#queue-' + video.id).click(function() { queueThisUrl($(this).attr('url'), $(this)) });
                         $('#videoFavButtons').append('<li><a id="fav-' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
                         $('#fav-' + video.id).click(function() {
-                            getSettings().then(
-                                settings => {
-                                    addThisToFavourites($(this).html(), $(this).attr('url'));
-                                });
+                            getSettings().then( settings => { addThisToFavourites($(this).html(), $(this).attr('url')); });
                         });
                     }
 
@@ -528,9 +510,7 @@ function initQueueCount() {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
                 if (playlistPosition != null) {
-                    if (isDebug()) {
-                        console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
-                    }
+                    debugLog("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
                     $("#queueVideoButton").html("+Queue(" + leftOvers + ")");
                     return;
                 }
@@ -672,9 +652,7 @@ function initSeekerSlider() {
                     $totalTime.css('top', top + 'px');
                     $currentTime.html(formatSeconds(timeInSeconds));
                     $totalTime.html(formatSeconds(totalTimeInSeconds));
-                    if (isDebug()) {
-                        console.log('Total time in seconds: ' + totalTimeInSeconds);
-                    }
+                    debugLog('Total time in seconds: ' + totalTimeInSeconds);
                     $seeker.slider({
                         max: totalTimeInSeconds,
                         value: timeInSeconds
@@ -781,9 +759,7 @@ function initKeyBindings() {
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 
-        if (isDebug()) {
-            console.log(e.keyCode);
-        }
+        debugLog(e.keyCode);
 
         switch (keyCode) {
             case keypress.left:
@@ -878,10 +854,3 @@ function emptyPlaylist() {
 }
 
 var urlList = [];
-var favArray;
-getSettings(["favArray"]).then(
-    settings => {
-        console.log("main of remote.js");
-        favArray = getAllFavourites(settings);
-    });
-

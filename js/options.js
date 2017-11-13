@@ -1,12 +1,10 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("options.js: " + JSON.stringify(opts));
-    });
-//console.log("options.js");
-
+console.log("options.js");
 $(document).ready(function(){
     getSettings().then(
         settings => {
+            if (null != settings.enableDebugLogs) {
+                setDebug(settings.enableDebugLogs);
+            }
             populateProfiles(settings);
             restoreOptions(settings);
             document.querySelector('#saveBtn').addEventListener('click', saveOptions);
@@ -21,7 +19,10 @@ $(document).ready(function(){
                 browser.storage.sync.set({enableMultiHost: $(this).prop('checked')}).then( saved => { populateProfiles(); });
             });
             $('#enableDebugLogs').change(function() {
-                chrome.runtime.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
+                let debugLogs = $(this).prop('checked');
+                browser.storage.sync.set({enableDebugLogs: debugLogs});
+                setDebug(debugLogs);
+                chrome.runtime.sendMessage({action: 'setDebug', enable: debugLogs}, function (response) {});
             });
             $('#paypalDonate').click(function() {
                 goToPaypal();
@@ -42,9 +43,7 @@ function showAlertMessage(status, message) {
 // Settings needed: ["enableMultiHost", "url", "port", "username", "password", "profiles"]
 //
 async function saveOptions() {
-    if (isDebug()) {
-        console.log("saveOptions()");
-    }
+    debugLog("saveOptions()");
     
     var status = $("#status");
     var profiles = $('#profiles');
@@ -94,13 +93,13 @@ async function saveOptions() {
                         // Update status to let user know options were saved
                         showAlertMessage(status, "Options Saved");
 
-                        //Show the previously selected profile
+                        // Show the previously selected profile
                         populateProfiles(null, function() {
                             // TODO Can we pass 'settings' and 'selectedProfile' variables here?
                             profiles.val(selectedProfile);
                             changeProfile(settings);
                         });
-                    }, onError);
+                    });
             });
     } else {
         urlControlGroup.addClass('error');
@@ -115,7 +114,7 @@ async function saveOptions() {
 // Settings needed: ["enableMultiHost", "enableDebugLogs", "showRepeat", "magnetAddon"]
 //
 async function restoreOptions(settings) {
-    console.log("restoreOptions()");
+    debugLog("restoreOptions()");
 
     if (isDebug()) {
         console.log("restoreOptions(): enableMultiHost " + settings.enableMultiHost);
@@ -145,7 +144,7 @@ async function restoreOptions(settings) {
 // Settings needed: ["url", "port", "username", "password", "showRepeat", "magnetAddOn"];
 //
 function restoreUrl(settings) {
-    console.log("restoreUrl()");
+    debugLog("restoreUrl()");
 
     if (isMultiHost(settings)) {
         changeProfile(settings);
@@ -211,7 +210,7 @@ function saveProfile(settings) {
 // Settings needed: ["profiles", "enableMultiHost"];
 //
 function changeProfile(settings) {
-    console.log("changeProfile()");
+    debugLog("changeProfile()");
 
     if (isMultiHost(settings)) {
         var profileId = $('#profiles').val();
@@ -236,7 +235,7 @@ function changeProfile(settings) {
 // Settings needed: ["enableMultiHost", "profiles", "url", "port", "username", "password"]
 //
 async function populateProfiles(settings, callback) {
-    console.log("populateProfiles()");
+    debugLog("populateProfiles()");
 
     if (!settings) {
         settings = await getSettings();
@@ -273,7 +272,6 @@ async function populateProfiles(settings, callback) {
 
     if (isMultiHost(settings)) {
         $('.profile-group').show();
-        // TODO Can we pass 'settings' and 'selectedProfile' variables here?
         changeProfile(settings);
     } else {
         $('.profile-group').hide();
@@ -291,7 +289,6 @@ async function createNewProfile(settings) {
 
     for (var i = 0; i < allProfiles.length; i++) {
         let profile = allProfiles[i];
-        console.log("createNewProfile(): profile.id: " + profile.id);
         if (profile.id > largestId) {
             largestId = profile.id;
         }
@@ -308,13 +305,11 @@ async function createNewProfile(settings) {
 
     browser.storage.sync.set({profiles: allProfiles}).then(
         (saved) => {
-            console.log("createNewProfile(): largestId: " + largestId);
             populateProfiles(null, function () {
                $('#profiles').val(largestId);
-               // TODO Can we pass 'settings' variable here?
                changeProfile(settings);
             });
-        }, onError);
+        });
 }
 
 // 
@@ -343,7 +338,7 @@ async function deleteThisProfile(settings) {
             if (allProfiles[0]) {
                 profiles.val(allProfiles[0].id);
             }
-        }, onError);
+        });
 }
 
 function goToPaypal() {

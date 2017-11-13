@@ -1,11 +1,8 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("settings.js: " + JSON.stringify(opts));
-    });
-//console.log("settings.js");
-
 getSettings().then(
     settings => {
+        if (null != settings.enableDebugLogs) {
+            setDebug(settings.enableDebugLogs);
+        }
         checkVersion(settings);
     });
 
@@ -20,9 +17,7 @@ function checkVersion(settings) {
 
     storageVersion = storageVersion && storageVersion > 1000 ? storageVersion/10 : storageVersion;
 
-    if (isDebug()) {
-        console.log("Storage version: " + storageVersion);
-    }
+    debugLog("Storage version: " + storageVersion);
 
     if (storageVersion == null) {
         setDefaultSettings();
@@ -123,9 +118,9 @@ function doUpgrade(from, to) {
 
             for (let i = 0; i < oldProfiles.length; i++) {
                 let profileOld = oldProfiles[i];
-                if (isDebug()) {
-                    console.log("Upgrade: profileOld: " + JSON.stringify(profileOld));
-                }
+
+                debugLog("Upgrade: profileOld: " + JSON.stringify(profileOld));
+
                 profile = {
                     "id": profileOld.id,
                     "name": profileOld.name,
@@ -142,25 +137,21 @@ function doUpgrade(from, to) {
     }
     opts.storageVersion = currentVersion;
 
-    if (isDebug()) {
-        console.log("Upgrade: Settings to save, opts: " + JSON.stringify(opts));
-    }
+    debugLog("Upgrade: Settings to save, opts: " + JSON.stringify(opts));
 
     browser.storage.sync.set(opts).then(
         (results) => {
             updated = true;
-            console.log("tooltip: setting updated: hasBeenUpdated(): " + hasBeenUpdated());
-            console.log("tooltip: setting updated: updated: " + updated);
             if (isDebug()) {
                 getSettings().then(
                     (settings) => {
-                        console.log("Upgrade: Migrated options: " + JSON.stringify(settings));
-                    }, onError);
+                        debugLog("Upgrade: Migrated options: " + JSON.stringify(settings));
+                    });
             }
             // TODO Is this needed? background will do it before options even show up
             // populateProfiles();
             // restoreOptions(settings);
-        }, onError);
+        });
 }
 
 function hasBeenUpdated() {

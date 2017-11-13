@@ -1,9 +1,3 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("init.js: " + JSON.stringify(opts));
-    });
-//console.log("init.js");
-
 $(document).ready( function() {
     initFocusFix();
     initWatchdog();
@@ -15,8 +9,8 @@ $(document).ready( function() {
         initKeyBindings();
 
         clearNonPlayingPlaylist(function() {
-            initVideoButton();
             getSettings(["favArray"]).then(settings => {initFavouritesTable(settings)});
+            initVideoButton();
             initQueueCount();
             initRepeatMode();
             initPlaylistNumbers();
@@ -32,10 +26,7 @@ $(document).ready( function() {
 
     $('#queueListButton').click(function() {queuePlaylist($(this))});
     $('#addToFavButton').click(function() {
-        getSettings(["favArray"]).then(
-            settings => {
-                addToFavourites(settings);
-        });
+        getSettings(["favArray"]).then(settings => { addToFavourites(settings); });
     });
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
@@ -45,15 +36,15 @@ $(document).ready( function() {
 
     getSettings().then(
         settings => {
-        let hasUrl = hasUrlSetup(settings);
-            console.log("tooltip: hasUrl: " + hasUrl);
-            console.log("tooltip: hasBeenUpdated: " + hasBeenUpdated());
-            console.log("tooltip: updated: " + updated);
+            let hasUrl = hasUrlSetup(settings);
             if (!hasUrl) {
+                debugLog("Add-on not configured");
                 $('#setupTooltip').css("display", "block");
             } else if (hasBeenUpdated()) {
+                debugLog("Add-on has been updated");
                 $('#updateTooltip').css("display", "block");
             }
-        }, onError);
-    updateVersion();
+            updateVersion();
+        });
+
 });

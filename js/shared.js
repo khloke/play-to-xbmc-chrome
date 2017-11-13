@@ -1,10 +1,4 @@
-browser.storage.sync.get().then(
-    (opts) => {
-        console.log("shared.js: " + JSON.stringify(opts));
-    });
-//console.log("shared.js");
-
-var debugEnabled = true;
+var debug = true;
 var updated = false;
 
 var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
@@ -12,22 +6,6 @@ var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g
 async function getSettings(settingsToGet) {
     return browser.storage.sync.get(settingsToGet);
 }
-
-/*
- * On startup, check whether we have stored settings.
- * If we don't, then store the default settings.
-function checkStoredSettings(settings) {
-    storedSettings = settings;
-    if (!storedSettings.storageVersion) {
-        console.log("No settings in storage. First run?");
-    } else {
-        //debugEnabled = storedSettings.enableDebugLogs;
-        if (debugEnabled) {
-            console.log("Settings read from storage: " + JSON.stringify(storedSettings));
-        }
-    }
-}
- */
 
 var actions = {
     "PlayPause": "Player.PlayPause",
@@ -44,20 +22,15 @@ var validPlaylistPatterns = [
     "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
 ];
 
-
-function onError(e) {
-  console.error(e);
-}
-
 //
 // Return currently selected profile
 //
 // Settings needed: ["selectedHost", "profiles"]
 //
 function getCurrentProfile(settings) {
-    var profile;
-    var selectedHost;
-    var allProfiles;
+    let profile;
+    let selectedHost;
+    let allProfiles;
 
     selectedHost = settings.selectedHost;
     allProfiles = settings.profiles;
@@ -79,14 +52,12 @@ function getCurrentProfile(settings) {
 // Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
 //
 function getURL(settings) {
-    var url;
-    var port;
+    debugLog("getURL()");
+    let url;
+    let port;
 
     if (isMultiHost(settings)) {
         let profile = getCurrentProfile(settings);
-        if (isDebug()) {
-            console.log("getURL(): profile: " + JSON.stringify(profile));
-        }
         if (profile) {
             url = profile.url;
             port = profile.port;
@@ -97,9 +68,6 @@ function getURL(settings) {
     }
 
     let uri = 'http://'+url + ':' + port;
-    if (isDebug()) {
-        console.log("getURL(): uri: " + uri);
-    }
 
     return uri;
 }
@@ -110,9 +78,7 @@ function getURL(settings) {
 // Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
 //
 function getCredentials(settings) {
-    if (isDebug()) {
-        console.log("getCredentials()");
-    }
+    debugLog("getCredentials()");
     let username;
     let password;
     
@@ -135,28 +101,36 @@ function getCredentials(settings) {
 // Settings needed: ["enableMultiHost"]
 //
 function isMultiHost(settings) {
-    console.log("isMultiHost()");
+    debugLog("isMultiHost(): " + settings.enableMultiHost); 
 
-    let multiHost = settings.enableMultiHost != null && settings.enableMultiHost;
-    if (isDebug()) {
-        console.log("isMultiHost(): settings.enableMultiHost: " + settings.enableMultiHost); 
-    }
-
-    return multiHost;
+    return settings.enableMultiHost;
 }
 
+//
+// Returns 'true' if debug is enabled
+// If settings are passed the debug value is retuned from settings. Else uses 'local' debug value.
+//
 function isDebug(settings) {
-    let debug = false;
-    if (settings) {
-        debug = settings.enableDebugLogs;
+    let retVal = false;
+    if (null != settings) {
+        retVal = settings.enableDebugLogs;
     } else {
-        debug = debugEnabled;
+        retVal = debug;
     }
-    return debug;
+    return retVal;
 }
 
-function setDebug(debug) {
-    debugEnabled = debug;
+//
+// Used to set 'local' debug value. This value is used first if set, before the one in browser.storage.sync.
+//
+function setDebug(value) {
+    debug = value;
+}
+
+function debugLog(message) {
+    if (isDebug()) { 
+        console.log(message);
+    }
 }
 
 //
@@ -169,4 +143,3 @@ function getAllProfiles(settings) {
 function updateVersion() {
     browser.storage.sync.set({"installedVersion": currentVersion});
 }
-
