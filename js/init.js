@@ -1,6 +1,8 @@
-console.log("init.js");
-
-var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("init.js: " + JSON.stringify(opts));
+    });
+//console.log("init.js");
 
 $(document).ready( function() {
     initFocusFix();
@@ -14,7 +16,7 @@ $(document).ready( function() {
 
         clearNonPlayingPlaylist(function() {
             initVideoButton();
-            initFavouritesTable();
+            getSettings(["favArray"]).then(settings => {initFavouritesTable(settings)});
             initQueueCount();
             initRepeatMode();
             initPlaylistNumbers();
@@ -29,18 +31,29 @@ $(document).ready( function() {
     $('#nextBtn').click(function() {next()});
 
     $('#queueListButton').click(function() {queuePlaylist($(this))});
-    $('#addToFavButton').click(function() {addToFavourites()});
+    $('#addToFavButton').click(function() {
+        getSettings(["favArray"]).then(
+            settings => {
+                addToFavourites(settings);
+        });
+    });
     $('#repeatButton').click(function() {toggleRepeat()});
     $('#playNextButton').click(function() {playNextCurrentUrl($(this))});
     $('#removeThisButton').click(function() {removeThisFromPlaylist($(this))});
     $('#clearPlaylistButton').click(function() {emptyPlaylist()});
-    //    $('#testBtn').click(function() { initVideoButton() });
+//    $('#testBtn').click(function() { initVideoButton() });
 
-    if (!hasUrlSetup()) {
-        $('#setupTooltip').css("display", "block");
-    } else if (hasBeenUpdated()) {
-        $('#updateTooltip').css("display", "block");
-    }
+    getSettings().then(
+        settings => {
+        let hasUrl = hasUrlSetup(settings);
+            console.log("tooltip: hasUrl: " + hasUrl);
+            console.log("tooltip: hasBeenUpdated: " + hasBeenUpdated());
+            console.log("tooltip: updated: " + updated);
+            if (!hasUrl) {
+                $('#setupTooltip').css("display", "block");
+            } else if (hasBeenUpdated()) {
+                $('#updateTooltip').css("display", "block");
+            }
+        }, onError);
     updateVersion();
-
 });

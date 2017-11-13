@@ -21,9 +21,11 @@
     },
     "background": {
         "scripts": [
+            "js/settings_migration_test.js",
             "js/jquery-2.1.4.min.js",
             "js/modules.js",
             "js/shared.js",
+            "js/settings.js",
             "js/background_scripts/background.js",
             "js/xbmc-helper.js"
         ]

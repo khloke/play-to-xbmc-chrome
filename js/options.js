@@ -1,22 +1,32 @@
-console.log("options.js");
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("options.js: " + JSON.stringify(opts));
+    });
+//console.log("options.js");
 
 $(document).ready(function(){
-    checkVersion();
-    populateProfiles();
-    restoreOptions();
-    document.querySelector('#saveBtn').addEventListener('click', saveOptions);
-    $('#newProfileBtn').click(function(){createNewProfile()});
-    $('#deleteProfileBtn').click(function(){deleteThisProfile()});
-    $('#enableMultiHost').change(function(){
-        getSettings().enableMultiHost = $(this).prop('checked');
-        populateProfiles();
-    });
-    $('#enableDebugLogs').change(function() {
-        chrome.runtime.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
-    });
-    $('#paypalDonate').click(function() {
-        goToPaypal();
-    });
+    getSettings().then(
+        settings => {
+            populateProfiles(settings);
+            restoreOptions(settings);
+            document.querySelector('#saveBtn').addEventListener('click', saveOptions);
+            $('#newProfileBtn').click(function(){
+                getSettings().then(settings => { createNewProfile(settings); });
+            });
+            $('#deleteProfileBtn').click(function(){
+                getSettings().then(settings => { deleteThisProfile(settings); });
+            });
+            $('#enableMultiHost').change(function(){
+                // TODO Show host combobox after multi host checkbox changed
+                browser.storage.sync.set({enableMultiHost: $(this).prop('checked')}).then( saved => { populateProfiles(); });
+            });
+            $('#enableDebugLogs').change(function() {
+                chrome.runtime.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
+            });
+            $('#paypalDonate').click(function() {
+                goToPaypal();
+            });
+        });
 });
 
 function showAlertMessage(status, message) {
@@ -28,7 +38,14 @@ function showAlertMessage(status, message) {
 }
 
 // Saves options to storage.
-function saveOptions() {
+//
+// Settings needed: ["enableMultiHost", "url", "port", "username", "password", "profiles"]
+//
+async function saveOptions() {
+    if (isDebug()) {
+        console.log("saveOptions()");
+    }
+    
     var status = $("#status");
     var profiles = $('#profiles');
     var urlControlGroup = $('#urlControlGroup');
@@ -39,10 +56,14 @@ function saveOptions() {
     var port = document.getElementById("port").value;
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-        
+
+    let settings = await getSettings();
+
     if (url && port && url != '' && port != '') {
-        if (isMultiHostEnabled()) {
-            saveProfile();
+        let profileSaved;
+
+        if (isMultiHost(settings)) {
+            profileSaved = saveProfile(settings);
         } else {
             var opts = {
                 url: url,
@@ -50,41 +71,37 @@ function saveOptions() {
                 username: username,
                 password: password
             };
-            browser.storage.sync.set(opts).then(
-                (results) => {
-                    if (isDebugEnabled()) {
-                        console.log("Options saved: Profile saved");
-                    }
-                }, onError);
+            profileSaved = browser.storage.sync.set(opts);
         }
 
-        // Update status to let user know options were saved
-        showAlertMessage(status, "Options Saved");
-        urlControlGroup.removeClass('error');
-        portControlGroup.removeClass('error');
-        urlControlGroup.find('.controls').find('.help-inline').remove();
-        portControlGroup.find('.controls').find('.help-inline').remove();
+        profileSaved.then(
+            saved => {
+                // Update status to let user know options were saved
+                showAlertMessage(status, "Options Saved");
+                urlControlGroup.removeClass('error');
+                portControlGroup.removeClass('error');
+                urlControlGroup.find('.controls').find('.help-inline').remove();
+                portControlGroup.find('.controls').find('.help-inline').remove();
 
-        var opts = {
-            showRepeat: $('#showRepeat').val(),
-            magnetAddOn: $('#magnetAddOn').val(),
-            enableMultiHost: $('#enableMultiHost').prop('checked'),
-            enableDebugLogs: $('#enableDebugLogs').prop('checked')
-        };
-        var saved = browser.storage.sync.set(opts);
-        saved.then((results) => {
-            if (isDebugEnabled()) {
-                console.log("Options saved");
-            }
-            // Update status to let user know options were saved
-            showAlertMessage(status, "Options Saved");
+                let opts = {
+                    showRepeat: $('#showRepeat').val(),
+                    magnetAddOn: $('#magnetAddOn').val(),
+                    enableMultiHost: $('#enableMultiHost').prop('checked'),
+                    enableDebugLogs: $('#enableDebugLogs').prop('checked')
+                };
+                browser.storage.sync.set(opts).then(
+                    saved => {
+                        // Update status to let user know options were saved
+                        showAlertMessage(status, "Options Saved");
 
-            //Show the previously selected profile
-            populateProfiles(function() {
-                profiles.val(selectedProfile);
-                changeProfile();
+                        //Show the previously selected profile
+                        populateProfiles(null, function() {
+                            // TODO Can we pass 'settings' and 'selectedProfile' variables here?
+                            profiles.val(selectedProfile);
+                            changeProfile(settings);
+                        });
+                    }, onError);
             });
-        }, onError);
     } else {
         urlControlGroup.addClass('error');
         portControlGroup.addClass('error');
@@ -94,49 +111,51 @@ function saveOptions() {
 }
 
 // Restores select box state to saved value from storage.
-function restoreOptions() {
+//
+// Settings needed: ["enableMultiHost", "enableDebugLogs", "showRepeat", "magnetAddon"]
+//
+async function restoreOptions(settings) {
     console.log("restoreOptions()");
-    if (isDebugEnabled()) {
-        console.log("restoreOptions(): enableMultiHost " + getSettings().enableMultiHost);
-        console.log("restoreOptions(): enableDebugLogs: " + getSettings().enableDebugLogs);
-        console.log("restoreOptions(): showRepeat: " + getSettings().showRepeat);
-        console.log("restoreOptions(): magnetAddon: " + getSettings().magnetAddOn);
-    }
-    if (isMultiHostEnabled()) {
-        changeProfile();
-    } else {
-        restoreUrl();
-    }
 
-    if (isMultiHostEnabled()) {
+    if (isDebug()) {
+        console.log("restoreOptions(): enableMultiHost " + settings.enableMultiHost);
+        console.log("restoreOptions(): enableDebugLogs: " + settings.enableDebugLogs);
+        console.log("restoreOptions(): showRepeat: " + settings.showRepeat);
+        console.log("restoreOptions(): magnetAddon: " + settings.magnetAddOn);
+    }
+    if (isMultiHost(settings)) {
+        changeProfile(settings);
         $('#enableMultiHost').prop("checked", true);
     } else {
+        restoreUrl(settings);
         $('#enableMultiHost').prop("checked", false);
     }
 
-    if (isDebugLogsEnabled()) {
+    if (isDebug(settings)) {
         $('#enableDebugLogs').prop("checked", true);
     } else {
         $('#enableDebugLogs').prop("checked", false);
     }
 
-    var showRepeat = getSettings().showRepeat;
-    $('#showRepeat').val(showRepeat);
-    var magnetAddOn = getSettings().magnetAddOn;
-    $('#magnetAddOn').val(magnetAddOn);
+    $('#showRepeat').val(settings.showRepeat);
+    $('#magnetAddOn').val(settings.magnetAddOn);
 }
 
-function restoreUrl() {
+//
+// Settings needed: ["url", "port", "username", "password", "showRepeat", "magnetAddOn"];
+//
+function restoreUrl(settings) {
     console.log("restoreUrl()");
-    if (isMultiHostEnabled()) {
-        changeProfile();
+
+    if (isMultiHost(settings)) {
+        changeProfile(settings);
     } else {
-        var url = getSettings().url;
-        var port = getSettings().port;
-        var username = getSettings().username;
-        var password = getSettings().password;
-        var showRepeat = getSettings().showRepeat;
-        var magnetAddOn = getSettings().magnetAddOn;
+        let url = settings.url;
+        let port = settings.port;
+        let username = settings.username;
+        let password = settings.password;
+        let showRepeat = settings.showRepeat;
+        let magnetAddOn = settings.magnetAddOn;
 
         if (!url || !port) {
             return;
@@ -149,150 +168,18 @@ function restoreUrl() {
         }
     }
 
-    $('#showRepeat').val(showRepeat);
-    $('#magnetAddOn').val(magnetAddOn);
+    $('#showRepeat').val(settings.showRepeat);
+    $('#magnetAddOn').val(settings.magnetAddOn);
 }
 
-function checkVersion() {
-    var storageVersion = getSettings().storageVersion;
-    if (!storageVersion) {
-        storageVersion = parseInt(localStorage["storage-version"], 10);
-    }
+// 
+//
+// Settings needed: ["profiles"]
+//
+function saveProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
 
-    storageVersion = storageVersion > 1000 ? storageVersion/10 : storageVersion;
-
-    if (isDebugEnabled()) {
-        console.log("Storage version: " + storageVersion);
-    }
-
-    if (storageVersion == null) {
-        browser.storage.sync.set({storageVersion: 0});
-        storageVersion = 0;
-    } else if (storageVersion < currentVersion) {
-        doUpgrade(storageVersion, currentVersion);
-    }
-}
-
-function doUpgrade(from, to) {
-    var opts;
-    
-    if (isDebugEnabled()) {
-        console.log("Upgrading from version '" + from + "' to '" + to + "'");
-    }
-    
-    console.log("Old settings from localStorage: " + JSON.stringify(localStorage));
-
-    if (from < 131) {
-        opts = {
-            url: localStorage["url"],
-            port: localStorage["port"],
-            username: localStorage["username"],
-            password: localStorage["password"]
-        }
-        opts.profiles = [];
-
-        let profile;
-
-        if (opts.url != null && opts.port != null && opts.url != '' && opts.port != '') {
-            profile = {
-                "id": 0,
-                "name": 'Default',
-                "url": opts.url,
-                "port": opts.port,
-                "username": opts.username,
-                "password": opts.password
-            };
-        } else {
-            profile = {
-                "id": 0,
-                "name": 'Default',
-                "url": '',
-                "port": '',
-                "username": '',
-                "password": ''
-            };
-        }
-
-        opts.profiles.push(profile);
-
-        opts.selectedHost = 0;
-        localStorage.clear();
-    } else if (from < 191) {
-        opts = {
-            url: localStorage.url,
-            port: localStorage.port,
-            username: localStorage.username,
-            password: localStorage.password,
-            showRepeat: localStorage.showRepeat,
-            enableMultiHost: localStorage.enableMultiHost == 'true',
-            selectedHost: parseInt(localStorage.selectedHost, 10),
-            enableDebugLogs: localStorage.enableDebugLogs == 'true',
-            magnetAddOn: localStorage.magnetAddOn,
-            profiles: []
-        }
-
-        if (isDebugEnabled()) {
-            console.log("Upgrade: showRepeat:" + localStorage.showRepeat);
-            console.log("Upgrade: enableMultiHost: " + localStorage.enableMultiHost);
-            console.log("Upgrade: magnetAddOn: " + localStorage.magnetAddOn);
-        }
-
-        opts.profiles = [];
-
-        let oldProfilesObj = localStorage.profiles;
-        let oldProfiles;
-
-        if (oldProfilesObj != null) {
-            oldProfiles = JSON.parse(oldProfilesObj);
-                
-            if (isDebugEnabled()) {
-                console.log("Upgrade: oldProfilesObj: " + oldProfilesObj);
-                console.log("Upgrade: oldProfiles: " + JSON.stringify(oldProfiles));
-            }
-
-            for (let i = 0; i < oldProfiles.length; i++) {
-                let profileOld = oldProfiles[i];
-                if (isDebugEnabled()) {
-                    console.log("Upgrade: profileOld: " + profileOld);
-                }
-                profile = {
-                    "id": profileOld.id,
-                    "name": profileOld.name,
-                    "url": profileOld.url,
-                    "port": profileOld.port,
-                    "username": profileOld.username,
-                    "password": profileOld.password
-                };
-                opts.profiles.push(profile);
-            }
-        }
-
-        localStorage.clear();
-    }
-    opts.storageVersion = currentVersion;
-
-    console.log("Upgrade: Settings to save, opts: " + JSON.stringify(opts));
-
-    browser.storage.sync.set(opts).then(
-        (results) => {
-            if (isDebugEnabled()) {
-                console.log("Upgrade: Migrated options saved");
-            }
-            browser.storage.sync.get().then(
-                (storage) => {
-                    getSettings() = storage;
-                    if (isDebugEnabled()) {
-                        console.log("Upgrade: Migrated options: " + JSON.stringify(getSettings()));
-                    }
-                    populateProfiles();
-                    restoreOptions();
-                });
-        }, onError);
-}
-
-function saveProfile() {
     let profileId = $('#profiles').val();
-    let allProfiles = getAllProfiles();
 
     if (allProfiles != null) {
         for (var i = 0; i < allProfiles.length; i++) {
@@ -317,19 +204,18 @@ function saveProfile() {
             password: document.getElementById("password").value
         };
     }
-
-    browser.storage.sync.set({profiles: allProfiles}).then(
-        (results) => {
-            if (isDebugEnabled()) {
-                console.log("Profile saved");
-            }
-        }, onError);
+    return browser.storage.sync.set({profiles: allProfiles});
 }
 
-function changeProfile() {
-    if (isMultiHostEnabled()) {
+//
+// Settings needed: ["profiles", "enableMultiHost"];
+//
+function changeProfile(settings) {
+    console.log("changeProfile()");
+
+    if (isMultiHost(settings)) {
         var profileId = $('#profiles').val();
-        var allProfiles = getAllProfiles();
+        var allProfiles = getAllProfiles(settings);
 
         for (var i = 0; i < allProfiles.length; i++) {
             var profile = allProfiles[i];
@@ -345,26 +231,36 @@ function changeProfile() {
     }
 }
 
-function populateProfiles(callback) {
+// 
+//
+// Settings needed: ["enableMultiHost", "profiles", "url", "port", "username", "password"]
+//
+async function populateProfiles(settings, callback) {
     console.log("populateProfiles()");
-    console.log("populateProfiles(): getSettings(): " + JSON.stringify(getSettings()));
-    var profiles = $('#profiles');
-    var allProfiles = getAllProfiles();
 
-    profiles.change(function(){
-        changeProfile();
+    if (!settings) {
+        settings = await getSettings();
+    }
+
+    let profiles = $('#profiles');
+    let allProfiles = settings.profiles;
+
+    profiles.change(function() {
+        getSettings().then(
+            settings => {
+                changeProfile(settings);
+            });
     });
-
 
     if (allProfiles != null) {
         profiles.children().each(function() {$(this).remove()});
 
-        for (var i=0; i<allProfiles.length; i++) {
-            var profile = allProfiles[i];
+        for (let i=0; i<allProfiles.length; i++) {
+            let profile = allProfiles[i];
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
         }
     } else {
-        if (isMultiHostEnabled()) {
+        if (isMultiHost(settings)) {
             profiles.append('<option>Default</option>');
             document.getElementById("name").value = 'Default';
             document.getElementById("url").value = '';
@@ -375,12 +271,13 @@ function populateProfiles(callback) {
 
     }
 
-    if (isMultiHostEnabled()) {
+    if (isMultiHost(settings)) {
         $('.profile-group').show();
-        changeProfile();
+        // TODO Can we pass 'settings' and 'selectedProfile' variables here?
+        changeProfile(settings);
     } else {
         $('.profile-group').hide();
-        restoreUrl();
+        restoreUrl(settings);
     }
 
     if (callback) {
@@ -388,40 +285,50 @@ function populateProfiles(callback) {
     }
 }
 
-function createNewProfile() {
-    var allProfiles = getAllProfiles();
-    var largestId = 0;
+async function createNewProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
+    let largestId = 0;
 
     for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
+        let profile = allProfiles[i];
+        console.log("createNewProfile(): profile.id: " + profile.id);
         if (profile.id > largestId) {
             largestId = profile.id;
         }
     }
 
     allProfiles.push({
-        id:largestId+1,
-        name:'New Profile',
+        id: ++largestId,
+        name: 'New Profile',
         "url": '',
         "port": '',
         "username": '',
         "password": ''
     });
 
-    browser.storage.sync.set({profiles: allProfiles});
-    populateProfiles();
-    $('#profiles').val(largestId+1);
-    changeProfile();
+    browser.storage.sync.set({profiles: allProfiles}).then(
+        (saved) => {
+            console.log("createNewProfile(): largestId: " + largestId);
+            populateProfiles(null, function () {
+               $('#profiles').val(largestId);
+               // TODO Can we pass 'settings' variable here?
+               changeProfile(settings);
+            });
+        }, onError);
 }
 
-function deleteThisProfile() {
-    var allProfiles = getAllProfiles();
-    var profiles = $('#profiles');
-    var selectedId = profiles.val();
-    var indexToRemove = -1;
+// 
+//
+// Settings needed: ["profiles"]
+//
+async function deleteThisProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
+    let profiles = $('#profiles');
+    let selectedId = profiles.val();
+    let indexToRemove = -1;
 
     for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
+        let profile = allProfiles[i];
         if (profile.id == selectedId) {
             indexToRemove = i;
             break;
@@ -432,9 +339,6 @@ function deleteThisProfile() {
 
     browser.storage.sync.set({profiles: allProfiles}).then(
         (results) => {
-            if (isDebugEnabled()) {
-                console.log("Profile deleted");
-            }
             populateProfiles();
             if (allProfiles[0]) {
                 profiles.val(allProfiles[0].id);

@@ -1,4 +1,8 @@
-console.log("xbmc-helper.js");
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("xbmc-helper.js: " + JSON.stringify(opts));
+    });
+//console.log("xbmc-helper.js");
 /**
  *  Handy curl command:
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
@@ -14,22 +18,22 @@ function getSiteName(url) {
 }
 
 function getPluginPath(url, callback) {
-    if (isDebugEnabled()) console.log("Number of modules available: " + allModules.length);
+    if (isDebug()) console.log("Number of modules available: " + allModules.length);
     var foundModule = false;
     for (var i = 0; i < allModules.length; i++) {
         var module = allModules[i];
         if (module.canHandleUrl(url)) {
             foundModule = true;
-            if (isDebugEnabled()) console.log("Found module to handle url: " + url);
+            if (isDebug()) console.log("Found module to handle url: " + url);
             
             module.getPluginPath(url, getAddOnVersion, function(path) {
-                if (isDebugEnabled()) console.log("Path to play media: " + path);
+                if (isDebug()) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
             });
         }
     }
 
-    if (isDebugEnabled() && !foundModule) console.log("No module found to handle url: " + url + "");
+    if (isDebug() && !foundModule) console.log("No module found to handle url: " + url + "");
 }
 
 function getAddOnVersion(addonId, callback) {
@@ -91,24 +95,26 @@ function insertItem(url, position, callback) {
     });
 }
 
-function ajaxPost(data, callback, timeout) {
-    var url = getURL();
+async function ajaxPost(data, callback, timeout) {
+    let settings = await getSettings();
+    var url = getURL(settings);
     var fullPath = url + "/jsonrpc";
-    var credentials = getCredentials();
+    var credentials = getCredentials(settings);
     var defaultTimeout = 5000;
     if (timeout) {
         defaultTimeout = timeout;
     }
-    if (isDebugEnabled()) {
-        console.log("POST " + data);
+    if (isDebug()) {
+        console.log("ajaxPost(): fullPath: " + fullPath);
+        console.log("ajaxPost(): data: " + data);
     }
 
     jQuery.ajax({
         type: 'POST',
         url: fullPath,
         success: function (response) {
-            if (isDebugEnabled()) {
-                console.log(response);
+            if (isDebug()) {
+                console.log("ajaxPost(): success: response: " + JSON.stringify(response));
             }
             callback(response);
         },
@@ -119,6 +125,9 @@ function ajaxPost(data, callback, timeout) {
         username: credentials[0],
         password: credentials[1],
         error: function (jqXHR, textStatus, erroThrown) {
+            console.log("ajaxPost(): error: jqXHR: " + JSON.stringify(jqXHR));
+            console.log("ajaxPost(): error: textStatus: " + textStatus);
+            console.log("ajaxPost(): error: erroThrown: " + erroThrown);
             callback(0);
         },
         beforeSend: function(xhr, settings){
@@ -173,6 +182,7 @@ function validVideoPage(url, callback) {
     } else {
         chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
             tab = tab[0];
+            // TODO This shows "Unchecked lastError value: Error: Could not establish connection. Receiving end does not exist." on Firefox in console
             chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
@@ -303,9 +313,9 @@ function playerSeek(value) {
 }
 
 function playerGoPrevious(callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
-            let version = storageSettings.jsonVersion;
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
             var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
@@ -324,9 +334,9 @@ function playerGoPrevious(callback) {
 }
 
 function playerGoNext(callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
-            let version = storageSettings.jsonVersion;
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
             var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
@@ -404,12 +414,12 @@ function getSpeed(callback) {
 }
 
 function setRepeatMode(mode, callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
             var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
             var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + playerid + ', "state":"' + mode + '"}, "id" : 1}';
 
-            let version = storageSettings.jsonVersion;
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
 
             if (version >= 6) {
                 ajaxPost(playerSetRepeatV6, function (response) {

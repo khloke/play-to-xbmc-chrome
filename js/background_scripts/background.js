@@ -1,4 +1,7 @@
-console.log("backgroud.js");
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("backgroud.js: " + JSON.stringify(opts));
+    });
 
 var currentTabId;
 
@@ -78,7 +81,7 @@ chrome.runtime.onMessage.addListener(
  * We'll just log success/failure here.
  */
 function onContextMenuCreated(n) {
-    if (isDebugEnabled()) {
+    if (isDebug()) {
         if (chrome.runtime.lastError) {
             console.log("Error creating context menu item:" + chrome.runtime.lastError);
         } else {
@@ -297,41 +300,43 @@ function createMagnetAndP2PAndImageContextMenus() {
         }
     }, onContextMenuCreated);
 
-    chrome.contextMenus.create({
-        title: "Play now",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            doAction(actions.Stop, function () {
-                clearPlaylist(function () {
-                    queueItem(info.linkUrl, function () {
-                    });
-                })
-            });
-        }
-    }, onContextMenuCreated);
-
-    chrome.contextMenus.create({
-        title: "Queue",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            queueItem(info.linkUrl, function () {
-            });
-        }
-    }, onContextMenuCreated);
-
-    chrome.contextMenus.create({
-        title: "Play this Next",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            getPlaylistPosition(function (position) {
-                insertItem(info.linkUrl, position + 1, function () {
+    if (!(navigator.userAgent.indexOf("Mozilla") > -1)) {
+        chrome.contextMenus.create({
+            title: "Play now",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                doAction(actions.Stop, function () {
+                    clearPlaylist(function () {
+                        queueItem(info.linkUrl, function () {
+                        });
+                    })
                 });
-            });
-        }
-    }, onContextMenuCreated);
+            }
+        }, onContextMenuCreated);
+
+        chrome.contextMenus.create({
+            title: "Queue",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                queueItem(info.linkUrl, function () {
+                });
+            }
+        }, onContextMenuCreated);
+
+        chrome.contextMenus.create({
+            title: "Play this Next",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                getPlaylistPosition(function (position) {
+                    insertItem(info.linkUrl, position + 1, function () {
+                    });
+                });
+            }
+        }, onContextMenuCreated);
+    }
 }
 
 chrome.contextMenus.removeAll();

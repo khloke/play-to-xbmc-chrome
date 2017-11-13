@@ -1,48 +1,52 @@
-console.log("remote.js");
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("remote.js: " + JSON.stringify(opts));
+    });
+//console.log("remote.js");
 
 /**
  * This file contains Google Chrome specific methods.
  */
 
-function hasUrlSetup() {
-    if (isMultiHostEnabled()) {
-        let profiles = getAllProfiles();
+//
+// Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
+//
+function hasUrlSetup(settings) {
+    let hasUrl = false;
+
+    if (isMultiHost(settings)) {
+        let profiles = settings.profiles;
 
         if (profiles != null) {
-            let selectedHost = getSettings().selectedHost;
+            let selectedHost = settings.selectedHost;
 
             if (selectedHost != null && selectedHost > 0) {
                 for (let i = 0; i < profiles.length; i++) {
                     let profile = profiles[i];
                     if (profile.id == selectedHost) {
-                        return profile.url != null && profile.url != '' && profile.port != null && profile.port != '';
+                        hasUrl = profile.url != null && profile.url != '' && profile.port != null && profile.port != '';
                     }
                 }
             } else {
-                return profiles[0] != null
+                hasUrl = profiles[0] != null
                     && profiles[0].url != null
                     && profiles[0].url != ''
                     && profiles[0].port != null
                     && profiles[0].port != '';
             }
         }
-
-        return false;
     } else {
-        let url = getSettings().url;
-        let port = getSettings().port;
+        let url = settings.url;
+        let port = settings.port;
 
-        return url != null && url != '' && port != null && port != '';
+        hasUrl = url != null && url != '' && port != null && port != '';
     }
-}
 
-function hasBeenUpdated() {
-    var installedVersion = getSettings().installedVersion;
-    return !installedVersion || installedVersion < currentVersion;
+    return hasUrl;
 }
 
 function updateVersion() {
-    browser.storage.sync.set({"installedVersion": currentVersion});
+    return browser.storage.sync.set({"installedVersion": currentVersion});
 }
 
 function onChangeUpdate() {
@@ -213,46 +217,83 @@ function removeThisFromPlaylist(caller) {
     });
 }
 
-
-function getAllFavourites() {
-    return getSettings().favArray || [];
+//
+// Returns array of favourites
+//
+// Settings needed: ["favArray"]
+//
+function getAllFavourites(settings) {
+    return settings.favArray || [];
 }
 
-function addToFavourites() {
+//
+// Adds current tab.url to favourites
+//
+// Settings needed: ["favArray"]
+//
+function addToFavourites(settings) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
         tab = tab[0];
         var url = tab.url;
         var title = tab.title.replace(' - YouTube', '').trim();
-        addThisToFavourites(title, url);
+        addThisToFavourites(settings, title, url);
     });
 }
 
-function addThisToFavourites(title, url) {
+//
+// Adds title and ulr to favourites
+//
+// Settings needed: ["favArray"]
+//
+function addThisToFavourites(settings, title, url) {
     if (validUrl(url)) {
-        var favArray = getAllFavourites();
+        console.log("addThisToFavourites()...");
+        var favArray = getAllFavourites(settings);
 
         var fav = [];
         fav[0] = title;
         fav[1] = url;
         favArray.push(fav);
-        browser.storage.sync.set({favArray: favArray});
-        initFavouritesTable();
+        browser.storage.sync.set({favArray: favArray}).then(
+            function(result) {
+                return getSettings(["favArray"]).then(
+                    settings => {initFavouritesTable(settings);}
+                );
+            });
     }
 }
 
-function removeFromFavourites(index) {
-    var favArray = getAllFavourites();
+//
+// Remove 'index' from favourites
+//
+// Settings needed: ["favArray"]
+//
+function removeFromFavourites(settings, index) {
+    console.log("removeFromFavourites()");
+    var favArray = getAllFavourites(settings);
     favArray.splice(index, 1);
-    browser.storage.sync.set({favArray: favArray});
-    initFavouritesTable();
+    browser.storage.sync.set({favArray: favArray}).getSettings(["favArray"]).then(
+        settings => {
+            initFavouritesTable(settings);
+        });
 }
 
-function clearFavouritesTable() {
-    browser.storage.sync.set({favArray: []});
-    initFavouritesTable();
+//
+// Clear favourites list
+//
+// Settings needed: ["favArray"]
+//
+function clearFavouritesTable(settings) {
+    browser.storage.sync.set({favArray: []}).getSettings(["favArray"]).then(
+        settings => {
+            initFavouritesTable(settings);
+        });
 }
 
-function createFavouritesActionButtons(i) {
+//
+// Create action button for favourite of index 'i'
+//
+function createFavouritesActionButtons(settings, i) {
     var name = favArray[i][0];
     var url = favArray[i][1];
     $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Play</a>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</a></div></td></tr>");
@@ -262,7 +303,10 @@ function createFavouritesActionButtons(i) {
         });
     });
     $('#favRemoveBtn' + i).click(function () {
-        removeFromFavourites(i);
+        getSettings().then(
+            settings => {
+                removeFromFavourites(settings, i);
+            });
     });
 }
 
@@ -352,12 +396,20 @@ function initConnectivity(callback) {
     });
 }
 
-function initFavouritesTable() {
+//
+// Initialize favourites table
+//
+// Settings needed: ["favArray"]
+//
+function initFavouritesTable(settings) {
+    console.log("initFavouritesTable()");
     var favouritesTable = $('#favourites');
     favouritesTable.hide();
     favouritesTable.find('tbody').find("tr").remove();
-    if (getAllFavourites() != null) {
-        favArray = getAllFavourites();
+    console.log("initFavouritesTable() 1");
+    if (getAllFavourites(settings) != null) {
+        console.log("initFavouritesTable() 2");
+        favArray = getAllFavourites(settings);
         if (favArray.length > 0) {
             for (var i = 0; i < favArray.length; i++) {
                 createFavouritesActionButtons(i);
@@ -443,7 +495,12 @@ function initVideoButton() {
                         $('#videoQueueButtons').append('<li><a id="queue-' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
                         $('#queue-' + video.id).click(function() { queueThisUrl($(this).attr('url'), $(this)) });
                         $('#videoFavButtons').append('<li><a id="fav-' + video.id + '" href="#" url="' + video.url + '">' + video.title + '</a></li>');
-                        $('#fav-' + video.id).click(function() { addThisToFavourites($(this).html(), $(this).attr('url')) });
+                        $('#fav-' + video.id).click(function() {
+                            getSettings().then(
+                                settings => {
+                                    addThisToFavourites($(this).html(), $(this).attr('url'));
+                                });
+                        });
                     }
 
                     $('#videoQueueButtons').append('<li class="divider"></li>').append('<li><a id="queueAllBtn">Queue All</a></li>');
@@ -471,7 +528,7 @@ function initQueueCount() {
             getPlaylistPosition(function (playlistPosition) {
                 var leftOvers = playlistSize - playlistPosition;
                 if (playlistPosition != null) {
-                    if (isDebugEnabled()) {
+                    if (isDebug()) {
                         console.log("playlistSize:" + playlistSize + ", playlistPosition:" + playlistPosition);
                     }
                     $("#queueVideoButton").html("+Queue(" + leftOvers + ")");
@@ -484,16 +541,17 @@ function initQueueCount() {
     $("#queueVideoButton").html("+Queue");
 }
 
-function initRepeatMode() {
-    var hasRepeat = 1;
+async function initRepeatMode() {
+    let hasRepeat = 1;
+    let showRepeat = await getSettings(["showRepeat"]);
 
     if ($('#repeatButton').length <= 0) {
-        if (getSettings().showRepeat == 'always') {
+        if (showRepeat == 'always') {
             $('#moreBtnGroup').before('<button id="repeatButton" class="btn btn-small" disabled style="padding: 5px; margin-left: -1px;">Repeat: Stopped</button>');
             $('#repeatButton').click(function () {
                 toggleRepeat()
             });
-        } else if (getSettings().showRepeat == 'dropdown') {
+        } else if (showRepeat == 'dropdown') {
             $('#dropdown-first').after('<li class="disabled disabled-link"><a tabindex="-1" href="#" id="repeatButton">Repeat: Stopped</a></li>');
             $('#repeatButton').click(function () {
                 toggleRepeat()
@@ -614,7 +672,7 @@ function initSeekerSlider() {
                     $totalTime.css('top', top + 'px');
                     $currentTime.html(formatSeconds(timeInSeconds));
                     $totalTime.html(formatSeconds(totalTimeInSeconds));
-                    if (isDebugEnabled()) {
+                    if (isDebug()) {
                         console.log('Total time in seconds: ' + totalTimeInSeconds);
                     }
                     $seeker.slider({
@@ -686,9 +744,16 @@ function initPlaylistNumbers() {
     });
 }
 
-function initProfiles() {
-    if (isMultiHostEnabled()) {
-        var allProfiles = getAllProfiles();
+async function initProfiles() {
+    let toGet = [
+        "profiles",
+        "selectedHost",
+        "enableMultiHost",
+    ];
+    let settings = await getSettings(toGet);
+
+    if (settings.enableMultiHost) {
+        var allProfiles = settings.profiles;
         var profiles = $('#profiles');
 
         profiles.children().each(function () {
@@ -699,7 +764,7 @@ function initProfiles() {
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
         }
 
-        profiles.val(getSettings().selectedHost);
+        profiles.val(settings.selectedHost);
 
         profiles.change(function () {
             browser.storage.sync.set({selectedHost: profiles.val()});
@@ -716,7 +781,7 @@ function initKeyBindings() {
         var keyCode = e.keyCode || e.which,
             keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
 
-        if (isDebugEnabled()) {
+        if (isDebug()) {
             console.log(e.keyCode);
         }
 
@@ -813,4 +878,10 @@ function emptyPlaylist() {
 }
 
 var urlList = [];
-var favArray = getAllFavourites();
+var favArray;
+getSettings(["favArray"]).then(
+    settings => {
+        console.log("main of remote.js");
+        favArray = getAllFavourites(settings);
+    });
+

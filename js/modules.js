@@ -1,4 +1,8 @@
-console.log("modules.js");
+browser.storage.sync.get().then(
+    (opts) => {
+        console.log("modules.js: " + JSON.stringify(opts));
+    });
+//console.log("modules.js");
 
 function urlMatchesOneOfPatterns(url, patterns) {
     for (var i = 0; i < patterns.length; i++) {
@@ -604,8 +608,8 @@ var TorrentsLinkModule = {
     getMediaType: function() {
         return 'video';
     },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        var magnetAddOn = getSettings().magnetAddOn;
+    getPluginPath: async function(url, getAddOnVersion, callback) {
+        let magnetAddOn = (await getSettings()).magnetAddOn;
         if (magnetAddOn == 'pulsar') {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
         } else if (magnetAddOn == 'quasar') {
@@ -712,13 +716,13 @@ var VesselLabModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        if (isDebugEnabled()) console.log("Sending message to tab '" + currentTabId + "' for video source.");
+        if (isDebug()) console.log("Sending message to tab '" + currentTabId + "' for video source.");
         chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (isDebugEnabled()) {console.log("Response from content script:"); console.log(response); }
+            if (isDebug()) {console.log("Response from content script:"); console.log(response); }
             if (response) {
                 callback(response.videoSrc);
             } else {
-                if (isDebugEnabled()) console.log("Did not receive response for message");
+                if (isDebug()) console.log("Did not receive response for message");
             }
         });
     }
