@@ -1,7 +1,7 @@
 var debug = true;
 var updated = false;
 
-var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
+var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/(alpha|a|beta|b|pre|rc)\d*$/, '').replace(/\./g, ''));
 
 async function getSettings(settingsToGet) {
     return browser.storage.sync.get(settingsToGet);

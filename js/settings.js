@@ -43,7 +43,7 @@ async function setDefaultSettings() {
 }
 
 function doUpgrade(from, to) {
-    var opts;
+    var opts = {};
    
     if (isDebug()) {
         console.log("Upgrading from version '" + from + "' to '" + to + "'");
