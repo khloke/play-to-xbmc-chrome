@@ -71,6 +71,46 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
+//Setup Icon Paths
+var notCompatibleIconPath = chrome.runtime.getURL("images/iconNotCompatible.png");
+var CompatibleIconPath = chrome.runtime.getURL("images/icon.png");
+
+//Check if the newly Selected Tab is playable
+chrome.tabs.onActivated.addListener(function(info){
+    chrome.tabs.getSelected(null,function(tab){
+        var tabURL = tab.url;
+
+        for (var i = 0; i < allModules.length; i++) {
+            var module = allModules[i];
+            if (module.canHandleUrl(tabURL) && !isContextMenuCreated(tabURL)){
+                chrome.browserAction.setIcon({path: CompatibleIconPath});
+                break;
+            }
+            //Reduce Flickering of Icon
+            if(i == allModules.length-1)
+                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+        }
+    })
+});
+
+//Recheck the selected Tab when any Tab updates
+chrome.tabs.onUpdated.addListener(function(tabID, changes){
+    chrome.tabs.getSelected(null,function(tab){
+        var tabURL = tab.url;
+
+        for (var i = 0; i < allModules.length; i++) {
+            var module = allModules[i];
+            if (module.canHandleUrl(tabURL) && !isContextMenuCreated(tabURL)){
+                chrome.browserAction.setIcon({path: CompatibleIconPath});
+                break;
+            }            
+            //Reduce Flickering of Icon
+            if(i == allModules.length-1)
+                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+        }
+    })
+})
+
 /*
  * Called when the context menu item has been created, or when creation failed due to an error.
  * We'll just log success/failure here.
