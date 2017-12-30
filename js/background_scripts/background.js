@@ -74,42 +74,78 @@ chrome.runtime.onMessage.addListener(
 //Setup Icon Paths
 var notCompatibleIconPath = chrome.runtime.getURL("images/iconNotCompatible.png");
 var CompatibleIconPath = chrome.runtime.getURL("images/icon.png");
+var allTabs = {}
 
-//Check if the newly Selected Tab is playable
+//Check if the newly Selected Tab is compatible
 chrome.tabs.onActivated.addListener(function(info){
-    chrome.tabs.getSelected(null,function(tab){
-        var tabURL = tab.url;
-
-        for (var i = 0; i < allModules.length; i++) {
-            var module = allModules[i];
-            if (module.canHandleUrl(tabURL) && !isContextMenuCreated(tabURL)){
-                chrome.browserAction.setIcon({path: CompatibleIconPath});
-                break;
-            }
-            //Reduce Flickering of Icon
-            if(i == allModules.length-1)
-                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        var tabURL = tab[0].url;
+        var tabID = tab[0].id;
+        
+        //Check if Tab has the required infos
+        if(allTabs[tabID] == null){
+            allTabs[tabID] = {needCheck: true, isCompatible: false};
         }
+
+        //Check if Tab needs to be Checked
+        if(!allTabs[tabID].needCheck){
+            if(allTabs[tabID].isCompatible)
+                chrome.browserAction.setIcon({path: CompatibleIconPath});
+            else
+                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+            return;
+        }
+
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabURL,tabID);
     })
 });
 
-//Recheck the selected Tab when any Tab updates
+//Set needCheck flag to true when Tab Updates and recheck currently selected Tab
 chrome.tabs.onUpdated.addListener(function(tabID, changes){
-    chrome.tabs.getSelected(null,function(tab){
-        var tabURL = tab.url;
-
-        for (var i = 0; i < allModules.length; i++) {
-            var module = allModules[i];
-            if (module.canHandleUrl(tabURL) && !isContextMenuCreated(tabURL)){
-                chrome.browserAction.setIcon({path: CompatibleIconPath});
-                break;
-            }            
-            //Reduce Flickering of Icon
-            if(i == allModules.length-1)
-                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+    allTabs[tabID] = {needCheck: true, isCompatible: false};
+    chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
+        var tabURL = tab[0].url;
+        var tabID = tab[0].id;
+        
+        //Check if Tab has the required infos
+        if(allTabs[tabID] == null){
+            allTabs[tabID] = {needCheck: true, isCompatible: false};
         }
+
+        //Check if Tab needs to be Checked
+        if(!allTabs[tabID].needCheck){
+            if(allTabs[tabID].isCompatible)
+                chrome.browserAction.setIcon({path: CompatibleIconPath});
+            else
+                chrome.browserAction.setIcon({path: notCompatibleIconPath});
+            return;
+        }
+
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabURL,tabID);
     })
 })
+
+function checkIfTabIsCompatible(tabURL, tabID){
+    //console.info("Checking ID", tabID, "Url", tabURL);
+    for (let i = 0; i < allModules.length; i++) {
+        var module = allModules[i];
+        if (module.canHandleUrl(tabURL)){
+            chrome.browserAction.setIcon({path: CompatibleIconPath});
+            allTabs[tabID].isCompatible = true;
+            allTabs[tabID].needCheck = false;
+            break;
+        }
+
+        //Reduce Flickering of Icon
+        if(i == allModules.length-1){
+            chrome.browserAction.setIcon({path: notCompatibleIconPath});
+            allTabs[tabID].needCheck = false;
+            allTabs[tabID].isCompatible = false;
+        }
+    }
+}
 
 /*
  * Called when the context menu item has been created, or when creation failed due to an error.
