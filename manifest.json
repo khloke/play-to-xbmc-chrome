@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.9.0",
+    "version": "1.9.1",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
     "applications": {
