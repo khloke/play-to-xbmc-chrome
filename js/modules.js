@@ -646,14 +646,19 @@ var TwitchTvModule = {
                 videoId = regexMatch[1];
             }
 
-            if (versionNumber >= 2.0) {
+            if (versionNumber >= 2.1) {
                 if (liveVideo) {
-                    chrome.tabs.sendMessage(currentTabId, {action: 'getChannelId'}, function (response) {
-                        if (response) {
-                            let channelId = response.channelId;
-                            callback('plugin://plugin.video.twitch/?mode=play&channel_id=' + channelId + '&name=' + videoId);
-                        }
-                    });
+                    callback('plugin://plugin.video.twitch/?mode=play&channel_name=' + videoId);
+                } else {
+                    callback('plugin://plugin.video.twitch/?mode=play&video_id=' + videoId);
+                }
+
+            } else if (versionNumber === 2.0) {
+                if (liveVideo) {
+                    alert("Twitch live video support for Play-to-Kodi is currently broken with Twitch on Kodi " +
+                        "version 2.0. Please update Twitch on Kodi to version 2.1.0 when it becomes available to " +
+                        "regain this feature.");
+                    callback('plugin://plugin.video.twitch/?mode=play&channel_name=broken_url');
                 } else {
                     callback('plugin://plugin.video.twitch/?mode=play&video_id=' + videoId);
                 }
