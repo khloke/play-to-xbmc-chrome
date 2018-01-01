@@ -84,9 +84,6 @@
         "matches": ["*://solarmoviez.to/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/solarmoviez-content-scripts.js"]
     }, {
-        "matches": ["*://*.twitch.tv/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/twitch-content-scripts.js"]
-    }, {
         "matches": ["*://vivo.sx/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/vivo-content-scripts.js"]
     }, {
