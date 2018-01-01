@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener(
                 });
                 break;
 
-            case 'isDebugLogsEnabled':
-                sendResponse({response: isDebugLogsEnabled()});
+            case 'isDebug':
+                sendResponse({response: isDebug()});
                 break;
 
             case 'createContextMenu':
@@ -62,8 +62,8 @@ chrome.runtime.onMessage.addListener(
                     sendResponse({response: "OK"});
                 })});
                 break;
-            case 'setLogging':
-                debugLogsEnabled = request.enable;
+            case 'setDebug':
+                setDebug(request.enable);
                 break;
         }
 
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(
  * We'll just log success/failure here.
  */
 function onContextMenuCreated(n) {
-    if (debugLogsEnabled) {
+    if (isDebug()) {
         if (chrome.runtime.lastError) {
             console.log("Error creating context menu item:" + chrome.runtime.lastError);
         } else {
@@ -295,44 +295,53 @@ function createMagnetAndP2PAndImageContextMenus() {
         }
     }, onContextMenuCreated);
 
-    chrome.contextMenus.create({
-        title: "Play now",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            doAction(actions.Stop, function () {
-                clearPlaylist(function () {
-                    queueItem(info.linkUrl, function () {
-                    });
-                })
-            });
-        }
-    }, onContextMenuCreated);
-
-    chrome.contextMenus.create({
-        title: "Queue",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            queueItem(info.linkUrl, function () {
-            });
-        }
-    }, onContextMenuCreated);
-
-    chrome.contextMenus.create({
-        title: "Play this Next",
-        contexts: ["link"],
-        targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
-        onclick: function (info) {
-            getPlaylistPosition(function (position) {
-                insertItem(info.linkUrl, position + 1, function () {
+    if (!(navigator.userAgent.indexOf("Mozilla") > -1)) {
+        chrome.contextMenus.create({
+            title: "Play now",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                doAction(actions.Stop, function () {
+                    clearPlaylist(function () {
+                        queueItem(info.linkUrl, function () {
+                        });
+                    })
                 });
-            });
-        }
-    }, onContextMenuCreated);
+            }
+        }, onContextMenuCreated);
+
+        chrome.contextMenus.create({
+            title: "Queue",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                queueItem(info.linkUrl, function () {
+                });
+            }
+        }, onContextMenuCreated);
+
+        chrome.contextMenus.create({
+            title: "Play this Next",
+            contexts: ["link"],
+            targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
+            onclick: function (info) {
+                getPlaylistPosition(function (position) {
+                    insertItem(info.linkUrl, position + 1, function () {
+                    });
+                });
+            }
+        }, onContextMenuCreated);
+    }
 }
 
-chrome.contextMenus.removeAll();
-createMagnetAndP2PAndImageContextMenus();
-createHtml5VideoContextMenus();
+getSettings(["enableDebugLogs"]).then(
+    settings => {
+        if (null != settings.enableDebugLogs) {
+            setDebug(settings.enableDebugLogs);
+        }
+
+        chrome.contextMenus.removeAll();
+        createMagnetAndP2PAndImageContextMenus();
+        createHtml5VideoContextMenus();
+    });
 

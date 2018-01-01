@@ -9,7 +9,7 @@
         }
     },
     "options_page": "options.html",
-    "permissions": [ "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
+    "permissions": [ "storage", "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
     "browser_action": {
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"
@@ -24,6 +24,7 @@
             "js/jquery-2.1.4.min.js",
             "js/modules.js",
             "js/shared.js",
+            "js/settings.js",
             "js/background_scripts/background.js",
             "js/xbmc-helper.js"
         ]

@@ -602,8 +602,8 @@ var TorrentsLinkModule = {
     getMediaType: function() {
         return 'video';
     },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        var magnetAddOn = localStorage['magnetAddOn'];
+    getPluginPath: async function(url, getAddOnVersion, callback) {
+        let magnetAddOn = (await getSettings()).magnetAddOn;
         if (magnetAddOn == 'pulsar') {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
         } else if (magnetAddOn == 'quasar') {
@@ -632,7 +632,7 @@ var TwitchTvModule = {
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
         getAddOnVersion('plugin.video.twitch', function(version) {
-            console.log(version);
+            debugLog("plugin.video.twitch: version: " + version);
             let videoId;
             let liveVideo = false;
             let pluginPath;
@@ -715,13 +715,13 @@ var VesselLabModule = {
         return 'video';
     },
     getPluginPath: function(url, getAddOnVersion, callback) {
-        if (debugLogsEnabled) console.log("Sending message to tab '" + currentTabId + "' for video source.");
+        debugLog("Sending message to tab '" + currentTabId + "' for video source.");
         chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (debugLogsEnabled) {console.log("Response from content script:"); console.log(response); }
+            if (isDebug()) {console.log("Response from content script:"); console.log(response); }
             if (response) {
                 callback(response.videoSrc);
             } else {
-                if (debugLogsEnabled) console.log("Did not receive response for message");
+                debugLog("Did not receive response for message");
             }
         });
     }

@@ -1,3 +1,6 @@
+// TODO Important to node:
+- versions should be 3 digit (and 2 dots), doUpgrade() function relays on that (older 4 digit versions are converted to 3 digits)
+
 A Google Chrome/Firefox Extension for sending online content to be played on XBMC/Kodi.
 
 Supported websites include

@@ -70,7 +70,7 @@ function showdialog(urls, done) {
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        console.log("Received message: " + request.action);
+        debugLog("Received message: " + request.action);
         if (request.action == "getEmbeddedVideos" || request.action == "getVideoSrc") {
 //            debugger;
             try {
@@ -83,7 +83,7 @@ chrome.runtime.onMessage.addListener(
                 });
                 return;
             } catch (e) {
-                console.log("not html5 player:" + e);
+                debugLog("not html5 player:" + e);
             };
             var stext = $('#player').text();
             var es = stext.search('eval');
@@ -114,7 +114,7 @@ chrome.runtime.onMessage.addListener(
                     sendResponse({videoSrc: videoSrc});
             });
         } else {
-            console.log('Unknown action: ' + request.action);
+            debugLog('Unknown action: ' + request.action);
         }
     }
 );
