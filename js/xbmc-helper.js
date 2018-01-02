@@ -21,10 +21,10 @@ function getPluginPath(url, callback) {
         if (module.canHandleUrl(url)) {
             foundModule = true;
             if (debugLogsEnabled) console.log("Found module to handle url: " + url);
-            
-            module.getPluginPath(url, getAddOnVersion, function(path) {
+
+            module.getPluginPath(url, getAddOnVersion, function(path, isDirectory) {
                 if (debugLogsEnabled) console.log("Path to play media: " + path);
-                callback(module.getMediaType(), path);
+                callback(module.getMediaType(), path, isDirectory);
             });
         }
     }
@@ -40,9 +40,9 @@ function getAddOnVersion(addonId, callback) {
 }
 
 function queueItem(url, callback) {
-    getPluginPath(url, function (contentType, pluginPath) {
+    getPluginPath(url, function (contentType, pluginPath, isDirectory) {
         addItemsToPlaylist([
-            {"contentType": contentType, "pluginPath": pluginPath}
+            {"contentType": contentType, "pluginPath": pluginPath, "isDirectory": isDirectory}
         ], function (result) {
             callback(result);
         });
@@ -56,8 +56,8 @@ function queueItems(tabUrl, urlList, callback) {
         var url = item;
         switch (name) {
             case 'youtube':
-                getPluginPath(url, function (contentType, pluginPath) {
-                    var element = {"contentType": contentType, "pluginPath": pluginPath};
+                getPluginPath(url, function (contentType, pluginPath, isDirectory) {
+                    var element = {"contentType": contentType, "pluginPath": pluginPath, "isDirectory": isDirectory};
                     contentArr.push(element);
                     // do we have the whole items.
                     if (contentArr.length == urlList.length) {
@@ -84,8 +84,8 @@ function queueItems(tabUrl, urlList, callback) {
 }
 
 function insertItem(url, position, callback) {
-    getPluginPath(url, function (contentType, pluginPath) {
-        insertItemToPlaylist(contentType, pluginPath, position, function (result) {
+    getPluginPath(url, function (contentType, pluginPath, isDirectory) {
+        insertItemToPlaylist(contentType, pluginPath, isDirectory, position, function (result) {
             callback(result);
         });
     });
@@ -212,7 +212,7 @@ function addItemsToPlaylist(items, callback, resumeTime) {
                     if (i > 0) {
                         addToPlaylist += ",";
                     }
-                    addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "file" : "' + items[i].pluginPath + '" }}, "id" :' + (i + 1) + '}';
+                    addToPlaylist += '{"jsonrpc": "2.0", "method": "Playlist.Add", "params":{"playlistid":' + playlistId + ', "item" :{ "' + (items[i].isDirectory ? 'directory' : 'file') + '" : "' + items[i].pluginPath + '" }}, "id" :' + (i + 1) + '}';
                 }
                 addToPlaylist += "]";
 
@@ -243,9 +243,9 @@ function addItemsToPlaylist(items, callback, resumeTime) {
     }
 }
 
-function insertItemToPlaylist(contentType, pluginPath, position, callback) {
+function insertItemToPlaylist(contentType, pluginPath, isDirectory, position, callback) {
     getPlaylistId(contentType, function (playlistId) {
-        var insertToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Insert", "params":{"playlistid":' + playlistId + ', "position": ' + position + ', "item" :{ "file" : "' + pluginPath + '" }}, "id" : 1}';
+        var insertToPlaylist = '{"jsonrpc": "2.0", "method": "Playlist.Insert", "params":{"playlistid":' + playlistId + ', "position": ' + position + ', "item" :{ "' + (isDirectory ? 'directory' : 'file') + '" : "' + pluginPath + '" }}, "id" : 1}';
 
         ajaxPost(insertToPlaylist, function (response) {
             callback(response);
