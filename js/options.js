@@ -16,11 +16,11 @@ $(document).ready(function(){
             });
             $('#enableMultiHost').change(function(){
                 // TODO Show host combobox after multi host checkbox changed
-                browser.storage.sync.set({enableMultiHost: $(this).prop('checked')}).then( saved => { populateProfiles(); });
+                chrome.storage.sync.set({enableMultiHost: $(this).prop('checked')}).then( saved => { populateProfiles(); });
             });
             $('#enableDebugLogs').change(function() {
                 let debugLogs = $(this).prop('checked');
-                browser.storage.sync.set({enableDebugLogs: debugLogs});
+                chrome.storage.sync.set({enableDebugLogs: debugLogs});
                 setDebug(debugLogs);
                 chrome.runtime.sendMessage({action: 'setDebug', enable: debugLogs}, function (response) {});
             });
@@ -70,7 +70,7 @@ async function saveOptions() {
                 username: username,
                 password: password
             };
-            profileSaved = browser.storage.sync.set(opts);
+            profileSaved = chrome.storage.sync.set(opts);
         }
 
         profileSaved.then(
@@ -88,7 +88,7 @@ async function saveOptions() {
                     enableMultiHost: $('#enableMultiHost').prop('checked'),
                     enableDebugLogs: $('#enableDebugLogs').prop('checked')
                 };
-                browser.storage.sync.set(opts).then(
+                chrome.storage.sync.set(opts).then(
                     saved => {
                         // Update status to let user know options were saved
                         showAlertMessage(status, "Options Saved");
@@ -203,7 +203,7 @@ function saveProfile(settings) {
             password: document.getElementById("password").value
         };
     }
-    return browser.storage.sync.set({profiles: allProfiles});
+    return chrome.storage.sync.set({profiles: allProfiles});
 }
 
 //
@@ -303,7 +303,7 @@ async function createNewProfile(settings) {
         "password": ''
     });
 
-    browser.storage.sync.set({profiles: allProfiles}).then(
+    chrome.storage.sync.set({profiles: allProfiles}).then(
         (saved) => {
             populateProfiles(null, function () {
                $('#profiles').val(largestId);
@@ -332,7 +332,7 @@ async function deleteThisProfile(settings) {
 
     allProfiles.splice(indexToRemove, 1);
 
-    browser.storage.sync.set({profiles: allProfiles}).then(
+    chrome.storage.sync.set({profiles: allProfiles}).then(
         (results) => {
             populateProfiles();
             if (allProfiles[0]) {

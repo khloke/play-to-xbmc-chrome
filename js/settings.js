@@ -39,7 +39,7 @@ async function setDefaultSettings() {
         password: "",
         profiles: []
     };
-    return browser.storage.sync.set(defaults);
+    return chrome.storage.sync.set(defaults);
 }
 
 function doUpgrade(from, to) {
@@ -139,8 +139,7 @@ function doUpgrade(from, to) {
 
     debugLog("Upgrade: Settings to save, opts: " + JSON.stringify(opts));
 
-    browser.storage.sync.set(opts).then(
-        (results) => {
+    chrome.storage.sync.set(opts, function() {
             updated = true;
             if (isDebug()) {
                 getSettings().then(

@@ -4,7 +4,8 @@ var updated = false;
 var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/(alpha|a|beta|b|pre|rc)\d*$/, '').replace(/\./g, ''));
 
 async function getSettings(settingsToGet) {
-    return browser.storage.sync.get(settingsToGet);
+    let settings = chrome.storage.sync.get(settingsToGet, function(){});
+    return settings ? settings : {};
 }
 
 var actions = {
@@ -121,7 +122,7 @@ function isDebug(settings) {
 }
 
 //
-// Used to set 'local' debug value. This value is used first if set, before the one in browser.storage.sync.
+// Used to set 'local' debug value. This value is used first if set, before the one in chrome.storage.sync.
 //
 function setDebug(value) {
     debug = value;
@@ -141,5 +142,5 @@ function getAllProfiles(settings) {
 }
 
 function updateVersion() {
-    browser.storage.sync.set({"installedVersion": currentVersion});
+    chrome.storage.sync.set({"installedVersion": currentVersion});
 }

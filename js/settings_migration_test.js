@@ -1,13 +1,13 @@
 /// MIGRATION TEST CODE //////////////////////////////////////////////////////////
 //
-// Remember to run browser.storage.sync.clear() before reloading the addon.
+// Remember to run chrome.storage.sync.clear() before reloading the addon.
 // This will allow the addon to run the upgrade process.
 //
 // Usefull commands:
 //  - clear all settings:
-//      browser.storage.sync.clear();
+//      chrome.storage.sync.clear();
 //  - print all settings in storage:
-//      browser.storage.sync.get().then((opts) => { console.log(JSON.stringify(opts));});
+//      chrome.storage.sync.get().then((opts) => { console.log(JSON.stringify(opts));});
 //
 //
 //////////////////////////////////////////////////////////////////////////////////

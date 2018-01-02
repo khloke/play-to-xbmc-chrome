@@ -36,7 +36,7 @@ function hasUrlSetup(settings) {
 }
 
 function updateVersion() {
-    return browser.storage.sync.set({"installedVersion": currentVersion});
+    return chrome.storage.sync.set({"installedVersion": currentVersion});
 }
 
 function onChangeUpdate() {
@@ -244,7 +244,7 @@ function addThisToFavourites(settings, title, url) {
         fav[0] = title;
         fav[1] = url;
         favArray.push(fav);
-        browser.storage.sync.set({favArray: favArray}).then(
+        chrome.storage.sync.set({favArray: favArray}).then(
             function(result) {
                 return getSettings(["favArray"]).then(
                     settings => {initFavouritesTable(settings);}
@@ -262,7 +262,7 @@ function removeFromFavourites(settings, index) {
     debugLog("removeFromFavourites()");
     var favArray = getAllFavourites(settings);
     favArray.splice(index, 1);
-    browser.storage.sync.set({favArray: favArray}).then(
+    chrome.storage.sync.set({favArray: favArray}).then(
         function(result) {
             return getSettings(["favArray"]).then(settings => { initFavouritesTable(settings); });
         });
@@ -274,7 +274,7 @@ function removeFromFavourites(settings, index) {
 // Settings needed: ["favArray"]
 //
 function clearFavouritesTable(settings) {
-    browser.storage.sync.set({favArray: []}).getSettings(["favArray"]).then(
+    chrome.storage.sync.set({favArray: []}).getSettings(["favArray"]).then(
         settings => { initFavouritesTable(settings); }
     );
 }
@@ -416,14 +416,14 @@ function initFavouritesTable(settings) {
                 fav[1] = link.attr('href');
                 newOrder.push(fav);
             });
-            browser.storage.sync.set({favArray: newOrder});
+            chrome.storage.sync.set({favArray: newOrder});
         }
     });
 }
 
 function initJsonVersion() {
     getXbmcJsonVersion(function (version) {
-        browser.storage.sync.set({jsonVersion: version});
+        chrome.storage.sync.set({jsonVersion: version});
     });
 }
 
@@ -745,7 +745,7 @@ async function initProfiles() {
         profiles.val(settings.selectedHost);
 
         profiles.change(function () {
-            browser.storage.sync.set({selectedHost: profiles.val()});
+            chrome.storage.sync.set({selectedHost: profiles.val()});
             document.location.reload(true)
         });
 
