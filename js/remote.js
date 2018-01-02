@@ -261,12 +261,25 @@ function clearFavouritesTable() {
 function createFavouritesActionButtons(i) {
     var name = favArray[i][0];
     var url = favArray[i][1];
-    $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Play</a>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</a></div></td></tr>");
+    $('#favourites').find('tbody:last').append("<tr id='favRow" + i + "'><td style='width: 100%;'><a class='btn btn-link youtube-link' target='_blank' href='" + url + "'> " + name + "</a></td><td style='text-align: center; vertical-align: middle;'><div class='btn-group'><button class='btn btn-mini btn-primary' id='favQueueBtn" + i + "'>Queue</button>&#32<button class='btn btn-mini' id='favPlayBtn" + i + "'>Play</button>&#32;<button class='btn btn-mini' id='favRemoveBtn" + i + "'>Remove</button></div></td></tr>");
+
     $('#favQueueBtn' + i).click(function () {
-        queueItem(favArray[i][1], function () {
+        queueItem(url, function () {
             onChangeUpdate();
         });
     });
+
+    $('#favPlayBtn' + i).click(function () {
+        doAction(actions.Stop, function () {
+            clearPlaylist(function(){
+                queueItem(url, function () {
+                    onChangeUpdate();
+                });
+            });
+        });
+    });
+
+
     $('#favRemoveBtn' + i).click(function () {
         removeFromFavourites(i);
     });
