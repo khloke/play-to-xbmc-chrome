@@ -103,36 +103,34 @@ function checkIfTabIsCompatible(tabURL, tabID){
         var currentTabId = tab[0].id;
 
         //Check if Tab has the required infos
-        if(allTabs[tabID] == null){
+        if(allTabs[tabID] == null)
             allTabs[tabID] = {needCheck: true, isCompatible: false};
-        }
 
         //Check if Tab needs to be Checked
         if(allTabs[tabID].needCheck){
+            allTabs[tabID].isCompatible = false;
             //console.info("Checking ID", tabID, "Url", tabURL);
             for (let i = 0; i < allModules.length; i++) {
                 var module = allModules[i];
                 if (module.canHandleUrl(tabURL)){
                     allTabs[tabID].isCompatible = true;
-                    allTabs[tabID].needCheck = false;
                     break;
                 }
-
-                if(i == allModules.length-1){
-                    allTabs[tabID].needCheck = false;
-                    allTabs[tabID].isCompatible = false;
-                }
             }
+            allTabs[tabID].needCheck = false;
         }
 
-        if(allTabs[tabID].isCompatible && tabID == currentTabId)
-            chrome.browserAction.setIcon({path: CompatibleIconPath});
-        else if(!allTabs[tabID].isCompatible && tabID == currentTabId)
-            chrome.browserAction.setIcon({path: notCompatibleIconPath});
-
-        //console.log(tabID," Compatible:", allTabs[tabID].isCompatible);
-        return;
+        //If the currently selected Tab was checked, update the icon
+        if(tabID == currentTabId)
+            updateAddOnIcon(allTabs[tabID].isCompatible);
     })
+}
+
+function updateAddOnIcon(isCompatible){
+    if(isCompatible)
+        chrome.browserAction.setIcon({path: CompatibleIconPath});
+    else
+        chrome.browserAction.setIcon({path: notCompatibleIconPath});
 }
 
 /*
