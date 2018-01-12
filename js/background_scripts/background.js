@@ -97,7 +97,7 @@ chrome.tabs.onUpdated.addListener(function(tabID, tabChanges, tab){
 
     chrome.tabs.get(tabID, function (tab) {
         checkIfTabIsCompatible(tab.url, tabID);
-        if(TabID == activeTabId){
+        if(tabID == activeTabId){
             updateAddOnIcon(allTabs[tabID].isCompatible);
         }
     });
