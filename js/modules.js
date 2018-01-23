@@ -608,6 +608,8 @@ var TorrentsLinkModule = {
             callback('plugin://plugin.video.pulsar/play?uri=' + encodeURIComponent(url));
         } else if (magnetAddOn == 'quasar') {
             callback('plugin://plugin.video.quasar/play?uri=' + encodeURIComponent(url));
+        } else if (magnetAddOn == 'elementum') {
+            callback('plugin://plugin.video.elementum/play?uri=' + encodeURIComponent(url));
         } else if (magnetAddOn == 'kmediatorrent') {
             callback('plugin://plugin.video.kmediatorrent/play/' + encodeURIComponent(url));
         } else if (magnetAddOn == 'torrenter') {
