@@ -77,6 +77,16 @@ var compatibleIconPath = chrome.runtime.getURL("images/icon.png");
 var activeTabId = -1;
 var allTabs = {}
 
+//Check Tab when Chrome firsts opens.
+chrome.runtime.onStartup.addListener(function(){
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs){
+        activeTabId = tabs[0].id;
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabs[0].url, tabs[0].id);
+        updateAddOnIcon(allTabs[tabs[0].id].isCompatible);
+    });
+});
+
 //Check if the newly Selected Tab is compatible
 chrome.tabs.onActivated.addListener(function(activeInfo){
     chrome.tabs.get(activeInfo.tabId, function (tab) {
@@ -93,7 +103,9 @@ chrome.tabs.onUpdated.addListener(function(tabID, tabChanges, tab){
     if(tabChanges.url == null) {
         return;
     }
-    allTabs[tabID].needCheck = true;
+    if(allTabs[tabID]){
+        allTabs[tabID].needCheck = true;
+    }
 
     chrome.tabs.get(tabID, function (tab) {
         checkIfTabIsCompatible(tab.url, tabID);
