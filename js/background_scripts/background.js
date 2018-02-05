@@ -110,17 +110,6 @@ chrome.windows.onCreated.addListener(function() {
     });
 });
 
-//When selected window Changes, check the tab
-chrome.windows.onFocusChanged.addListener(function() {
-    chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
-        if(tabs.length >= 1) {
-            //Check if Tab is Compatible
-            checkIfTabIsCompatible(tabs[0].url, tabs[0].id);
-            updateAddOnIcon(allTabs[tabs[0].id].isCompatible, tabs[0].id);
-        }
-    });
-});
-
 //Check if the newly Selected Tab is compatible
 chrome.tabs.onActivated.addListener(function(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, function (tab) {
