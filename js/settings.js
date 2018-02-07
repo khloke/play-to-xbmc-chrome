@@ -83,7 +83,7 @@ function doUpgrade(from, to) {
 
         opts.selectedHost = 0;
         localStorage.clear();
-    } else if (from < 191) {
+    } else if (from < 192) {
         opts = {
             url: localStorage.url,
             port: localStorage.port,

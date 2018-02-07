@@ -1,4 +1,3 @@
-console.log("options.js");
 $(document).ready(function(){
     getSettings().then(
         settings => {
