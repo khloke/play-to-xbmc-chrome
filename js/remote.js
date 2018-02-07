@@ -464,7 +464,9 @@ function getEmbeddedVideos(callback) {
     chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
         tab = tab[0];
         chrome.tabs.sendMessage(tab.id, {action: 'getEmbeddedVideos'}, function (response) {
-            if (response && response.length > 0) {
+            if (chrome.runtime.lastError) {
+                if (isDebugLogsEnabled()) console.log(`sendMessage failed to tab.id: ${tab.id}, tab.url: ${tab.url}, msg: ${chrome.runtime.lastError}`);
+            } else if (response && response.length > 0) {
                 callback(response);
             }
         });
