@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        console.log("Received message: " + request.action);
+        debugLog("Received message: " + request.action);
         if (request.action == "getEmbeddedVideos" || request.action == "getVideoSrc") {
 //            debugger;
             var embed = $('embed');
@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(
                 }
             }
         } else {
-            console.log('Unknown action: ' + request.action);
+            debugLog('Unknown action: ' + request.action);
         }
     }
 );

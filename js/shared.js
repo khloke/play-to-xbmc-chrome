@@ -1,13 +1,11 @@
-var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/\./g, ''));
+var debug = true;
+var updated = false;
 
-var storageKeys = {
-    "showRepeat": "showRepeat",
-    "profiles": "profiles",
-    "enableMultiHost": "enableMultiHost",
-    "selectedHost": "selectedHost",
-    "enableDebugLogs": "enableDebugLogs",
-    "magnetAddOn": "magnetAddOn"
-};
+var currentVersion = parseInt(chrome.runtime.getManifest().version.replace(/(alpha|a|beta|b|pre|rc)\d*$/, '').replace(/\./g, ''));
+
+async function getSettings(settingsToGet) {
+    return browser.storage.sync.get(settingsToGet);
+}
 
 var actions = {
     "PlayPause": "Player.PlayPause",
@@ -24,15 +22,23 @@ var validPlaylistPatterns = [
     "(https|http)://(www\.)?soundcloud.com/[^_&/#\?]+/sets/[^_&/#\?]+"
 ];
 
-function getCurrentProfile() {
-    var profile;
-    var selectedHost = localStorage[storageKeys.selectedHost];
-    var allProfiles = JSON.parse(getAllProfiles());
+//
+// Return currently selected profile
+//
+// Settings needed: ["selectedHost", "profiles"]
+//
+function getCurrentProfile(settings) {
+    let profile;
+    let selectedHost;
+    let allProfiles;
+
+    selectedHost = settings.selectedHost;
+    allProfiles = settings.profiles;
 
     for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
-        if (profile.id == selectedHost) {
-            profile = profile;
+        let p = allProfiles[i];
+        if (p.id == selectedHost) {
+            profile = p;
             break;
         }
     }
@@ -40,51 +46,100 @@ function getCurrentProfile() {
     return profile;
 }
 
-function getURL() {
-    var url;
-    var port;
+//
+// Return current URL
+//
+// Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
+//
+function getURL(settings) {
+    debugLog("getURL()");
+    let url;
+    let port;
 
-    if (isMultiHostEnabled()) {
-        var profile = getCurrentProfile();
-        url = profile.url;
-        port = profile.port;
+    if (isMultiHost(settings)) {
+        let profile = getCurrentProfile(settings);
+        if (profile) {
+            url = profile.url;
+            port = profile.port;
+        }
     } else {
-        url = localStorage["url"];
-        port = localStorage["port"];
+        url = settings.url;
+        port = settings.port;
     }
 
-    return 'http://'+url + ':' + port;
+    let uri = 'http://'+url + ':' + port;
+
+    return uri;
 }
 
-function getCredentials() {
-    var username;
-    var password;
+//
+// Return credentials for current profile
+//
+// Settings needed: ["enableMultiHost", "selectedHost", "profiles", "url", "port", "username", "password"]
+//
+function getCredentials(settings) {
+    debugLog("getCredentials()");
+    let username;
+    let password;
     
-    if (isMultiHostEnabled()) {
-        var profile = getCurrentProfile();
-        username = profile.username;
-        password = profile.password;
+    if (isMultiHost(settings)) {
+        let profile = getCurrentProfile(settings);
+        if (profile) {
+            username = profile.username;
+            password = profile.password;
+        }
     } else {
-        username = localStorage["username"];
-        password = localStorage["password"];
+        username = settings.username;
+        password = settings.password;
     }
 
     return [username ? username : "anonymous", password];
 }
 
-function isMultiHostEnabled() {
-    var enableMultiHost = localStorage[storageKeys.enableMultiHost];
+// 
+//
+// Settings needed: ["enableMultiHost"]
+//
+function isMultiHost(settings) {
+    debugLog("isMultiHost(): " + settings.enableMultiHost); 
 
-    return enableMultiHost != null && enableMultiHost == 'true';
+    return settings.enableMultiHost;
 }
 
-function isDebugLogsEnabled() {
-    var enableDebugLogs = localStorage[storageKeys.enableDebugLogs];
-
-    return enableDebugLogs != null && enableDebugLogs == 'true';
+//
+// Returns 'true' if debug is enabled
+// If settings are passed the debug value is retuned from settings. Else uses 'local' debug value.
+//
+function isDebug(settings) {
+    let retVal = false;
+    if (null != settings) {
+        retVal = settings.enableDebugLogs;
+    } else {
+        retVal = debug;
+    }
+    return retVal;
 }
 
-function getAllProfiles() {
-    return localStorage[storageKeys.profiles];
+//
+// Used to set 'local' debug value. This value is used first if set, before the one in browser.storage.sync.
+//
+function setDebug(value) {
+    debug = value;
 }
 
+function debugLog(message) {
+    if (isDebug()) { 
+        console.log(message);
+    }
+}
+
+//
+// Settings needed: ["profiles"]
+//
+function getAllProfiles(settings) {
+    return settings.profiles;
+}
+
+function updateVersion() {
+    browser.storage.sync.set({"installedVersion": currentVersion});
+}

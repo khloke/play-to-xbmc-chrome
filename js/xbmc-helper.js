@@ -3,7 +3,13 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true';
+var debug;
+getSettings(["enableDebugLogs"]).then(
+    settings => {
+        if (null != settings.enableDebugLogs) {
+            setDebug(settings.enableDebugLogs);
+        }
+    });
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
@@ -14,22 +20,24 @@ function getSiteName(url) {
 }
 
 function getPluginPath(url, callback) {
-    if (debugLogsEnabled) console.log("Number of modules available: " + allModules.length);
-    var foundModule = false;
-    for (var i = 0; i < allModules.length; i++) {
-        var module = allModules[i];
+    debugLog("Number of modules available: " + allModules.length);
+    let foundModule = false;
+    for (let i = 0; i < allModules.length; i++) {
+        let module = allModules[i];
         if (module.canHandleUrl(url)) {
             foundModule = true;
-            if (debugLogsEnabled) console.log("Found module to handle url: " + url);
+            debugLog("Found module to handle url: " + url);
             
             module.getPluginPath(url, getAddOnVersion, function(path) {
-                if (debugLogsEnabled) console.log("Path to play media: " + path);
+                debugLog("Path to play media: " + path);
                 callback(module.getMediaType(), path);
             });
         }
     }
 
-    if (debugLogsEnabled && !foundModule) console.log("No module found to handle url: " + url + "");
+    if (!foundModule) {
+        debugLog("No module found to handle url: " + url + "");
+    }
 }
 
 function getAddOnVersion(addonId, callback) {
@@ -91,25 +99,25 @@ function insertItem(url, position, callback) {
     });
 }
 
-function ajaxPost(data, callback, timeout) {
-    var url = getURL();
-    var fullPath = url + "/jsonrpc";
-    var credentials = getCredentials();
-    var defaultTimeout = 5000;
+async function ajaxPost(data, callback, timeout) {
+    let settings = await getSettings();
+    let url = getURL(settings);
+    let fullPath = url + "/jsonrpc";
+    let credentials = getCredentials(settings);
+    let defaultTimeout = 5000;
     if (timeout) {
         defaultTimeout = timeout;
     }
-    if (debugLogsEnabled) {
-        console.log("POST " + data);
+    if (isDebug()) {
+        console.log("ajaxPost(): fullPath: " + fullPath);
+        console.log("ajaxPost(): data: " + data);
     }
 
     jQuery.ajax({
         type: 'POST',
         url: fullPath,
         success: function (response) {
-            if (debugLogsEnabled) {
-                console.log(response);
-            }
+            debugLog("ajaxPost(): success: response: " + JSON.stringify(response));
             callback(response);
         },
         contentType: "application/json",
@@ -119,6 +127,12 @@ function ajaxPost(data, callback, timeout) {
         username: credentials[0],
         password: credentials[1],
         error: function (jqXHR, textStatus, erroThrown) {
+            if (isDebug()) {
+                console.log("ajaxPost(): error: jqXHR: " + JSON.stringify(jqXHR));
+                console.log("ajaxPost(): error: textStatus: " + textStatus);
+                console.log("ajaxPost(): error: erroThrown: " + erroThrown);
+                console.trace();
+            }
             callback(0);
         },
         beforeSend: function(xhr, settings){
@@ -173,6 +187,7 @@ function validVideoPage(url, callback) {
     } else {
         chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
             tab = tab[0];
+            // TODO This shows "Unchecked lastError value: Error: Could not establish connection. Receiving end does not exist." on Firefox in console
             chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
                 if (response) {
                     callback();
@@ -303,10 +318,10 @@ function playerSeek(value) {
 }
 
 function playerGoPrevious(callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
-            var version = localStorage["jsonVersion"];
-            var playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
+            let playerPreviousV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"previous"}, "id" : 1}';
 
             if (version >= 6) {
                 ajaxPost(playerPreviousV6, function () {
@@ -324,10 +339,10 @@ function playerGoPrevious(callback) {
 }
 
 function playerGoNext(callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
-            var version = localStorage["jsonVersion"];
-            var playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
+            let playerNextV6 = '{"jsonrpc": "2.0", "method": "Player.GoTo", "params":{"playerid":' + playerid + ', "to":"next"}, "id" : 1}';
 
             if (version >= 6) {
                 ajaxPost(playerNextV6, function () {
@@ -404,12 +419,12 @@ function getSpeed(callback) {
 }
 
 function setRepeatMode(mode, callback) {
-    getActivePlayerId(function (playerid) {
+    getActivePlayerId(async function (playerid) {
         if (playerid != null) {
-            var playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
-            var playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + playerid + ', "state":"' + mode + '"}, "id" : 1}';
+            let playerSetRepeatV6 = '{"jsonrpc": "2.0", "method": "Player.SetRepeat", "params":{"playerid":' + playerid + ', "repeat":"' + mode + '"}, "id" : 1}';
+            let playerSetRepeatV4 = '{"jsonrpc": "2.0", "method": "Player.Repeat", "params":{"playerid":' + playerid + ', "state":"' + mode + '"}, "id" : 1}';
 
-            var version = localStorage["jsonVersion"];
+            let version = (await getSettings(["jsonVersion"])).jsonVersion;
 
             if (version >= 6) {
                 ajaxPost(playerSetRepeatV6, function (response) {

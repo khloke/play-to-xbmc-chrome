@@ -1,20 +1,32 @@
 $(document).ready(function(){
-    checkVersion();
-    populateProfiles();
-    restoreOptions();
-    document.querySelector('#saveBtn').addEventListener('click', saveOptions);
-    $('#newProfileBtn').click(function(){createNewProfile()});
-    $('#deleteProfileBtn').click(function(){deleteThisProfile()});
-    $('#enableMultiHost').change(function(){
-        localStorage.setItem(storageKeys.enableMultiHost, $(this).prop('checked'));
-        populateProfiles();
-    });
-    $('#enableDebugLogs').change(function() {
-        chrome.runtime.sendMessage({action: 'setLogging', enable: $(this).prop('checked')}, function (response) {});
-    });
-    $('#paypalDonate').click(function() {
-        goToPaypal();
-    });
+    getSettings().then(
+        settings => {
+            if (null != settings.enableDebugLogs) {
+                setDebug(settings.enableDebugLogs);
+            }
+            populateProfiles(settings);
+            restoreOptions(settings);
+            document.querySelector('#saveBtn').addEventListener('click', saveOptions);
+            $('#newProfileBtn').click(function(){
+                getSettings().then(settings => { createNewProfile(settings); });
+            });
+            $('#deleteProfileBtn').click(function(){
+                getSettings().then(settings => { deleteThisProfile(settings); });
+            });
+            $('#enableMultiHost').change(function(){
+                // TODO Show host combobox after multi host checkbox changed
+                browser.storage.sync.set({enableMultiHost: $(this).prop('checked')}).then( saved => { populateProfiles(); });
+            });
+            $('#enableDebugLogs').change(function() {
+                let debugLogs = $(this).prop('checked');
+                browser.storage.sync.set({enableDebugLogs: debugLogs});
+                setDebug(debugLogs);
+                chrome.runtime.sendMessage({action: 'setDebug', enable: debugLogs}, function (response) {});
+            });
+            $('#paypalDonate').click(function() {
+                goToPaypal();
+            });
+        });
 });
 
 function showAlertMessage(status, message) {
@@ -25,8 +37,13 @@ function showAlertMessage(status, message) {
     }, 3000);
 }
 
-// Saves options to localStorage.
-function saveOptions() {
+// Saves options to storage.
+//
+// Settings needed: ["enableMultiHost", "url", "port", "username", "password", "profiles"]
+//
+async function saveOptions() {
+    debugLog("saveOptions()");
+    
     var status = $("#status");
     var profiles = $('#profiles');
     var urlControlGroup = $('#urlControlGroup');
@@ -38,37 +55,51 @@ function saveOptions() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
+    let settings = await getSettings();
+
     if (url && port && url != '' && port != '') {
-        if (isMultiHostEnabled()) {
-            saveProfile();
+        let profileSaved;
+
+        if (isMultiHost(settings)) {
+            profileSaved = saveProfile(settings);
         } else {
-            localStorage.setItem("url", url);
-            localStorage.setItem("port", port);
-            localStorage.setItem("username", username);
-            localStorage.setItem("password", password);
+            var opts = {
+                url: url,
+                port: port,
+                username: username,
+                password: password
+            };
+            profileSaved = browser.storage.sync.set(opts);
         }
 
-        // Update status to let user know options were saved
-        showAlertMessage(status, "Options Saved");
-        urlControlGroup.removeClass('error');
-        portControlGroup.removeClass('error');
-        urlControlGroup.find('.controls').find('.help-inline').remove();
-        portControlGroup.find('.controls').find('.help-inline').remove();
+        profileSaved.then(
+            saved => {
+                // Update status to let user know options were saved
+                showAlertMessage(status, "Options Saved");
+                urlControlGroup.removeClass('error');
+                portControlGroup.removeClass('error');
+                urlControlGroup.find('.controls').find('.help-inline').remove();
+                portControlGroup.find('.controls').find('.help-inline').remove();
 
-        localStorage.setItem(storageKeys.showRepeat, $('#showRepeat').val());
-        localStorage.setItem(storageKeys.magnetAddOn, $('#magnetAddOn').val());
-        localStorage.setItem(storageKeys.enableMultiHost, $('#enableMultiHost').prop('checked'));
-        localStorage.setItem(storageKeys.enableDebugLogs, $('#enableDebugLogs').prop('checked'));
+                let opts = {
+                    showRepeat: $('#showRepeat').val(),
+                    magnetAddOn: $('#magnetAddOn').val(),
+                    enableMultiHost: $('#enableMultiHost').prop('checked'),
+                    enableDebugLogs: $('#enableDebugLogs').prop('checked')
+                };
+                browser.storage.sync.set(opts).then(
+                    saved => {
+                        // Update status to let user know options were saved
+                        showAlertMessage(status, "Options Saved");
 
-        // Update status to let user know options were saved
-        showAlertMessage(status, "Options Saved");
-
-        //Show the previously selected profile
-        populateProfiles(function() {
-            profiles.val(selectedProfile);
-            changeProfile();
-        });
-
+                        // Show the previously selected profile
+                        populateProfiles(null, function() {
+                            // TODO Can we pass 'settings' and 'selectedProfile' variables here?
+                            profiles.val(selectedProfile);
+                            changeProfile(settings);
+                        });
+                    });
+            });
     } else {
         urlControlGroup.addClass('error');
         portControlGroup.addClass('error');
@@ -77,42 +108,52 @@ function saveOptions() {
     }
 }
 
-// Restores select box state to saved value from localStorage.
-function restoreOptions() {
-    if (isMultiHostEnabled()) {
-        changeProfile();
-    } else {
-        restoreUrl();
-    }
+// Restores select box state to saved value from storage.
+//
+// Settings needed: ["enableMultiHost", "enableDebugLogs", "showRepeat", "magnetAddon"]
+//
+async function restoreOptions(settings) {
+    debugLog("restoreOptions()");
 
-    if (isMultiHostEnabled()) {
+    if (isDebug()) {
+        console.log("restoreOptions(): enableMultiHost " + settings.enableMultiHost);
+        console.log("restoreOptions(): enableDebugLogs: " + settings.enableDebugLogs);
+        console.log("restoreOptions(): showRepeat: " + settings.showRepeat);
+        console.log("restoreOptions(): magnetAddon: " + settings.magnetAddOn);
+    }
+    if (isMultiHost(settings)) {
+        changeProfile(settings);
         $('#enableMultiHost').prop("checked", true);
     } else {
+        restoreUrl(settings);
         $('#enableMultiHost').prop("checked", false);
     }
 
-    if (isDebugLogsEnabled()) {
+    if (isDebug(settings)) {
         $('#enableDebugLogs').prop("checked", true);
     } else {
         $('#enableDebugLogs').prop("checked", false);
     }
 
-    var showRepeat = localStorage[storageKeys.showRepeat];
-    $('#showRepeat').val(showRepeat);
-    var magnetAddOn = localStorage[storageKeys.magnetAddOn];
-    $('#magnetAddOn').val(magnetAddOn);
+    $('#showRepeat').val(settings.showRepeat);
+    $('#magnetAddOn').val(settings.magnetAddOn);
 }
 
-function restoreUrl() {
-    if (isMultiHostEnabled()) {
-        changeProfile();
+//
+// Settings needed: ["url", "port", "username", "password", "showRepeat", "magnetAddOn"];
+//
+function restoreUrl(settings) {
+    debugLog("restoreUrl()");
+
+    if (isMultiHost(settings)) {
+        changeProfile(settings);
     } else {
-        var url = localStorage["url"];
-        var port = localStorage["port"];
-        var username = localStorage["username"];
-        var password = localStorage["password"];
-        var showRepeat = localStorage[storageKeys.showRepeat];
-        var magnetAddOn = localStorage[storageKeys.magnetAddOn];
+        let url = settings.url;
+        let port = settings.port;
+        let username = settings.username;
+        let password = settings.password;
+        let showRepeat = settings.showRepeat;
+        let magnetAddOn = settings.magnetAddOn;
 
         if (!url || !port) {
             return;
@@ -125,77 +166,22 @@ function restoreUrl() {
         }
     }
 
-    if (isMultiHostEnabled()) {
-        $('#enableMultiHost').prop("checked", true);
-    } else {
-        $('#enableMultiHost').prop("checked", false);
-    }
-
-    $('#showRepeat').val(showRepeat);
-    $('#magnetAddOn').val(magnetAddOn);
+    $('#showRepeat').val(settings.showRepeat);
+    $('#magnetAddOn').val(settings.magnetAddOn);
 }
 
-function checkVersion() {
-    var storageVersion = localStorage["storage-version"];
+// 
+//
+// Settings needed: ["profiles"]
+//
+function saveProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
 
-    if (storageVersion == null) {
-        localStorage.setItem("storage-version", 0);
-        storageVersion = 0;
-    }
+    let profileId = $('#profiles').val();
 
-    if (storageVersion < currentVersion) {
-        doUpgrade(storageVersion, currentVersion);
-        localStorage.setItem("storage-version", currentVersion);
-    }
-}
-
-function doUpgrade(from, to) {
-    if (from < 1310) {
-        var storageUrl = localStorage["url"];
-        var storagePort = localStorage["port"];
-        var storageUsername = localStorage["username"];
-        var storagePassword = localStorage["password"];
-
-        var profiles = [];
-        var profile;
-
-        if (storageUrl != null && storagePort != null && storageUrl != '' && storagePort != '') {
-            profile = {
-                "id": 0,
-                "name": 'Default',
-                "url": storageUrl,
-                "port": storagePort,
-                "username": storageUsername,
-                "password": storagePassword
-            };
-        } else {
-            profile = {
-                "id": 0,
-                "name": 'Default',
-                "url": '',
-                "port": '',
-                "username": '',
-                "password": ''
-            };
-        }
-
-        profiles.push(profile);
-
-        localStorage.setItem(storageKeys.profiles, JSON.stringify(profiles));
-        localStorage.setItem(storageKeys.selectedHost, 0);
-    }
-}
-
-function saveProfile() {
-    var profileId = $('#profiles').val();
-    var allProfilesObj = getAllProfiles();
-    var allProfiles;
-
-    if (allProfilesObj != null) {
-        allProfiles = JSON.parse(allProfilesObj);
-
+    if (allProfiles != null) {
         for (var i = 0; i < allProfiles.length; i++) {
-            var profile = allProfiles[i];
+            let profile = allProfiles[i];
             if (profile.id == profileId) {
                 profile.name = document.getElementById("name").value;
                 profile.url = document.getElementById("url").value;
@@ -207,23 +193,27 @@ function saveProfile() {
             }
         }
     } else {
-        allProfiles = [{
+        allProfiles = {
             id:0,
             name: document.getElementById("name").value,
-            "url": document.getElementById("url").value,
-            "port": document.getElementById("port").value,
-            "username": document.getElementById("username").value,
-            "password": document.getElementById("password").value
-        }];
+            url: document.getElementById("url").value,
+            port: document.getElementById("port").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
     }
-
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
+    return browser.storage.sync.set({profiles: allProfiles});
 }
 
-function changeProfile() {
-    if (isMultiHostEnabled()) {
+//
+// Settings needed: ["profiles", "enableMultiHost"];
+//
+function changeProfile(settings) {
+    debugLog("changeProfile()");
+
+    if (isMultiHost(settings)) {
         var profileId = $('#profiles').val();
-        var allProfiles = JSON.parse(getAllProfiles());
+        var allProfiles = getAllProfiles(settings);
 
         for (var i = 0; i < allProfiles.length; i++) {
             var profile = allProfiles[i];
@@ -239,26 +229,36 @@ function changeProfile() {
     }
 }
 
-function populateProfiles(callback) {
-    var profiles = $('#profiles');
-    var allProfilesObj = getAllProfiles();
+// 
+//
+// Settings needed: ["enableMultiHost", "profiles", "url", "port", "username", "password"]
+//
+async function populateProfiles(settings, callback) {
+    debugLog("populateProfiles()");
 
-    profiles.change(function(){
-        changeProfile();
+    if (!settings) {
+        settings = await getSettings();
+    }
+
+    let profiles = $('#profiles');
+    let allProfiles = settings.profiles;
+
+    profiles.change(function() {
+        getSettings().then(
+            settings => {
+                changeProfile(settings);
+            });
     });
 
-
-    if (allProfilesObj != null) {
-        var allProfiles = JSON.parse(allProfilesObj);
-
+    if (allProfiles != null) {
         profiles.children().each(function() {$(this).remove()});
 
-        for (var i=0; i<allProfiles.length; i++) {
-            var profile = allProfiles[i];
+        for (let i=0; i<allProfiles.length; i++) {
+            let profile = allProfiles[i];
             profiles.append('<option value="' + profile.id + '">' + profile.name + '</option>');
         }
     } else {
-        if (isMultiHostEnabled()) {
+        if (isMultiHost(settings)) {
             profiles.append('<option>Default</option>');
             document.getElementById("name").value = 'Default';
             document.getElementById("url").value = '';
@@ -269,12 +269,12 @@ function populateProfiles(callback) {
 
     }
 
-    if (isMultiHostEnabled()) {
+    if (isMultiHost(settings)) {
         $('.profile-group').show();
-        changeProfile();
+        changeProfile(settings);
     } else {
         $('.profile-group').hide();
-        restoreUrl();
+        restoreUrl(settings);
     }
 
     if (callback) {
@@ -282,40 +282,47 @@ function populateProfiles(callback) {
     }
 }
 
-function createNewProfile() {
-    var allProfiles = JSON.parse(getAllProfiles());
-    var largestId = 0;
+async function createNewProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
+    let largestId = 0;
 
     for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
+        let profile = allProfiles[i];
         if (profile.id > largestId) {
             largestId = profile.id;
         }
     }
 
     allProfiles.push({
-        id:largestId+1,
-        name:'New Profile',
+        id: ++largestId,
+        name: 'New Profile',
         "url": '',
         "port": '',
         "username": '',
         "password": ''
     });
 
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
-    populateProfiles();
-    $('#profiles').val(largestId+1);
-    changeProfile();
+    browser.storage.sync.set({profiles: allProfiles}).then(
+        (saved) => {
+            populateProfiles(null, function () {
+               $('#profiles').val(largestId);
+               changeProfile(settings);
+            });
+        });
 }
 
-function deleteThisProfile() {
-    var allProfiles = JSON.parse(getAllProfiles());
-    var profiles = $('#profiles');
-    var selectedId = profiles.val();
-    var indexToRemove = -1;
+// 
+//
+// Settings needed: ["profiles"]
+//
+async function deleteThisProfile(settings) {
+    let allProfiles = getAllProfiles(settings);
+    let profiles = $('#profiles');
+    let selectedId = profiles.val();
+    let indexToRemove = -1;
 
     for (var i = 0; i < allProfiles.length; i++) {
-        var profile = allProfiles[i];
+        let profile = allProfiles[i];
         if (profile.id == selectedId) {
             indexToRemove = i;
             break;
@@ -324,9 +331,13 @@ function deleteThisProfile() {
 
     allProfiles.splice(indexToRemove, 1);
 
-    localStorage.setItem(storageKeys.profiles, JSON.stringify(allProfiles));
-    populateProfiles();
-    profiles.val(allProfiles[0].id);
+    browser.storage.sync.set({profiles: allProfiles}).then(
+        (results) => {
+            populateProfiles();
+            if (allProfiles[0]) {
+                profiles.val(allProfiles[0].id);
+            }
+        });
 }
 
 function goToPaypal() {

@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "1.9.1",
+    "version": "1.9.2",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
     "applications": {
@@ -9,7 +9,7 @@
         }
     },
     "options_page": "options.html",
-    "permissions": [ "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
+    "permissions": [ "storage", "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
     "browser_action": {
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"
@@ -22,15 +22,17 @@
     "background": {
         "scripts": [
             "js/jquery-2.1.4.min.js",
+            "js/browser-polyfill.min.js",
             "js/modules.js",
             "js/shared.js",
+            "js/settings.js",
             "js/background_scripts/background.js",
             "js/xbmc-helper.js"
         ]
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["js/jquery-2.1.4.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
         "all_frames": true
     },{
         "matches": ["http://www.liveleak.com/view*"],
@@ -40,22 +42,22 @@
         "js": ["js/content_scripts/facebook-content-scripts.js", "js/jquery-2.1.4.min.js"]
     },{
         "matches": ["*://www.youtube.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
     }, {
         "matches": ["*://soundcloud.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
     }, {
         "matches": ["*://streamcloud.eu/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]
     }, {
         "matches": ["*://mycloudplayers.com/*"],
-        "js": ["js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
+        "js": ["js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
     }, {
         "matches": ["*://*.khanacademy.org/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
     }, {
         "matches": ["*://*.hulu.com/watch/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
+        "js": ["js/jquery-2.1.4.min.js", "js/browser-polyfill.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
     }, {
         "matches": ["*://*.animelab.com/player/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/animelab-content-scripts.js"]
