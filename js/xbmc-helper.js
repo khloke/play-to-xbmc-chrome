@@ -174,7 +174,9 @@ function validVideoPage(url, callback) {
         chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
             tab = tab[0];
             chrome.tabs.sendMessage(tab.id, {action: 'isValid'}, function (response) {
-                if (response) {
+                if (chrome.runtime.lastError) {
+                    if (debugLogsEnabled) console.log(`sendMessage failed to tab.id: ${tab.id}, tab.url: ${tab.url}, msg: ${chrome.runtime.lastError}`);
+                } else if (response) {
                     callback();
                 }
             });
