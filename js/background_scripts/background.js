@@ -71,6 +71,106 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
+//Setup Icon Paths
+var notCompatibleIconPath = chrome.runtime.getURL("images/iconNotCompatible.png");
+var compatibleIconPath = chrome.runtime.getURL("images/icon.png");
+var allTabs = {}
+
+//Check if tab is supported, when the addon is installed/updated
+chrome.runtime.onInstalled.addListener(function() {
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabs[0].url, tabs[0].id);
+        updateAddOnIcon(allTabs[tabs[0].id].isCompatible, tabs[0].id);
+    });
+});
+
+//Check Tab when Chrome firsts opens.
+chrome.runtime.onStartup.addListener(function() {
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabs[0].url, tabs[0].id);
+        updateAddOnIcon(allTabs[tabs[0].id].isCompatible, tabs[0].id);
+    });
+});
+
+//When Chrome is still running in the background and a new window is created, check the tab.
+chrome.windows.onCreated.addListener(function() {
+    //If another window is already opend, there is no need to query through the tabs here.
+    chrome.windows.getAll(function(windows) {
+        if(windows.length != 1) {
+            return;
+        }
+    });
+
+    chrome.tabs.query({active: true, currentWindow: true},function(tabs) {
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tabs[0].url, tabs[0].id);
+        updateAddOnIcon(allTabs[tabs[0].id].isCompatible, tabs[0].id);
+    });
+});
+
+//Check if the newly Selected Tab is compatible
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+    chrome.tabs.get(activeInfo.tabId, function (tab) {
+        //When tab doesn´t need to be checked, we don´t need to do anything here.
+        if(allTabs[tab.id]) {
+            if(!allTabs[tab.id].needCheck) {
+                return;
+            }
+        }
+
+        //Check if Tab is Compatible
+        checkIfTabIsCompatible(tab.url, tab.id);
+        updateAddOnIcon(allTabs[tab.id].isCompatible, tab.id);
+    })
+});
+
+//Set needCheck flag to true when Tab Updates and check the updated Tab
+chrome.tabs.onUpdated.addListener(function(tabID, tabChanges, tab) {
+    //If the URL didn´t Change there is no need to recheck
+    if(tabChanges.url == null) {
+        return;
+    }
+    if(allTabs[tabID]) {
+        allTabs[tabID].needCheck = true;
+    }
+
+    chrome.tabs.get(tabID, function (tab) {
+        checkIfTabIsCompatible(tab.url, tabID);
+        updateAddOnIcon(allTabs[tabID].isCompatible, tabID);
+    });
+})
+
+function checkIfTabIsCompatible(tabURL, tabID) {
+    //Check if Tab has the required infos
+    if(allTabs[tabID] == null) {
+        allTabs[tabID] = {needCheck: true, isCompatible: false};
+    }
+
+    //Check if Tab needs to be Checked
+    if(allTabs[tabID].needCheck) {
+        allTabs[tabID].isCompatible = false;
+        //console.info("Checking ID", tabID, "Url", tabURL);
+        for (let i = 0; i < allModules.length; i++) {
+            var module = allModules[i];
+            if (module.canHandleUrl(tabURL)) {
+                allTabs[tabID].isCompatible = true;
+                break;
+            }
+        }
+        allTabs[tabID].needCheck = false;
+    }
+}
+
+function updateAddOnIcon(isCompatible, tabID) {
+    if(isCompatible) {
+        chrome.browserAction.setIcon({path: compatibleIconPath, tabId: tabID});
+    } else {
+        chrome.browserAction.setIcon({path: notCompatibleIconPath, tabId: tabID});
+    }
+}
+
 /*
  * Called when the context menu item has been created, or when creation failed due to an error.
  * We'll just log success/failure here.
