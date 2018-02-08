@@ -1,10 +1,11 @@
 $(document).ready( function() {
     initFocusFix();
+    initSeekerSlider(false);
     initWatchdog();
     initProfiles();
     initConnectivity(function() {
         initJsonVersion();
-        initSeekerSlider();
+        initSeekerSlider(true);
         initVolumeSlider();
         initKeyBindings();
 
