@@ -577,37 +577,43 @@ function initVolumeSlider() {
     });
 }
 
-function initSeekerSlider() {
+function initSeekerSlider(connected) {
     var $seeker = $('#seeker');
     $seeker.slider({
         animate: 'fast',
         orientation: "horizontal",
         range: "min",
         min: 0,
-        start: function(event, ui) {
-            clearInterval(watchdog);
-            $('#scrollerTime').show();
-        },
-        slide: function (event, ui) {
-            $(document).bind('mousemove', function(e) {
-                var $scrollerTime = $('#scrollerTime');
-                $scrollerTime.css({
-                    left: e.pageX + 18,
-                    top: e.pageY + 8
-                });
-                $scrollerTime.html(formatSeconds(ui.value));
-            });
-        },
-        stop: function (event, ui) {
-            initWatchdog();
-            getActivePlayerId(function (playerId) {
-                if (playerId == 0 || playerId == 1) {
-                    seek(playerId, ui.value);
-                }
-            });
-            $('#scrollerTime').hide();
-        }
+        value: 0,
+        disabled: true
     });
+    if (connected) {
+        $seeker.slider({
+            start: function(event, ui) {
+                clearInterval(watchdog);
+                $('#scrollerTime').show();
+            },
+            slide: function (event, ui) {
+                $(document).bind('mousemove', function(e) {
+                    var $scrollerTime = $('#scrollerTime');
+                    $scrollerTime.css({
+                        left: e.pageX + 18,
+                        top: e.pageY + 8
+                    });
+                    $scrollerTime.html(formatSeconds(ui.value));
+                });
+            },
+            stop: function (event, ui) {
+                initWatchdog();
+                getActivePlayerId(function (playerId) {
+                    if (playerId == 0 || playerId == 1) {
+                        seek(playerId, ui.value);
+                    }
+                });
+                $('#scrollerTime').hide();
+            }
+        });
+    }
 
     getActivePlayerId(function (playerId, type) {
         if (playerId == 0 || playerId == 1) {
