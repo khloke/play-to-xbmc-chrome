@@ -89,6 +89,9 @@
     }, {
         "matches": ["*://*.pornhub.com/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/pornhub-content-scripts.js"]
+    }, {
+        "matches": ["*://*.stormo.tv/*"],
+        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/stormotv-content-scripts.js"]
     }],
     "web_accessible_resources": [
         "images/*"
