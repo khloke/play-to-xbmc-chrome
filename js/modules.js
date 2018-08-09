@@ -538,6 +538,25 @@ function getSoundcloudTrackId(url, callback) {
     });
 }
 
+var StormoTvModule = {
+        canHandleUrl: function(url) {
+            var validPatterns = [
+                "^https?://(www\\.)?stormo\\.tv/videos/"
+            ];
+            return urlMatchesOneOfPatterns(url, validPatterns);
+        },
+        getMediaType: function() {
+            return 'video';
+        },
+        getPluginPath: function(url, getAddOnVersion, callback) {
+            chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
+                if (response) {
+                    callback(response.videoSrc);
+                }
+            });
+        }
+    };
+
 var StreamCloudModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -922,6 +941,7 @@ var allModules = [
     SolarmoviezModule,
     SopcastModule,
     SoundcloudModule,
+    StormoTvModule,
     StreamCloudModule,
     SVTOppetArkivModule,
     SVTPLAYModule,
