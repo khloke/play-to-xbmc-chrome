@@ -280,6 +280,14 @@ function createHtml5VideoContextMenus() {
     }, onContextMenuCreated);
 }
 
+function getLinkUrl(infoObject){
+    var link = infoObject.linkUrl;
+    if (link === undefined){
+        link = infoObject.selectionText;
+    }
+    return link;    
+} 
+
 function createMagnetAndP2PAndImageContextMenus() {
     chrome.contextMenus.create({
         title: "Show Image",
@@ -297,12 +305,12 @@ function createMagnetAndP2PAndImageContextMenus() {
 
     chrome.contextMenus.create({
         title: "Play now",
-        contexts: ["link"],
+        contexts: ["link","selection"],
         targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
         onclick: function (info) {
             doAction(actions.Stop, function () {
                 clearPlaylist(function () {
-                    queueItem(info.linkUrl, function () {
+                    queueItem(getLinkUrl(info), function () {
                     });
                 })
             });
@@ -311,21 +319,21 @@ function createMagnetAndP2PAndImageContextMenus() {
 
     chrome.contextMenus.create({
         title: "Queue",
-        contexts: ["link"],
+        contexts: ["link", "selection"],
         targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
         onclick: function (info) {
-            queueItem(info.linkUrl, function () {
+            queueItem(getLinkUrl(info), function () {
             });
         }
     }, onContextMenuCreated);
 
     chrome.contextMenus.create({
         title: "Play this Next",
-        contexts: ["link"],
+        contexts: ["link","selection"],
         targetUrlPatterns: ['magnet:*', 'acestream:*', 'sop:*'],
         onclick: function (info) {
             getPlaylistPosition(function (position) {
-                insertItem(info.linkUrl, position + 1, function () {
+                insertItem(getLinkUrl(info), position + 1, function () {
                 });
             });
         }
