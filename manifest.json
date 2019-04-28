@@ -75,9 +75,6 @@
         "matches": ["*://*.cda.pl/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]
     }, {
-        "matches": ["*://*.xnxx.com/*"],
-        "js": ["js/content_scripts/xnxx-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
         "matches": ["*://*.seasonvar.ru/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/seasonvar-content-scripts.js"]
     }, {
@@ -86,9 +83,6 @@
     }, {
         "matches": ["*://vivo.sx/*"],
         "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/vivo-content-scripts.js"]
-    }, {
-        "matches": ["*://*.pornhub.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/pornhub-content-scripts.js"]
     }],
     "web_accessible_resources": [
         "images/*"

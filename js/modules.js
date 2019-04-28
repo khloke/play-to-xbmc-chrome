@@ -414,25 +414,6 @@ var MyCloudPlayersModule = {
     }
 };
 
-var PornhubModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            "^https?://(www\\.)?pornhub\\.com/view_video"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.sendMessage(currentTabId, {action: 'getVideoSrc'}, function (response) {
-            if (response) {
-                callback(response.videoSrc);
-            }
-        });
-    }
-};
-
 var RuutuModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -762,28 +743,6 @@ var VivoModule = {
     }
 };
 
-var XnxxModule = {
-    canHandleUrl: function(url) {
-        var validPatterns = [
-            ".*xnxx.com/.*"
-        ];
-        return urlMatchesOneOfPatterns(url, validPatterns);
-    },
-    getMediaType: function() {
-        return 'video';
-    },
-    getPluginPath: function(url, getAddOnVersion, callback) {
-        chrome.tabs.query({active: true,lastFocusedWindow: true}, function (tab) {
-            var tab = tab[0];
-            chrome.tabs.sendMessage(tab.id, {action: 'getVideoSrc'}, function (response) {
-                if (response) {
-                    callback(response.videoSrc);
-                }
-            });
-        });
-    }
-};
-
 var YleAreenaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -916,7 +875,6 @@ var allModules = [
     MixcloudModule,
     Mp4UploadModule,
     MyCloudPlayersModule,
-    PornhubModule,
     RuutuModule,
     SeasonvarModule,
     SolarmoviezModule,
@@ -931,7 +889,6 @@ var allModules = [
     VesselLabModule,
     VimeoModule,
     VivoModule,
-    XnxxModule,
     YleAreenaModule,
     YoutubeModule,
     ZdfMediathekModule
