@@ -58,6 +58,22 @@ var ArdMediaThekModule = {
     }
 };
 
+var BitChuteModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*bitchute.com/video/.*"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        var videoId = url.match('https://www\.bitchute\.com/video/([^/]+)/.*')[1];
+        callback('plugin://plugin.video.bitchute/?action=play&videoId=' + videoId);
+    }
+};
+
 var CdaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -897,6 +913,7 @@ var allModules = [
     AcestreamModule,
     AnimeLabModule,
     ArdMediaThekModule,
+    BitChuteModule,
     CdaModule,
     CollegeHumorModule,
     DailyMotionModule,
