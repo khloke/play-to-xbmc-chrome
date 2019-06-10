@@ -43,7 +43,7 @@
     background: #179ccc 50% 50% repeat-x;
     font-weight: bold;
     color: #4c3000;
-    top: -0.6em;
+    top: -8px;
     border-radius: 10px;
 }
 
@@ -56,12 +56,12 @@
 }
 
 #seekerRow .ui-slider-horizontal {
-    height: 2px;
+    height: 4px;
 }
 
 .timeIndicator {
     position: absolute;
-    top: 135px;
+    top: 138px;
 }
 
 #currentTime {
