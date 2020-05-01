@@ -58,6 +58,23 @@ var ArdMediaThekModule = {
     }
 };
 
+var ArteModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            'https://www.arte.tv/(fr|de|en|es|pl|it)/videos/*'
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        var kind='SHOW';
+        var program_id=url.match('/videos/(.*)/.*/')[1]; 
+        callback('plugin://plugin.video.arteplussept/play/' + kind + '/' + program_id);
+    }
+};
+
 var CdaModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -897,6 +914,7 @@ var allModules = [
     AcestreamModule,
     AnimeLabModule,
     ArdMediaThekModule,
+    ArteModule,
     CdaModule,
     CollegeHumorModule,
     DailyMotionModule,
