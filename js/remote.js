@@ -720,7 +720,7 @@ function initKeyBindings() {
     $(document).keydown(function (e) {
         $('#focusAnchor').focus();
         var keyCode = e.keyCode || e.which,
-            keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73 };
+            keypress = {left: 37, up: 38, right: 39, down: 40, backspace: 8, enter: 13, c: 67, i: 73, m: 77};
 
         if (isDebugLogsEnabled()) {
             console.log(e.keyCode);
@@ -750,6 +750,9 @@ function initKeyBindings() {
                 break;
             case keypress.c:
                 navigate('ContextMenu');
+                break;
+	    case keypress.m:
+                navigate('ShowOSD');
                 break;
         }
     });
