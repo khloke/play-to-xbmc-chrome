@@ -762,6 +762,21 @@ var VivoModule = {
     }
 };
 
+var VrtNuModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*vrt.be/vrtnu/.+/.+/.+" // at least 2 slashes, if not it may be an overview page without selected episode
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        callback('plugin://plugin.video.vrt.nu/play/url/' + url);
+    }
+};
+
 var XnxxModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -931,6 +946,7 @@ var allModules = [
     VesselLabModule,
     VimeoModule,
     VivoModule,
+    VrtNuModule,
     XnxxModule,
     YleAreenaModule,
     YoutubeModule,
