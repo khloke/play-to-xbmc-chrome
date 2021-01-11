@@ -727,6 +727,24 @@ var VesselLabModule = {
     }
 };
 
+var VierVijfZesModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            ".*(vier|vijf|zes)(tv)?\.be/(video/.*)"
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        let regex = ".*(vier|vijf|zes)(tv)?\.be/(video/.*)";
+        let channel = url.match(regex)[1];
+        let page = url.match(regex)[3];
+        callback('plugin://plugin.video.viervijfzes/play/page/' + channel + '/' + encodeURIComponent(page));
+    }
+};
+
 var VimeoModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -929,6 +947,7 @@ var allModules = [
     TwitchTvModule,
     UrgantShowModule,
     VesselLabModule,
+    VierVijfZesModule,
     VimeoModule,
     VivoModule,
     XnxxModule,
