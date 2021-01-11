@@ -762,6 +762,32 @@ var VivoModule = {
     }
 };
 
+var VtmGoModule = {
+    canHandleUrl: function(url) {
+        var validPatterns = [
+            '^.*vtm\.be/vtmgo/(afspelen/|.*~)([ecmot])([a-z0-9\-]+)$'
+        ];
+        return urlMatchesOneOfPatterns(url, validPatterns);
+    },
+    getMediaType: function() {
+        return 'video';
+    },
+    getPluginPath: function(url, getAddOnVersion, callback) {
+        // playlists: p
+        let categories = {
+            "e": "episodes"
+            , "c": "channels" //untested
+            , "m": "movies"
+            , "o": "on-offs" //untested
+            , "t": "trailers" //untested
+        };
+        let regex = '^.*vtm\.be/vtmgo/(afspelen/|.*~)([ecmot])([a-z0-9\-]+)$';
+        let category = categories[url.match(regex)[2]];
+        let item = url.match(regex)[3];
+        callback('plugin://plugin.video.vtm.go/play/catalog/' + category + '/' + item);
+    }
+};
+
 var XnxxModule = {
     canHandleUrl: function(url) {
         var validPatterns = [
@@ -931,6 +957,7 @@ var allModules = [
     VesselLabModule,
     VimeoModule,
     VivoModule,
+    VtmGoModule,
     XnxxModule,
     YleAreenaModule,
     YoutubeModule,
