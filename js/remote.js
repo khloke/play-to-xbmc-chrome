@@ -57,7 +57,7 @@ function seek(playerId, timeInSeconds) {
     var minutes = Math.floor((timeInSeconds % 3600) / 60);
     var seconds = Math.floor((timeInSeconds % 3600) % 60);
 
-    var seek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerId + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
+    var seek = `{"jsonrpc":"2.0","method":"Player.Seek","params":[${playerId},{"time":{"hours":${hours},"minutes":${minutes},"seconds":${seconds}}}],"id":1}`
     ajaxPost(seek, function() {});
 }
 
