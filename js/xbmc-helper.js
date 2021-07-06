@@ -3,7 +3,7 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true';
+var debugLogsEnabled = true; //localStorage[storageKeys.enableDebugLogs] == 'true';
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
@@ -21,7 +21,7 @@ function getPluginPath(url, callback) {
         if (module.canHandleUrl(url)) {
             foundModule = true;
             if (debugLogsEnabled) console.log("Found module to handle url: " + url);
-            
+            chrome://extensions/
             module.getPluginPath(url, getAddOnVersion, function(path) {
                 if (debugLogsEnabled) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
@@ -294,7 +294,7 @@ function playerSeek(value) {
     var seconds = Math.floor((value % 3600) % 60);
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
-            var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
+            var seek = `{"jsonrpc":"2.0","method":"Player.Seek","params":[${playerId},{"time":{"hours":${hours},"minutes":${minutes},"seconds":${seconds}}}],"id":1}`
             ajaxPost(playerseek, function () {
                 onChangeUpdate();
             });
