@@ -21,7 +21,7 @@ function getPluginPath(url, callback) {
         if (module.canHandleUrl(url)) {
             foundModule = true;
             if (debugLogsEnabled) console.log("Found module to handle url: " + url);
-            chrome://extensions/
+
             module.getPluginPath(url, getAddOnVersion, function(path) {
                 if (debugLogsEnabled) console.log("Path to play media: " + path);
                 callback(module.getMediaType(), path);
