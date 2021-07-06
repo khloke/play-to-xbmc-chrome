@@ -3,7 +3,7 @@
  *  curl -i -X POST --header Content-Type:"application/json" -d '' http://localhost:8085/jsonrpc
  */
 
-var debugLogsEnabled = true; //localStorage[storageKeys.enableDebugLogs] == 'true';
+var debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true';
 
 function getSiteName(url) {
     if (url.match("magnet:")) {
