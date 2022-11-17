@@ -53,7 +53,15 @@ function getURL() {
         port = localStorage["port"];
     }
 
-    return 'http://'+url + ':' + port;
+    // Handle https in the url
+    if (url.includes('https://')) {
+        // Remove https in url and append after
+        // so user/pass is in the correct place
+        url = url.replace('https://', '')
+        return 'https://'+url + ':' + port;
+    } else {
+        return 'http://'+url + ':' + port;
+    }
 }
 
 function getCredentials() {
