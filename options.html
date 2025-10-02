@@ -5,6 +5,8 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- MV3 storage sync must load before shared.js -->
+    <script type="text/javascript" src="js/storage-sync.js"></script>
     <script type="text/javascript" src="js/shared.js"></script>
     <script type="text/javascript" src="js/options.js"></script>
     <style>
@@ -23,7 +25,6 @@
                     <li class="active"><a href="#kodiHost" data-toggle="tab">Kodi Host(s)</a></li>
                     <li><a href="#general" data-toggle="tab">Others</a></li>
                     <li><a href="#changelist" data-toggle="tab">Changelist</a></li>
-                    <li><a href="#donate" data-toggle="tab">Donate</a></li>
                     <li><a href="#help" data-toggle="tab">Help</a></li>
                 </ul>
                 <div class="tab-content">
@@ -426,15 +427,6 @@
                                     <li>Last time I tested, I couldn't get a single CollegeHumor video to play, this is an issue with the plugin on XBMC, which is no longer supported.</li>
                                 </ul>
                             </p>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="donate" style="text-align: center">
-                        <div>If you like what I did and would like to buy me a coffee, <br/>you can send me some bitcoins to the address below!</div>
-                        <div><img src="images/bitcoin_qr.png" height="200" width="200"></div>
-                        <div>1GcpoegwrJv7VBw51JCbbmiY6oun7kcn9c</div>
-                        <div>
-                            Or you could do it via PayPal:
-                            <img id="paypalDonate" src="images/btn_donate_LG.gif" style="cursor: pointer;"/>
                         </div>
                     </div>
                     <div class="tab-pane" id="help" style="text-align: center">

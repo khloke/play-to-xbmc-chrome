@@ -1,16 +1,10 @@
 {
-    "manifest_version": 2,
-    "version": "1.9.1",
+    "manifest_version": 3,
+    "version": "2.0.0",
     "name": "Play to Kodi",
     "description": "Play, queue and remote control your favourite online media on Kodi / XBMC.",
-    "applications": {
-        "gecko": {
-            "id": "{ba707b6e-571d-47c9-a31d-7b94807d6ee2}"
-        }
-    },
     "options_page": "options.html",
-    "permissions": [ "tabs", "*://www.googleapis.com/*", "http://*/*", "contextMenus" ],
-    "browser_action": {
+    "action": {
         "default_icon": "images/icon.png",
         "default_popup": "remote.html"
     },
@@ -19,78 +13,31 @@
         "24": "images/icon.png",
         "128": "images/tv.png"
     },
+    "permissions": ["tabs", "contextMenus", "storage"],
+    "host_permissions": ["<all_urls>"],
     "background": {
-        "scripts": [
-            "js/jquery-2.1.4.min.js",
-            "js/modules.js",
-            "js/shared.js",
-            "js/background_scripts/background.js",
-            "js/xbmc-helper.js"
-        ]
+        "service_worker": "js/background_scripts/background-sw.js"
     },
-    "content_scripts": [{
-        "matches": ["<all_urls>"],
-        "js": ["js/jquery-2.1.4.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"],
-        "all_frames": true
-    },{
-        "matches": ["http://www.liveleak.com/view*"],
-        "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    },{
-        "matches": ["*://*.facebook.com/*"],
-        "js": ["js/content_scripts/facebook-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    },{
-        "matches": ["*://www.youtube.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]
-    }, {
-        "matches": ["*://soundcloud.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
-    }, {
-        "matches": ["*://streamcloud.eu/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]
-    }, {
-        "matches": ["*://mycloudplayers.com/*"],
-        "js": ["js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]
-    }, {
-        "matches": ["*://*.khanacademy.org/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]
-    }, {
-        "matches": ["*://*.hulu.com/watch/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]
-    }, {
-        "matches": ["*://*.animelab.com/player/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/animelab-content-scripts.js"]
-    }, {
-        "matches": ["*://*.lynda.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/lyndacom-content-scripts.js"]
-    }, {
-        "matches": ["*://*.urgantshow.ru/page/*"],
-        "js": ["js/content_scripts/urgantshow-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
-        "matches": ["*://*.kino-live.org/*"],
-        "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
-        "matches": ["*://*.vessel.com/*"],
-        "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
-        "matches": ["*://*.cda.pl/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]
-    }, {
-        "matches": ["*://*.xnxx.com/*"],
-        "js": ["js/content_scripts/xnxx-content-scripts.js", "js/jquery-2.1.4.min.js"]
-    }, {
-        "matches": ["*://*.seasonvar.ru/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/seasonvar-content-scripts.js"]
-    }, {
-        "matches": ["*://solarmoviez.to/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/solarmoviez-content-scripts.js"]
-    }, {
-        "matches": ["*://vivo.sx/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/vivo-content-scripts.js"]
-    }, {
-        "matches": ["*://*.pornhub.com/*"],
-        "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/pornhub-content-scripts.js"]
-    }],
+    "content_scripts": [
+        {"matches": ["<all_urls>"], "js": ["js/jquery-2.1.4.min.js", "js/modules.js","js/content_scripts/context-menu-content-scripts.js", "js/content_scripts/embedded-video-content-scripts.js"], "all_frames": true},
+        {"matches": ["http://www.liveleak.com/view*"], "js": ["js/content_scripts/liveleak-content-scripts.js", "js/jquery-2.1.4.min.js"]},
+        {"matches": ["*://*.facebook.com/*"], "js": ["js/content_scripts/facebook-content-scripts.js", "js/jquery-2.1.4.min.js"]},
+        {"matches": ["*://www.youtube.com/*"], "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/youtube-content-scripts.js"]},
+        {"matches": ["*://soundcloud.com/*"], "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]},
+        {"matches": ["*://streamcloud.eu/*"], "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/streamcloud-content-scripts.js"]},
+        {"matches": ["*://mycloudplayers.com/*"], "js": ["js/shared.js", "js/content_scripts/soundcloud-content-scripts.js"]},
+        {"matches": ["*://*.khanacademy.org/*"], "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/khanacademy-content-scripts.js"]},
+        {"matches": ["*://*.hulu.com/watch/*"], "js": ["js/jquery-2.1.4.min.js", "js/shared.js", "js/content_scripts/hulu-content-scripts.js"]},
+        {"matches": ["*://*.lynda.com/*"], "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/lyndacom-content-scripts.js"]},
+        {"matches": ["*://*.urgantshow.ru/page/*"], "js": ["js/content_scripts/urgantshow-content-scripts.js", "js/jquery-2.1.4.min.js"]},
+        {"matches": ["*://*.kino-live.org/*"], "js": ["js/content_scripts/kinolive-content-scripts.js", "js/jquery-2.1.4.min.js"]},
+        {"matches": ["*://*.vessel.com/*"], "js": ["js/content_scripts/vessel-content-scripts.js", "js/jquery-2.1.4.min.js"]},
+        {"matches": ["*://*.cda.pl/*"], "js": ["js/jquery-2.1.4.min.js", "js/jquery-ui-1.11.4.min.js", "js/content_scripts/cda-content-scripts.js"]},
+        {"matches": ["*://*.seasonvar.ru/*"], "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/seasonvar-content-scripts.js"]},
+        {"matches": ["*://solarmoviez.to/*"], "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/solarmoviez-content-scripts.js"]},
+        {"matches": ["*://vivo.sx/*"], "js": ["js/jquery-2.1.4.min.js", "js/content_scripts/vivo-content-scripts.js"]}
+    ],
     "web_accessible_resources": [
-        "images/*"
+        {"resources": ["images/*"], "matches": ["<all_urls>"]}
     ]
 }
