@@ -1,53 +1,53 @@
 // Refactored for MV3: context menu onclick handlers replaced by central onClicked listener.
 var currentTabId;
 
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.tabId) currentTabId = request.tabId;
-        switch (request.action) {
-            case 'isAvailable':
-                getXbmcJsonVersion(function (version) {
-                    if (version == null) {
-                        sendResponse({response: "NOT_DETECTED"});
-                    } else {
-                        sendResponse({response: "OK"});
-                    }
-                });
-                break;
-            case 'playThis':
-                if (currentTabId) chrome.tabs.sendMessage(currentTabId, {action: 'onPlayback'});
-                playThisUrl(request.url, function() { sendResponse({response: "OK"}); });
-                break;
-            case 'queueThis':
-                queueThisUrl(request.url, function () { sendResponse({response: "OK"}); });
-                break;
-            case 'queueList':
-                queueList(request.url, request.urlList, function () { sendResponse({response: "OK"}); });
-                break;
-            case 'removeThis':
-                removeThisFromPlaylist(function () { sendResponse({response: "OK"}); });
-                break;
-            case 'playThisNext':
-                playThisNext(request.url, function () { sendResponse({response: "OK"}); });
-                break;
-            case 'isDebugLogsEnabled':
-                sendResponse({response: isDebugLogsEnabled()});
-                break;
-            case 'createContextMenu':
-                createContextMenu(request, function() { sendResponse({response: "OK"}); });
-                break;
-            case 'resume':
-                playThisUrl(request.url, function(){
-                    resume(request.currentTime, function () { sendResponse({response: "OK"}); })});
-                break;
-            case 'setLogging':
-                debugLogsEnabled = request.enable;
-                sendResponse({response: 'OK'});
-                break;
-        }
-        return true; // keep message channel open for async
+function __processMessage(request, sendResponse) {
+    switch (request.action) {
+        case 'isAvailable':
+            getXbmcJsonVersion(function (version) { sendResponse({response: version == null ? "NOT_DETECTED" : "OK"}); });
+            break;
+        case 'playThis':
+            if (currentTabId) chrome.tabs.sendMessage(currentTabId, {action: 'onPlayback'});
+            playThisUrl(request.url, function() { sendResponse({response: "OK"}); });
+            break;
+        case 'queueThis':
+            queueThisUrl(request.url, function () { sendResponse({response: "OK"}); });
+            break;
+        case 'queueList':
+            queueList(request.url, request.urlList, function () { sendResponse({response: "OK"}); });
+            break;
+        case 'removeThis':
+            removeThisFromPlaylist(function () { sendResponse({response: "OK"}); });
+            break;
+        case 'playThisNext':
+            playThisNext(request.url, function () { sendResponse({response: "OK"}); });
+            break;
+        case 'isDebugLogsEnabled':
+            sendResponse({response: isDebugLogsEnabled()});
+            break;
+        case 'createContextMenu':
+            createContextMenu(request, function() { sendResponse({response: "OK"}); });
+            break;
+        case 'resume':
+            playThisUrl(request.url, function(){ resume(request.currentTime, function () { sendResponse({response: "OK"}); })});
+            break;
+        case 'setLogging':
+            debugLogsEnabled = request.enable;
+            sendResponse({response: 'OK'});
+            break;
     }
-);
+}
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.tabId) currentTabId = request.tabId;
+    // Wait until storage has been merged (set by background-sw.js after async chrome.storage.local.get)
+    if (typeof self.__storageReady !== 'undefined' && !self.__storageReady) {
+        setTimeout(function(){ __processMessage(request, sendResponse); }, 50);
+        return true; // keep channel alive
+    }
+    __processMessage(request, sendResponse);
+    return true;
+});
 
 function onContextMenuCreated() {
     if (debugLogsEnabled && chrome.runtime.lastError) {

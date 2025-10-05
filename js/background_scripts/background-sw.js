@@ -1,5 +1,5 @@
 // Background Service Worker for MV3
-// Load localStorage polyfill and then legacy scripts after syncing chrome.storage.local
+// Load localStorage polyfill first
 importScripts('localstorage-polyfill.js');
 
 // Minimal jQuery-like ajax implementation to satisfy existing code expectations
@@ -40,11 +40,16 @@ importScripts('localstorage-polyfill.js');
   self.$ = Object.assign(function(i){ return dollarStub(i); }, self.$);
 })();
 
-// Sync chrome.storage.local into polyfilled localStorage then load legacy scripts
+// Synchronously import legacy scripts so MV3 doesn't block importScripts after install
+importScripts('../shared.js', '../modules.js', '../xbmc-helper.js', 'background.js');
+
+// After scripts load, merge stored data and refresh debug flag
 chrome.storage.local.get(null, data => {
   localStorage._replaceData(data || {});
-  // Load shared logic and background scripts
-  importScripts('../shared.js', '../modules.js', '../xbmc-helper.js', 'background.js');
+  if (typeof storageKeys !== 'undefined') {
+    // Refresh debug flag defined in xbmc-helper.js
+    try { debugLogsEnabled = localStorage[storageKeys.enableDebugLogs] == 'true'; } catch(e){}
+  }
 });
 
 // Persist any storage changes initiated inside service worker (defensive; polyfill already writes)
