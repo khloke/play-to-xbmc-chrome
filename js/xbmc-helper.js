@@ -288,17 +288,28 @@ function clearNonPlayingPlaylist(callback) {
     });
 }
 
-function playerSeek(value) {
-    var hours = Math.floor(value / 3600);
-    var minutes = Math.floor((value % 3600) / 60);
-    var seconds = Math.floor((value % 3600) % 60);
+function playerStep(value) {
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
-            var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
+            var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"step":"' + value + '"}},"id":1}';
             ajaxPost(playerseek, function () {
                 onChangeUpdate();
             });
         }
+    });
+}
+
+function playerSeek(timeInSeconds) {
+    getActivePlayerId(function (playerid) {
+        getPlayerTimes(playerid, function (currentTimeInSeconds, totalTimeInSeconds) {
+            if (currentTimeInSeconds != null) {
+                var targetTimeInSeconds = timeInSeconds - currentTimeInSeconds;
+                var playerseek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerid + ', "value":{"seconds":' + targetTimeInSeconds + '}},"id":1}';
+                ajaxPost(playerseek, function () {
+                    onChangeUpdate();
+                });
+            }
+        })
     });
 }
 

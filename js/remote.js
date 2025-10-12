@@ -52,15 +52,6 @@ function setVolume(volume) {
     ajaxPost(setVolume, function() {});
 }
 
-function seek(playerId, timeInSeconds) {
-    var hours = Math.floor(timeInSeconds / 3600);
-    var minutes = Math.floor((timeInSeconds % 3600) / 60);
-    var seconds = Math.floor((timeInSeconds % 3600) % 60);
-
-    var seek = '{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":' + playerId + ', "value":{"hours":' + hours + ', "minutes":' + minutes + ', "seconds":' + seconds + '}},"id":1}';
-    ajaxPost(seek, function() {});
-}
-
 function doAction(item, callback) {
     getActivePlayerId(function (playerid) {
         if (playerid != null) {
@@ -600,11 +591,7 @@ function initSeekerSlider() {
         },
         stop: function (event, ui) {
             initWatchdog();
-            getActivePlayerId(function (playerId) {
-                if (playerId == 0 || playerId == 1) {
-                    seek(playerId, ui.value);
-                }
-            });
+            playerSeek(ui.value);
             $('#scrollerTime').hide();
         }
     });

@@ -18,10 +18,10 @@ $(document).ready( function() {
     });
 
     $('#previousBtn').click(function() {previous()});
-    $('#rewindBtn').click(function() {playerSeek('smallbackward')});
+    $('#rewindBtn').click(function() {playerStep('smallbackward')});
     $('#stopBtn').click(function() {stop()});
     $('#playBtn').click(function() {playPause()});
-    $('#fastForwardBtn').click(function() {playerSeek('smallforward')});
+    $('#fastForwardBtn').click(function() {playerStep('smallforward')});
     $('#nextBtn').click(function() {next()});
 
     $('#queueListButton').click(function() {queuePlaylist($(this))});
