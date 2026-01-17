@@ -547,10 +547,11 @@ function initVolumeSlider() {
         });
     });
 
-    $('#volume_control').bind("mousewheel", function (e) {
+    $('#volume_control').bind("wheel", function (wheelEvent) {
+        let e = wheelEvent.originalEvent;
         var $volumecontrol = $('#volume_control');
         var addDiff = 1;
-        var diff = e.originalEvent.timeStamp - lastRecordedWheelTime;
+        var diff = e.timeStamp - lastRecordedWheelTime;
         if (diff < 10) {
             addDiff+=15;
         } else if (diff < 100) {
@@ -558,13 +559,13 @@ function initVolumeSlider() {
         } else if (diff < 150) {
             addDiff+=2;
         }
-        if (e.originalEvent.wheelDelta > 0) {
+        if (e.deltaY > 0) {
             $volumecontrol.slider("value", $volumecontrol.slider("value") + addDiff);
         } else {
             $volumecontrol.slider("value", $volumecontrol.slider("value") - addDiff);
         }
 
-        lastRecordedWheelTime = e.originalEvent.timeStamp;
+        lastRecordedWheelTime = e.timeStamp;
     });
 }
 
